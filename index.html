@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.12</title>
+<title>Firma Finansal Yönetim — V: 1.0.13</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -214,25 +214,110 @@
   .btn-cloud { padding:7px 12px; font-size:12px; }
 
   @media (max-width:768px) {
-    .sidebar { width:100%; height:auto; position:relative; flex-direction:row; overflow-x:auto; }
+    body { overflow-x:hidden; }
+    .app-shell { flex-direction:column; min-width:0; overflow-x:hidden; }
+    .sidebar {
+      width:100%;
+      max-width:100%;
+      height:auto;
+      position:sticky;
+      top:0;
+      left:auto;
+      flex-direction:row;
+      overflow-x:auto;
+      overflow-y:hidden;
+      -webkit-overflow-scrolling:touch;
+      z-index:95;
+    }
     .sidebar-logo { display:none; }
-    .sidebar-nav { display:flex; padding:8px; overflow-x:auto; }
+    .sidebar-nav {
+      display:flex;
+      width:max-content;
+      min-width:100%;
+      padding:8px;
+      gap:4px;
+      overflow-x:auto;
+      overflow-y:hidden;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    .sidebar-nav::-webkit-scrollbar { display:none; }
     .nav-section { display:none; }
-    .nav-btn { white-space:nowrap; padding:8px 12px; border-left:none; border-bottom:2px solid transparent; font-size:12px; }
+    .nav-btn {
+      flex:0 0 auto;
+      white-space:nowrap;
+      padding:10px 12px;
+      border-left:none;
+      border-bottom:2px solid transparent;
+      font-size:12px;
+      border-radius:10px;
+    }
     .nav-btn.active { border-left-color:transparent; border-bottom-color:var(--gold); }
     .sidebar-footer { display:none; }
-    .main { margin-left:0; }
-    .app-shell { flex-direction:column; }
+    .main { margin-left:0; width:100%; min-width:0; }
+    .topbar {
+      padding:14px 16px;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:stretch;
+    }
+    .topbar-title {
+      width:100%;
+      font-size:15px;
+    }
+    .topbar-actions {
+      width:100%;
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:8px;
+      align-items:stretch;
+    }
+    .topbar-actions > * { min-width:0; }
+    .cloud-pill,
+    .btn-cloud,
+    .theme-toggle {
+      width:100%;
+      min-height:42px;
+      justify-content:center;
+      text-align:center;
+    }
+    .cloud-user,
+    .topbar-date {
+      width:100%;
+      max-width:none;
+      white-space:normal;
+      overflow:visible;
+      text-overflow:clip;
+      overflow-wrap:anywhere;
+      text-align:left;
+    }
+    .cloud-pill,
+    .cloud-user,
+    .topbar-date { grid-column:1 / -1; }
     .two-col { grid-template-columns:1fr; }
     .form-grid-4,.form-grid-3 { grid-template-columns:1fr 1fr; }
     .content { padding:16px; }
-    .topbar { padding:12px 16px; gap:10px; flex-wrap:wrap; }
-    .topbar-actions { gap:8px; }
+    .metrics-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+    .metric, .card { min-width:0; }
+    .report-tabs { width:100%; overflow-x:auto; }
+    .chart-wrap { min-width:0; overflow:hidden; }
+    canvas { max-width:100% !important; }
     .theme-toggle { padding:6px 10px; font-size:11px; }
+    .auth-screen { padding:16px; }
+    .auth-card { padding:22px 18px; border-radius:18px; }
   }
   @media (max-width:480px) {
+    .content { padding:12px; }
+    .topbar { padding:12px; }
+    .topbar-actions { grid-template-columns:1fr 1fr; }
     .form-grid-4,.form-grid-3,.form-grid-2 { grid-template-columns:1fr; }
-    .metrics-grid { grid-template-columns:1fr 1fr; }
+    .metrics-grid { grid-template-columns:1fr; }
+    .filter-bar { padding:10px; gap:8px; }
+    .filter-bar input,
+    .filter-bar select { width:100%; }
+    .card { padding:16px; }
+    .modal { padding:18px; }
+    .auth-actions { grid-template-columns:1fr; }
   }
 </style>
 </head>
@@ -255,7 +340,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.12</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.13</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>

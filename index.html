@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.29</title>
+<title>Firma Finansal Yönetim — V: 1.0.30</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -365,7 +365,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.29</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.30</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -1193,8 +1193,7 @@ function fmt(n){return '₺'+Math.round(n).toLocaleString('tr-TR');}
 const CURRENCY_SYMBOLS={TRY:'₺',EUR:'€',USD:'$'};
 const CURRENCY_LABELS={TRY:'TL',EUR:'EUR',USD:'USD'};
 const TCMB_TODAY_XML='https://www.tcmb.gov.tr/kurlar/today.xml';
-const TCMB_PROXY_XML='https://api.allorigins.win/raw?url='+encodeURIComponent(TCMB_TODAY_XML);
-const FX_RATE_STORAGE_KEY='firma_finans_tcmb_rates_v1';
+const FX_RATE_STORAGE_KEY='firma_finans_tcmb_rates_v2';
 let currentFxRates=loadStoredFxRates();
 function safeCurrency(c){return ['TRY','EUR','USD'].includes(String(c||'TRY').toUpperCase())?String(c||'TRY').toUpperCase():'TRY';}
 function itemCurrency(item){return safeCurrency(item&&item.currency?item.currency:'TRY');}
@@ -1205,31 +1204,66 @@ function loadStoredFxRates(){
 }
 function storeFxRates(obj){try{localStorage.setItem(FX_RATE_STORAGE_KEY,JSON.stringify(obj));}catch(e){}}
 function parseTrNumber(txt){return parseFloat(String(txt||'').replace(/\./g,'').replace(',','.'))||0;}
-function parseTcmbRates(xmlText){
+function turkeyNow(){return new Date(new Date().toLocaleString('en-US',{timeZone:'Europe/Istanbul'}));}
+function ymdLocal(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function compactYm(d){return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}`;}
+function compactDmy(d){return `${String(d.getDate()).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}${d.getFullYear()}`;}
+function trDateLabel(d){return d.toLocaleDateString('tr-TR',{timeZone:'Europe/Istanbul'});}
+function getTcmbTargetDateInfo(){
+  const now=turkeyNow();
+  const cutoff=new Date(now.getFullYear(),now.getMonth(),now.getDate(),15,35,0);
+  const target=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const afterCutoff=now>=cutoff;
+  if(!afterCutoff)target.setDate(target.getDate()-1);
+  return {target,afterCutoff,now,cutoff,label:afterCutoff?'Bugün 15:35 sonrası':'15:35 öncesi, önceki yayın günü'};
+}
+function candidateTcmbDates(startDate,maxDays){
+  const arr=[];const d=new Date(startDate.getFullYear(),startDate.getMonth(),startDate.getDate());
+  for(let i=0;i<maxDays;i++){arr.push(new Date(d));d.setDate(d.getDate()-1);}
+  return arr;
+}
+function tcmbXmlUrlsForDate(d){
+  const dated=`https://www.tcmb.gov.tr/kurlar/${compactYm(d)}/${compactDmy(d)}.xml`;
+  const urls=[dated,'https://api.allorigins.win/raw?url='+encodeURIComponent(dated)];
+  const today=ymdLocal(turkeyNow());
+  if(ymdLocal(d)===today){urls.unshift(TCMB_TODAY_XML,'https://api.allorigins.win/raw?url='+encodeURIComponent(TCMB_TODAY_XML));}
+  return urls;
+}
+function parseTcmbRates(xmlText,requestedDate){
   const doc=new DOMParser().parseFromString(xmlText,'text/xml');
   const out={EUR:0,USD:0};
   Array.from(doc.querySelectorAll('Currency')).forEach(node=>{
     const code=(node.getAttribute('CurrencyCode')||node.getAttribute('Kod')||'').toUpperCase();
     if(code==='EUR'||code==='USD') out[code]=parseTrNumber((node.querySelector('ForexSelling')||{}).textContent||'');
   });
-  const date=(doc.querySelector('Tarih_Date')||{}).getAttribute?((doc.querySelector('Tarih_Date')||{}).getAttribute('Tarih')||new Date().toLocaleDateString('tr-TR')):new Date().toLocaleDateString('tr-TR');
+  const dateNode=doc.querySelector('Tarih_Date');
+  const date=dateNode?(dateNode.getAttribute('Tarih')||dateNode.getAttribute('Date')||trDateLabel(requestedDate)):trDateLabel(requestedDate);
   if(!out.EUR||!out.USD) throw new Error('TCMB XML içinde EUR/USD satış kuru okunamadı.');
-  return {rates:out,date,source:'TCMB döviz satış kuru'};
+  return {rates:out,date,source:'TCMB döviz satış kuru',effectiveYmd:ymdLocal(requestedDate)};
 }
 async function fetchTcmbRates(force){
-  const today=new Date().toISOString().slice(0,10);
-  if(!force && currentFxRates && currentFxRates.fetchedDay===today && currentFxRates.rates && currentFxRates.rates.EUR && currentFxRates.rates.USD) return currentFxRates;
-  const urls=[TCMB_TODAY_XML,TCMB_PROXY_XML];
-  for(const url of urls){
-    try{
-      const res=await fetch(url,{cache:'no-store'});
-      if(!res.ok) throw new Error('Kur servisi yanıt vermedi');
-      const parsed=parseTcmbRates(await res.text());
-      currentFxRates=Object.assign(parsed,{fetchedAt:new Date().toISOString(),fetchedDay:today});
-      storeFxRates(currentFxRates);
-      return currentFxRates;
-    }catch(e){console.warn('TCMB kur çekme denemesi başarısız:',url,e);}
+  const targetInfo=getTcmbTargetDateInfo();
+  const targetKey=ymdLocal(targetInfo.target);
+  if(!force && currentFxRates && currentFxRates.targetKey===targetKey && currentFxRates.rates && currentFxRates.rates.EUR && currentFxRates.rates.USD) return currentFxRates;
+  const candidates=candidateTcmbDates(targetInfo.target,10);
+  let lastErr=null;
+  for(const d of candidates){
+    for(const url of tcmbXmlUrlsForDate(d)){
+      try{
+        const res=await fetch(url,{cache:'no-store'});
+        if(!res.ok) throw new Error('Kur servisi yanıt vermedi: '+res.status);
+        const parsed=parseTcmbRates(await res.text(),d);
+        currentFxRates=Object.assign(parsed,{fetchedAt:new Date().toISOString(),targetKey,targetRule:targetInfo.label,requestedTargetDate:targetKey});
+        storeFxRates(currentFxRates);
+        return currentFxRates;
+      }catch(e){lastErr=e;console.warn('TCMB kur çekme denemesi başarısız:',url,e);}
+    }
   }
+  if(currentFxRates && currentFxRates.rates && currentFxRates.rates.EUR && currentFxRates.rates.USD){
+    currentFxRates=Object.assign({},currentFxRates,{source:(currentFxRates.source||'TCMB')+' · son kayıtlı kur',targetRule:targetInfo.label,requestedTargetDate:targetKey,stale:true});
+    return currentFxRates;
+  }
+  console.warn('TCMB kur alınamadı:',lastErr);
   return currentFxRates;
 }
 function currentRate(c){c=safeCurrency(c);if(c==='TRY')return 1;return Number.isFinite(parseFloat(currentFxRates&&currentFxRates.rates&&currentFxRates.rates[c]))?parseFloat(currentFxRates.rates[c]):0;}
@@ -1237,8 +1271,11 @@ function currentRateInfoHtml(){
   const eur=currentRate('EUR'), usd=currentRate('USD');
   const src=(currentFxRates&&currentFxRates.source)||'TCMB';
   const dt=(currentFxRates&&currentFxRates.date)||'kur bekleniyor';
+  const rule=(currentFxRates&&currentFxRates.targetRule)||getTcmbTargetDateInfo().label;
+  const target=(currentFxRates&&currentFxRates.requestedTargetDate)||ymdLocal(getTcmbTargetDateInfo().target);
+  const stale=currentFxRates&&currentFxRates.stale?'<span class="warn">Canlı kur alınamadı; son kayıtlı kur kullanılıyor.</span>':'';
   const warn=(!eur||!usd)?'<span class="warn">TCMB kuru alınamadı; değerleme için kur bekleniyor.</span>':'';
-  return `<div class="fx-rate-status"><span class="fx-chip"><strong>Güncel değerleme kuru:</strong> ${src}</span><span class="fx-chip">EUR satış: ${eur?fmtTL(eur):'—'}</span><span class="fx-chip">USD satış: ${usd?fmtTL(usd):'—'}</span><span class="fx-chip">Tarih: ${dt}</span>${warn}</div>`;
+  return `<div class="fx-rate-status"><span class="fx-chip"><strong>Güncel değerleme kuru:</strong> ${src}</span><span class="fx-chip">Kural: ${rule}</span><span class="fx-chip">Hedef gün: ${target}</span><span class="fx-chip">EUR satış: ${eur?fmtTL(eur):'—'}</span><span class="fx-chip">USD satış: ${usd?fmtTL(usd):'—'}</span><span class="fx-chip">Yayın tarihi: ${dt}</span>${stale}${warn}</div>`;
 }
 function amountTL(item){
   if(item && typeof item==='object'){
@@ -1258,7 +1295,7 @@ function validateMoneyInput(prefix){
   const raw=(rateEl&&rateEl.value!==undefined)?String(rateEl.value).trim():'';
   const r=parseFloat(raw.replace(',','.'));
   if(c!=='TRY' && (!raw || !Number.isFinite(r) || r<=1)){
-    alert(`${CURRENCY_LABELS[c]} işleminde kayıt kuru zorunludur. Lütfen işlem günü ${CURRENCY_LABELS[c]}/TL kurunu girin.`);
+    alert(`${CURRENCY_LABELS[c]} işleminde kayıt kuru zorunludur. Lütfen işlem kayıt kurunu girin. Bu kur geçmiş işlem değerinde kalır; kasadaki döviz güncel TCMB satış kuru ile ayrıca değerlenir.`);
     if(rateEl)rateEl.focus();
     return false;
   }
@@ -1567,23 +1604,21 @@ function renderDashboard(){
   const totalExpAll=totalExp+fixedPeriod;
   const net=totalInc-totalExpAll;
   const projectedNet=net-variableOpen;
-  const periodWallet=getCurrencyMovementForRange(from,to,false);
-  const projectedWallet=getCurrencyMovementForRange(from,to,true);
-  const currentPortfolio=getPortfolioValueAtCurrentRates(periodWallet);
-  const projectedPortfolio=getPortfolioValueAtCurrentRates(projectedWallet);
   const marginPct=totalInc>0?((net/totalInc)*100).toFixed(1):'0.0';
   const prevFrom=period==='month'?new Date(from.getFullYear(),from.getMonth()-1,1):period==='week'?new Date(from.getTime()-7*86400000):new Date(from.getFullYear()-1,0,1);
   const prevTo=period==='month'?new Date(from.getFullYear(),from.getMonth(),0,23,59,59):period==='week'?new Date(from.getTime()-1):new Date(from.getFullYear()-1,11,31,23,59,59);
   const prevInc=filterByPeriod(data.income,prevFrom,prevTo).reduce((s,r)=>s+amountTL(r),0);
   const incChange=prevInc>0?((totalInc-prevInc)/prevInc*100).toFixed(1):null;
   document.getElementById('dash-metrics').innerHTML=`
-    <div class="metric"><div class="metric-label">Gelir Değeri (Kayıt Kuru)</div><div class="metric-value positive">${fmt(totalInc)}</div>${incChange?`<div class="metric-sub">${parseFloat(incChange)>=0?'▲':'▼'} ${Math.abs(incChange)}% önceki dönem</div>`:'<div class="metric-sub">Döviz gelir TL kasaya eklenmez</div>'}</div>
-    <div class="metric"><div class="metric-label">Gider Değeri (Kayıt Kuru)</div><div class="metric-value negative">${fmt(totalExp)}</div><div class="metric-sub">${expenses.length} işlem</div></div>
+    <div class="metric"><div class="metric-label">Gelir Değeri (TL)</div><div class="metric-value positive">${fmt(totalInc)}</div>${incChange?`<div class="metric-sub">${parseFloat(incChange)>=0?'▲':'▼'} ${Math.abs(incChange)}% önceki dönem</div>`:'<div class="metric-sub">—</div>'}</div>
+    <div class="metric"><div class="metric-label">Gider Değeri (TL)</div><div class="metric-value negative">${fmt(totalExp)}</div><div class="metric-sub">${expenses.length} işlem</div></div>
     <div class="metric"><div class="metric-label">Kesin Sabit Net</div><div class="metric-value" style="color:var(--fixed)">${fmt(fixedPeriod)}</div><div class="metric-sub">Kira/kredi gibi kesin kalemler</div></div>
-    <div class="metric"><div class="metric-label">Güncel Portföy Değeri</div><div class="metric-value ${currentPortfolio>=0?'positive':'negative'}">${fmt(currentPortfolio)}</div><div class="metric-sub">TL + EUR/USD TCMB satış</div></div>
+    <div class="metric"><div class="metric-label">Gerçek Net Kasa</div><div class="metric-value ${net>=0?'positive':'negative'}">${fmt(net)}</div><div class="metric-sub">Gerçek gider: ${fmt(totalExpAll)}</div></div>
     <div class="metric"><div class="metric-label">Bekleyen Tahmini Fatura</div><div class="metric-value" style="color:#BF6A00">${fmt(variableOpen)}</div><div class="metric-sub">Elektrik vb. gerçekleşmemiş tahmin</div></div>
-    <div class="metric"><div class="metric-label">Tahmini Portföy Değeri</div><div class="metric-value ${projectedPortfolio>=0?'positive':'negative'}">${fmt(projectedPortfolio)}</div><div class="metric-sub">Bekleyen tahmin dahil</div></div>
+    <div class="metric"><div class="metric-label">Tahmini Ay Sonu Kasa</div><div class="metric-value ${projectedNet>=0?'positive':'negative'}">${fmt(projectedNet)}</div><div class="metric-sub">Gerçek net - bekleyen tahmin</div></div>
     <div class="metric"><div class="metric-label">Kâr Marjı</div><div class="metric-value neutral">%${marginPct}</div><div class="metric-sub">${parseFloat(marginPct)>20?'✓ Sağlıklı':parseFloat(marginPct)>0?'⚠ Düşük':'✗ Zarar'}</div></div>`;
+  const periodWallet=getCurrencyMovementForRange(from,to,false);
+  const projectedWallet=getCurrencyMovementForRange(from,to,true);
   const oldWallet=document.getElementById('dash-wallet-breakdown');if(oldWallet)oldWallet.remove();
   const dashMetricsForWallet=document.getElementById('dash-metrics');
   if(dashMetricsForWallet){dashMetricsForWallet.insertAdjacentHTML('afterend', `<div id="dash-wallet-breakdown">${renderWalletCards(periodWallet,projectedWallet)}</div>`);}
@@ -2510,7 +2545,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.29'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.30'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2644,7 +2679,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.29 — Stil destekli Excel çıktısı.
+  // V: 1.0.30 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -2920,7 +2955,7 @@ function buildStandaloneHtmlReport(report){
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.29</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.30</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -3005,7 +3040,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.29 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.30 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -3084,7 +3119,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.29 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.30 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }

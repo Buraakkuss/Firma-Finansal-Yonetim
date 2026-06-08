@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.18</title>
+<title>Firma Finansal Yönetim — V: 1.0.19</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -347,7 +347,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.18</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.19</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -2025,9 +2025,11 @@ function buildExportReport(){
   return {range,months,monthly,incomeRecords,expenseRecords,forecastItems,fixedItems,totals,incomeCats,expenseCats,generatedAt:new Date()};
 }
 function makeBar(v,maxAbs){
-  if(!maxAbs)return'';
-  const len=Math.max(1,Math.round(Math.abs(v)/maxAbs*18));
-  return (v>=0?'▲ ':'▼ ')+'█'.repeat(len);
+  if(!maxAbs)return '• %0';
+  const pct=Math.max(0,Math.min(100,Math.round(Math.abs(v)/maxAbs*100)));
+  if(v>0) return `▲ %${pct}`;
+  if(v<0) return `▼ %${pct}`;
+  return '• %0';
 }
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -2048,7 +2050,7 @@ function buildWorkbookSheets(report,flags){
     rows.push(['Kâr Marjı',report.totals.margin,'Net / toplam gelir','']);
     rows.push(['Kayıt Sayıları',`Gelir: ${report.totals.incomeCount} · Gider: ${report.totals.expenseCount} · Sabit: ${report.totals.fixedCount} · Tahmin: ${report.totals.forecastCount}`,'','']);
     rows.push([]);
-    rows.push(['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Görsel Net']);
+    rows.push(['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Seviye']);
     report.monthly.forEach(r=>rows.push([r.label,r.actualIncome,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,makeBar(r.combinedNet,maxNet)]));
     sheets.push({name:'Yönetim Özeti',rows,cols:[22,18,24,18,18,18,18,24],freezeRow:4,autoFilter:{row:15,cols:8}});
     const catRows=[['Bölüm','Kategori','Tutar','Oran']];
@@ -2057,7 +2059,7 @@ function buildWorkbookSheets(report,flags){
     const expTotal=Object.values(report.expenseCats).reduce((s,v)=>s+Math.max(0,v),0);
     Object.entries(report.expenseCats).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).forEach(([k,v])=>catRows.push(['Gider/Sabit',k,v,expTotal?Math.abs(v)/expTotal:0]));
     sheets.push({name:'Kategori Özeti',rows:catRows,cols:[16,28,18,14],freezeRow:1,autoFilter:{row:1,cols:4}});
-    const graphRows=[['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Bar']];
+    const graphRows=[['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Seviye']];
     report.monthly.forEach(r=>graphRows.push([r.label,r.actualIncome,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,makeBar(r.combinedNet,maxNet)]));
     sheets.push({name:'Grafik Verisi',rows:graphRows,cols:[16,18,20,18,18,18,18,24],freezeRow:1,autoFilter:{row:1,cols:8}});
   }
@@ -2145,7 +2147,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.18 — Stil destekli Excel çıktısı.
+  // V: 1.0.19 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -2473,7 +2475,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.18 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.19 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -2488,13 +2490,13 @@ function buildWorkbookSheets(report,flags){
     rows.push(['Gerçek + tahmini gelir','',`Gider + sabit + tahmin`,'',`Kâr marjı: ${(report.totals.margin*100).toFixed(1)}%`,'','Açılış 0 TL kabul edilir','']);
     rows.push(['','','','','','','','']);
     rows.push(['AYLIK PERFORMANS ÖZETİ','','','','','','','']);
-    rows.push(['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Bar']);
+    rows.push(['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Seviye']);
     report.monthly.forEach(r=>rows.push([r.label,r.actualIncome,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,makeBar(r.combinedNet,maxNet)]));
     rows.push(['','','','','','','','']);
     rows.push(['KAYIT ÖZETİ','','','','','','','']);
     rows.push(['Gelir Kaydı',`${report.totals.incomeCount} adet`,'Gider Kaydı',`${report.totals.expenseCount} adet`,'Sabit Kalem',`${report.totals.fixedCount} adet`,'Tahmin Kalemi',`${report.totals.forecastCount} adet`]);
     rows.push(['Not','Bu rapor Excel Dışa Aktar ekranından otomatik oluşturulmuştur. Açılış bakiyesi 0 TL varsayılmıştır.','','','','','','']);
-    sheets.push({name:'Yönetim Özeti',excelKind:'dashboard',rows,cols:[22,24,26,22,22,22,24,24],freezeRow:9,autoFilter:{row:9,cols:8}});
+    sheets.push({name:'Yönetim Özeti',excelKind:'dashboard',rows,cols:[22,24,26,22,22,22,24,16],freezeRow:9,autoFilter:{row:9,cols:8}});
 
     const catRows=[['Bölüm','Kategori','Tutar','Oran']];
     const incTotal=Object.values(report.incomeCats).reduce((s,v)=>s+v,0);
@@ -2503,9 +2505,9 @@ function buildWorkbookSheets(report,flags){
     Object.entries(report.expenseCats).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).forEach(([k,v])=>catRows.push(['Gider/Sabit',k,v,expTotal?Math.abs(v)/expTotal:0]));
     sheets.push({name:'Kategori Özeti',excelKind:'table',rows:catRows,cols:[18,34,18,14],freezeRow:1,autoFilter:{row:1,cols:4}});
 
-    const graphRows=[['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Bar']];
+    const graphRows=[['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Seviye']];
     report.monthly.forEach(r=>graphRows.push([r.label,r.actualIncome,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,makeBar(r.combinedNet,maxNet)]));
-    sheets.push({name:'Grafik Verisi',excelKind:'table',rows:graphRows,cols:[18,18,22,18,18,18,20,30],freezeRow:1,autoFilter:{row:1,cols:8}});
+    sheets.push({name:'Grafik Verisi',excelKind:'table',rows:graphRows,cols:[18,18,22,18,18,18,20,16],freezeRow:1,autoFilter:{row:1,cols:8}});
   }
   if(flags.income){
     const rows=[['Tarih','Kategori','Açıklama','Tutar']];
@@ -2549,7 +2551,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.18 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.19 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }

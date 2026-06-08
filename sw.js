@@ -1,4 +1,4 @@
-const CACHE_NAME = 'firma-finansal-v1-0-25';
+const CACHE_NAME = 'firma-finansal-v1-0-27';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {

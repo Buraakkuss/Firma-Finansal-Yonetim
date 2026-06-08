@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.16</title>
+<title>Firma Finansal Yönetim — V: 1.0.17</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -341,7 +341,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.16</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.17</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -2051,7 +2051,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.16 — Stil destekli Excel çıktısı.
+  // V: 1.0.17 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -2379,7 +2379,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.16 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.17 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -2398,9 +2398,9 @@ function buildWorkbookSheets(report,flags){
     report.monthly.forEach(r=>rows.push([r.label,r.actualIncome,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,makeBar(r.combinedNet,maxNet)]));
     rows.push(['','','','','','','','']);
     rows.push(['KAYIT ÖZETİ','','','','','','','']);
-    rows.push(['Gelir Kaydı',report.totals.incomeCount,'Gider Kaydı',report.totals.expenseCount,'Sabit Kalem',report.totals.fixedCount,'Tahmin Kalemi',report.totals.forecastCount]);
+    rows.push(['Gelir Kaydı',`${report.totals.incomeCount} adet`,'Gider Kaydı',`${report.totals.expenseCount} adet`,'Sabit Kalem',`${report.totals.fixedCount} adet`,'Tahmin Kalemi',`${report.totals.forecastCount} adet`]);
     rows.push(['Not','Bu rapor Excel Dışa Aktar ekranından otomatik oluşturulmuştur. Açılış bakiyesi 0 TL varsayılmıştır.','','','','','','']);
-    sheets.push({name:'Yönetim Özeti',excelKind:'dashboard',rows,cols:[20,18,24,18,20,18,22,22],freezeRow:9,autoFilter:{row:9,cols:8}});
+    sheets.push({name:'Yönetim Özeti',excelKind:'dashboard',rows,cols:[22,24,26,22,22,22,24,24],freezeRow:9,autoFilter:{row:9,cols:8}});
 
     const catRows=[['Bölüm','Kategori','Tutar','Oran']];
     const incTotal=Object.values(report.incomeCats).reduce((s,v)=>s+v,0);
@@ -2455,7 +2455,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.16 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.17 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }
@@ -2486,9 +2486,15 @@ function shouldFormatPercent(aoa,R,C){
   return header.includes('oran')||header.includes('marj')||rowLabel.includes('marj')||left.includes('marj');
 }
 function isCurrencyColumn(aoa,R,C){
+  // KPI satırındaki A/C/E/G değerleri para formatında gösterilir.
+  if(R===4 && [0,2,4,6].includes(C)) return true;
   const headerRow=(R>=8&&aoa[8])?aoa[8]:aoa[0]||[];
   const header=String(headerRow[C]||'').toLowerCase();
   const label=String((aoa[R]&&aoa[R][0])||'').toLowerCase();
+  const cellText=String((aoa[R]&&aoa[R][C])||'').toLowerCase();
+  const combined=header+' '+label+' '+cellText;
+  // Kayıt sayıları para değildir; adet olarak kalmalıdır.
+  if(/kayıt|kaydı|kalem|adet|sayı/.test(combined) && !/tutar|gelir|gider|net|kasa|bakiye/.test(header)) return false;
   return /gelir|gider|tutar|net|kasa|karşılık|hareket|bakiye/.test(header+' '+label);
 }
 function excelFill(rgb){return{patternType:'solid',fgColor:{rgb}};}

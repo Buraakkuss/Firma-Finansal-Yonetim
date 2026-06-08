@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.25</title>
+<title>Firma Finansal Yönetim — V: 1.0.26</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -347,7 +347,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.25</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.26</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -1229,33 +1229,44 @@ function linkedActualForFixedMonth(f,monthDate){
   const mt=new Date(monthDate.getFullYear(),monthDate.getMonth()+1,0,23,59,59);
   return (data.expense||[]).filter(r=>String(r.fixedLinkId||'')===id).filter(r=>{const d=new Date(r.date+'T00:00:00');return d>=mf&&d<=mt;}).reduce((s,r)=>s+n(r.amount),0);
 }
+function getVariableEstimateStatusForFixedMonth(f,monthDate){
+  const budget=fixedMonthlyEquivalent(f);
+  const actual=linkedActualForFixedMonth(f,monthDate);
+  const isClosed=actual>0;
+  return {budget,actual,isClosed,open:isClosed?0:budget};
+}
 function getVariableEstimateOpenForMonth(monthDate){
   let total=0;
   (data.fixed||[]).forEach(f=>{
     if(f.fixedType==='income'||fixedBudgetType(f)!=='variable')return;
     if(!isFixedActiveInMonth(f,monthDate))return;
-    const budget=fixedMonthlyEquivalent(f);
-    const actual=linkedActualForFixedMonth(f,monthDate);
-    total+=Math.max(0,budget-actual);
+    total+=getVariableEstimateStatusForFixedMonth(f,monthDate).open;
   });
   return total;
 }
 function getFixedBreakdownForMonth(monthDate){
-  let exactExpense=0, exactIncome=0, variableBudget=0, variableActual=0, variableOpen=0, memo=0;
+  let exactExpense=0, exactIncome=0, variableBudget=0, variableActual=0, variableOpen=0, variableClosed=0, memo=0;
   (data.fixed||[]).forEach(f=>{
     if(!isFixedActiveInMonth(f,monthDate))return;
     const eq=fixedMonthlyEquivalent(f);
     const bt=fixedBudgetType(f);
     if(bt==='memo'){memo+=eq;return;}
     if(f.fixedType==='income'){exactIncome+=eq;return;}
-    if(bt==='variable'){const actual=linkedActualForFixedMonth(f,monthDate);variableBudget+=eq;variableActual+=actual;variableOpen+=Math.max(0,eq-actual);return;}
+    if(bt==='variable'){
+      const st=getVariableEstimateStatusForFixedMonth(f,monthDate);
+      variableBudget+=st.budget;
+      variableActual+=st.actual;
+      variableOpen+=st.open;
+      if(st.isClosed)variableClosed+=st.budget;
+      return;
+    }
     exactExpense+=eq;
   });
-  return {exactExpense,exactIncome,exactNet:exactExpense-exactIncome,variableBudget,variableActual,variableOpen,memo};
+  return {exactExpense,exactIncome,exactNet:exactExpense-exactIncome,variableBudget,variableActual,variableOpen,variableClosed,memo};
 }
 function getFixedRollupForRange(from,to){
   const months=getMonthListBetween(firstOfMonth(from),firstOfMonth(to));
-  return months.reduce((acc,m)=>{const b=getFixedBreakdownForMonth(m);Object.keys(b).forEach(k=>acc[k]=(acc[k]||0)+b[k]);return acc;},{exactExpense:0,exactIncome:0,exactNet:0,variableBudget:0,variableActual:0,variableOpen:0,memo:0});
+  return months.reduce((acc,m)=>{const b=getFixedBreakdownForMonth(m);Object.keys(b).forEach(k=>acc[k]=(acc[k]||0)+b[k]);return acc;},{exactExpense:0,exactIncome:0,exactNet:0,variableBudget:0,variableActual:0,variableOpen:0,variableClosed:0,memo:0});
 }
 function updateFixedBudgetHelp(){
   const type=(document.getElementById('fix-type')||{}).value||'expense';
@@ -1273,9 +1284,9 @@ function populateFixedLinkSelect(){
   (data.fixed||[]).forEach(f=>{
     if(f.fixedType==='income'||fixedBudgetType(f)!=='variable')return;
     if(!isFixedActiveInMonth(f,d))return;
-    const budget=fixedMonthlyEquivalent(f);
-    const actual=linkedActualForFixedMonth(f,d);
-    const label=`${f.description||'Tahmini fatura'} · ${fmt(budget)}/ay · gerçekleşen ${fmt(actual)}`;
+    const st=getVariableEstimateStatusForFixedMonth(f,d);
+    const status=st.isClosed?'kapandı':'bekliyor';
+    const label=`${f.description||'Tahmini fatura'} · ${fmt(st.budget)}/ay · gerçekleşen ${fmt(st.actual)} · ${status}`;
     opts.push(`<option value="${String(f.id)}"${String(f.id)===String(cur)?' selected':''}>${label}</option>`);
   });
   el.innerHTML=opts.join('');
@@ -1519,7 +1530,7 @@ function renderInsights(inc,expAll,fixed,net,marginPct,prevInc,incChange,variabl
   if(incChange!==null)insights.push({icon:parseFloat(incChange)>=0?'📈':'📉',text:`Önceki döneme göre gelir değişimi: <strong>${parseFloat(incChange)>=0?'+':''}${incChange}%</strong>`});
   if(parseFloat(fixedRatio)>60)insights.push({icon:'⚠️',text:`Sabit giderler gelirinizin <strong>%${fixedRatio}</strong>'ini oluşturuyor. Bu oran yüksek.`});
   else if(inc>0)insights.push({icon:'ℹ️',text:`Sabit giderler gelirinizin <strong>%${fixedRatio}</strong>'ini oluşturuyor.`});
-  if((variableOpen||0)>0)insights.push({icon:'🧾',text:`Bu dönemde henüz gerçekleşmemiş <strong>${fmt(variableOpen)}</strong> tutarında değişken tahmini fatura var. Gerçek fatura girilince ilgili tahminle eşleştirin.`});
+  if((variableOpen||0)>0)insights.push({icon:'🧾',text:`Bu dönemde henüz kapanmamış <strong>${fmt(variableOpen)}</strong> tutarında değişken tahmini fatura var. Gerçek gider eşleştirildiğinde o ayın tahmini faturası hesaplardan otomatik kaldırılır.`});
   if(data.fixed.length===0)insights.push({icon:'💡',text:`Henüz sabit gider girilmemiş. <strong>Sabit Giderler</strong> sekmesinden ekleyebilirsiniz.`});
   if(inc>0&&data.forecast.length>0){const now=new Date();const mkey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;const fc=getForecastTotals(mkey);if(fc.count>0){const diff=inc-fc.income;insights.push({icon:diff>=0?'🎯':'📊',text:`Bu ay tahmini gelire kıyasla: <strong>${diff>=0?'+':''}${fmt(diff)}</strong>`});}}
   el.innerHTML=insights.map(i=>`<div class="insight"><span class="insight-icon">${i.icon}</span><span>${i.text}</span></div>`).join('');
@@ -1606,8 +1617,9 @@ function renderFixed(){
     const pm=PERIOD_MONTHS[period]||1;
     const monthlyEq=Math.round(parseFloat(f.amount||0)/pm);
     const bType=fixedBudgetType(f);
-    const linkedActual=(!isIncome&&bType==='variable')?linkedActualForFixedMonth(f,new Date(now.getFullYear(),now.getMonth(),1)):0;
-    const openEstimate=(!isIncome&&bType==='variable')?Math.max(0,monthlyEq-linkedActual):0;
+    const varStatus=(!isIncome&&bType==='variable')?getVariableEstimateStatusForFixedMonth(f,new Date(now.getFullYear(),now.getMonth(),1)):null;
+    const linkedActual=varStatus?varStatus.actual:0;
+    const openEstimate=varStatus?varStatus.open:0;
     const budgetBadge=bType==='exact'
       ?`<span class="badge" style="background:rgba(30,138,76,0.10);color:var(--income)">Kesin</span>`
       :bType==='variable'
@@ -2120,8 +2132,15 @@ function buildExportReport(){
   fixedItems.forEach(f=>{
     const bt=fixedBudgetType(f);
     if(bt==='memo')return;
-    const label=bt==='variable'?'Tahmini Fatura: ':'Sabit: ';
-    expenseCats[label+(f.category||'Diğer')]=(expenseCats[label+(f.category||'Diğer')]||0)+(f.fixedType==='income'?-fixedMonthlyEquivalent(f):fixedMonthlyEquivalent(f));
+    const label=bt==='variable'?'Bekleyen Tahmini Fatura: ':'Sabit: ';
+    const cat=label+(f.category||'Diğer');
+    let amount=0;
+    months.forEach(m=>{
+      if(!isFixedActiveInMonth(f,m))return;
+      if(bt==='variable')amount+=getVariableEstimateStatusForFixedMonth(f,m).open;
+      else amount+=(f.fixedType==='income'?-fixedMonthlyEquivalent(f):fixedMonthlyEquivalent(f));
+    });
+    if(amount!==0)expenseCats[cat]=(expenseCats[cat]||0)+amount;
   });
   return {range,months,monthly,incomeRecords,expenseRecords,forecastItems,fixedItems,totals,incomeCats,expenseCats,generatedAt:new Date()};
 }
@@ -2218,7 +2237,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.25'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.26'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2352,7 +2371,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.25 — Stil destekli Excel çıktısı.
+  // V: 1.0.26 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -2628,7 +2647,7 @@ function buildStandaloneHtmlReport(report){
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.25</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.26</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -2713,7 +2732,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.25 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.26 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -2789,7 +2808,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.25 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.26 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }

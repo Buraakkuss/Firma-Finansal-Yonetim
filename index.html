@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.22</title>
+<title>Firma Finansal Yönetim — V: 1.0.23</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -347,7 +347,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.22</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.23</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -2116,7 +2116,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.22'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.23'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2250,7 +2250,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.22 — Stil destekli Excel çıktısı.
+  // V: 1.0.23 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -2512,15 +2512,16 @@ function buildStandaloneHtmlReport(report){
     :root{--bg:#f7f0e5;--paper:#fffaf2;--paper2:#fffdf8;--ink:#35291f;--muted:#7b6a58;--line:#dfcfb8;--brand:#4b3f35;--brand2:#6d5946;--green:#1e8a4c;--red:#c0392b;--blue:#2f6f91;--gold:#dfa85b;}
     *{box-sizing:border-box} body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:32px;line-height:1.45}.wrap{max-width:1220px;margin:auto}.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:18px;align-items:stretch;margin-bottom:18px}.hero-main{background:linear-gradient(135deg,var(--brand),#2f261f);color:#fff;border-radius:22px;padding:26px 28px;box-shadow:0 12px 32px rgba(66,45,25,.14)}.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.76;font-weight:700}.hero h1{font-size:30px;line-height:1.1;margin:8px 0 10px}.hero-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:rgba(255,255,255,.82)}.chip{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 10px}.hero-side{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:22px;display:grid;align-content:center;gap:10px}.side-row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(111,82,54,.12);padding-bottom:8px}.side-row:last-child{border-bottom:none;padding-bottom:0}.side-row span:first-child{color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}.side-row span:last-child{text-align:right;font-weight:700}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0 26px}.kpi{background:var(--paper2);border:1px solid var(--line);border-radius:18px;padding:18px 18px 16px;box-shadow:0 8px 22px rgba(78,54,30,.06)}.kpi .label{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:800}.kpi .val{font-size:28px;font-weight:900;margin-top:8px;letter-spacing:-.02em}.kpi .sub{font-size:12px;color:var(--muted);margin-top:3px}.pos{color:var(--green)!important}.neg{color:var(--red)!important}.blue{color:var(--blue)!important}.section{margin-top:28px}.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:0 0 10px}.section h2{margin:0;font-size:22px}.section-note{color:var(--muted);font-size:12px}.table-card{background:var(--paper2);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 8px 20px rgba(78,54,30,.045)}table{width:100%;border-collapse:collapse}th{background:var(--brand);color:#fff;text-align:left;font-size:12px;padding:11px 10px;white-space:nowrap}td{border-bottom:1px solid #eadcc8;padding:10px;font-size:13px;vertical-align:middle}tr:nth-child(even) td{background:rgba(239,228,210,.34)}tr:last-child td{border-bottom:none}.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.strong{font-weight:800}.muted-cell{font-size:12px;color:var(--muted)}.mini-bar{width:130px;height:9px;background:#efe4d2;border-radius:99px;overflow:hidden}.mini-bar span{display:block;height:100%;border-radius:99px}.mini-bar .inc{background:var(--green)}.mini-bar .exp{background:var(--red)}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.footer{margin-top:26px;border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:16px}.print-btn{position:fixed;right:22px;bottom:22px;border:none;border-radius:999px;background:var(--brand);color:#fff;padding:12px 18px;font-weight:800;box-shadow:0 12px 32px rgba(0,0,0,.18);cursor:pointer}.pill{display:inline-block;border-radius:999px;background:#efe4d2;color:var(--brand);font-weight:800;font-size:11px;padding:4px 9px;margin-left:8px}.empty{color:var(--muted);font-style:italic}.wide-table{overflow-x:auto}
     @media(max-width:960px){body{padding:18px}.hero,.two,.detail-grid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.mini-bar{width:90px}.print-btn{display:none}}@media(max-width:560px){.kpis{grid-template-columns:1fr}.hero h1{font-size:24px}.section-head{display:block}}
-    @media print{body{background:white;padding:0}.wrap{max-width:none}.print-btn{display:none}.hero-main,.hero-side,.kpi,.table-card{box-shadow:none}.section{break-inside:avoid}.hero-main{background:#4b3f35!important;color:white!important}thead{display:table-header-group}tr{break-inside:avoid}}
-  </style></head><body><button class="print-btn" onclick="window.print()">Yazdır / PDF</button><div class="wrap">
+    @page{size:A4 landscape;margin:8mm}
+    @media print{html,body{width:297mm;min-height:210mm}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{background:white!important;padding:0!important;font-size:11px}.wrap{max-width:none;width:100%;margin:0}.print-btn{display:none!important}.hero{grid-template-columns:1.35fr .65fr;gap:10px;margin-bottom:10px}.hero-main{padding:16px 18px;border-radius:14px;background:#4b3f35!important;color:white!important;box-shadow:none!important}.hero h1{font-size:22px}.hero-side{padding:14px;border-radius:14px;box-shadow:none!important}.kpis{grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 14px}.kpi{padding:12px;border-radius:12px;box-shadow:none!important}.kpi .val{font-size:20px}.kpi .sub{font-size:10px}.section{margin-top:14px;break-inside:auto;page-break-inside:auto}.section h2{font-size:17px}.section-head{margin-bottom:6px}.table-card{border-radius:12px;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid}th{font-size:9px;padding:6px 6px}td{font-size:10px;padding:6px 6px}.mini-bar{width:70px;height:6px}.two,.detail-grid{grid-template-columns:1fr 1fr;gap:10px}.footer{font-size:10px;margin-top:12px;padding-top:8px}.pill{font-size:9px;padding:3px 7px}thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}}
+  </style></head><body><button class="print-btn" onclick="window.print()" title="PDF alırken tarayıcı başlık/altlık kapalı, arka plan grafikleri açık olmalı.">Yazdır / PDF</button><div class="wrap">
     <div class="hero"><div class="hero-main"><div class="eyebrow">Marmara Teknik · Finans Raporu</div><h1>Firma Finansal Yönetim Raporu</h1><div class="hero-meta"><span class="chip">Dönem: ${htmlEsc(report.range.fromStr||'Tüm')} / ${htmlEsc(report.range.toStr||'Tüm')}</span><span class="chip">Kâr Marjı: ${formatPct(margin)}</span><span class="chip">Açılış Kasa: 0 TL</span></div></div><div class="hero-side"><div class="side-row"><span>Oluşturma</span><span>${htmlEsc(report.generatedAt.toLocaleString('tr-TR'))}</span></div><div class="side-row"><span>Para Birimi</span><span>TL</span></div><div class="side-row"><span>Rapor Tipi</span><span>Görsel HTML</span></div></div></div>
     <div class="kpis"><div class="kpi"><div class="label">Toplam Gelir</div><div class="val pos">${moneyHtml(report.totals.combinedIncome)}</div><div class="sub">Gerçek + tahmini gelir</div></div><div class="kpi"><div class="label">Toplam Gider</div><div class="val neg">${moneyHtml(report.totals.combinedExpense)}</div><div class="sub">Gider + sabit + tahmin</div></div><div class="kpi"><div class="label">Net Hareket</div><div class="val ${resultClass}">${moneyHtml(report.totals.combinedNet)}</div><div class="sub">Seçili dönem net sonucu</div></div><div class="kpi"><div class="label">Dönem Sonu Kasa</div><div class="val ${report.totals.endingCash>=0?'pos':'neg'}">${moneyHtml(report.totals.endingCash)}</div><div class="sub">Açılış 0 TL kabul edilir</div></div></div>
     <div class="section"><div class="section-head"><h2>Aylık Performans</h2><div class="section-note">Gelir, gider, net ve kümülatif kasa hareketi</div></div><div class="table-card wide-table"><table><thead><tr><th>Ay</th><th>Gelir</th><th>Gelir Grafik</th><th>Gider</th><th>Gider Grafik</th><th>Net</th><th>Net Grafik</th><th>Kümülatif Kasa</th><th>Tahmin</th></tr></thead><tbody>${monthlyRows}</tbody></table></div></div>
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Sabit Kalemler</h2><div class="section-note">${report.totals.fixedCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Açıklama</th><th>Tür</th><th>Kategori</th><th>Tutar</th><th>Periyot</th><th>Aylık Karşılık</th></tr></thead><tbody>${safeRows(fixedRows,'<tr><td colspan="6" class="empty">Sabit kalem yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Tahmin Kalemleri</h2><div class="section-note">${report.totals.forecastCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Ay</th><th>Tür</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(forecastRows,'<tr><td colspan="4" class="empty">Tahmin kalemi yok</td></tr>')}</tbody></table></div></div></div>
-    <div class="footer"><span>Bu rapor Görsel HTML çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.22</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML çıktısı olarak hazırlanmıştır. PDF alırken yazdırma ayarlarında başlık/altlık kapalı, arka plan grafikleri açık olmalıdır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.23</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -2605,7 +2606,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.22 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.23 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -2681,7 +2682,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.22 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.23 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }

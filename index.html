@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.31</title>
+<title>Firma Finansal Yönetim — V: 1.0.32</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -365,7 +365,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.31</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.32</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -846,9 +846,10 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',daily:'Günlük Kayıt',fixed:'Sabit Giderler',forecast:'Tahminler',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Excel Dışa Aktar'};
 const STORAGE_KEY='firma_finansal_v3';
-const APP_VERSION='1.0.29';
+const APP_VERSION='1.0.32';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_W1AHDSfZwbWN0cCxW-hJ7g_6YMXuWPr';
+const AUTH_MIRROR_KEY='firma_finansal_supabase_session_v1';
 const LEGACY_CLOUD_TABLE='firma_finans_data';
 const SHARED_DATA_RPC='firma_finans_get_shared_data';
 const SAVE_DATA_RPC='firma_finans_save_shared_data';
@@ -1005,8 +1006,42 @@ function setCloudUser(user){
 function ensureSupabase(){
   if(supabaseClient) return supabaseClient;
   if(!window.supabase){setAuthMessage('Supabase kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edin.','error');return null;}
-  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{
+    auth:{
+      persistSession:true,
+      autoRefreshToken:true,
+      detectSessionInUrl:true,
+      flowType:'pkce'
+    }
+  });
   return supabaseClient;
+}
+function saveAuthMirror(session){
+  try{
+    if(!session||!session.access_token||!session.refresh_token)return;
+    localStorage.setItem(AUTH_MIRROR_KEY,JSON.stringify({
+      access_token:session.access_token,
+      refresh_token:session.refresh_token,
+      expires_at:session.expires_at||null,
+      savedAt:Date.now(),
+      email:session.user&&session.user.email?session.user.email:''
+    }));
+  }catch(e){console.warn('Oturum yedeği kaydedilemedi',e);}
+}
+function clearAuthMirror(){
+  try{localStorage.removeItem(AUTH_MIRROR_KEY);}catch(e){}
+}
+async function restoreAuthMirror(sb){
+  try{
+    const raw=localStorage.getItem(AUTH_MIRROR_KEY);
+    if(!raw)return null;
+    const saved=JSON.parse(raw);
+    if(!saved||!saved.access_token||!saved.refresh_token)return null;
+    const {data:restored,error}=await sb.auth.setSession({access_token:saved.access_token,refresh_token:saved.refresh_token});
+    if(error||!restored||!restored.session){clearAuthMirror();return null;}
+    saveAuthMirror(restored.session);
+    return restored.session;
+  }catch(e){clearAuthMirror();return null;}
 }
 function showAuthScreen(){
   document.body.classList.remove('cloud-ready');document.body.classList.add('cloud-locked');
@@ -1018,10 +1053,16 @@ function showAppScreen(){
 async function initSupabaseAuth(){
   const sb=ensureSupabase();
   if(!sb){showAuthScreen();return;}
+  setAuthMessage('Oturum kontrol ediliyor...','');
   const {data:sessionData,error}=await sb.auth.getSession();
   if(error){setAuthMessage('Oturum kontrolü başarısız: '+error.message,'error');showAuthScreen();return;}
-  sb.auth.onAuthStateChange((_event,session)=>{handleAuthSession(session,true);});
-  await handleAuthSession(sessionData&&sessionData.session,false);
+  let session=sessionData&&sessionData.session?sessionData.session:null;
+  if(!session) session=await restoreAuthMirror(sb);
+  sb.auth.onAuthStateChange((event,session)=>{
+    if(session){saveAuthMirror(session);handleAuthSession(session,true);return;}
+    if(event==='SIGNED_OUT'){clearAuthMirror();handleAuthSession(null,true);}
+  });
+  await handleAuthSession(session,false);
 }
 async function handleAuthSession(session,fromEvent){
   if(!session||!session.user){
@@ -1038,6 +1079,7 @@ async function authLogin(){
   setAuthMessage('Giriş yapılıyor...','');
   const {data:loginData,error}=await sb.auth.signInWithPassword({email,password});
   if(error){setAuthMessage('Giriş başarısız: '+error.message,'error');return;}
+  if(loginData&&loginData.session) saveAuthMirror(loginData.session);
   await handleAuthSession(loginData.session,false);
 }
 async function authSignup(){
@@ -1048,12 +1090,13 @@ async function authSignup(){
   setAuthMessage('Kullanıcı oluşturuluyor...','');
   const {data:signData,error}=await sb.auth.signUp({email,password});
   if(error){setAuthMessage('Kayıt başarısız: '+error.message,'error');return;}
-  if(signData.session){await handleAuthSession(signData.session,false);}
+  if(signData.session){saveAuthMirror(signData.session);await handleAuthSession(signData.session,false);}
   else setAuthMessage('Kullanıcı oluşturuldu. Supabase e-posta doğrulaması açıksa mail onayından sonra giriş yapın.','ok');
 }
 async function authLogout(){
   const sb=ensureSupabase();if(!sb)return;
   await flushCloudSave();
+  clearAuthMirror();
   await sb.auth.signOut();
   currentUser=null;currentRole=null;cloudReady=false;showAuthScreen();
   setAuthMessage('Çıkış yapıldı.','ok');
@@ -2545,7 +2588,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.31'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.32'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2679,7 +2722,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.31 — Stil destekli Excel çıktısı.
+  // V: 1.0.32 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -2955,7 +2998,7 @@ function buildStandaloneHtmlReport(report){
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.31</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.32</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -3040,7 +3083,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.31 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.32 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -3119,7 +3162,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.31 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.32 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }

@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.17</title>
+<title>Firma Finansal Yönetim — V: 1.0.18</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -212,6 +212,11 @@
   .cloud-pill.warn { color:#B36B00; border-color:rgba(179,107,0,0.28); }
   .cloud-pill.error { color:var(--expense); border-color:rgba(192,57,43,0.30); }
   .cloud-user { font-size:11px; color:var(--text-muted); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .role-pill { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:var(--bg-secondary); color:var(--text); font-size:11px; font-weight:700; white-space:nowrap; }
+  .role-pill.admin { color:var(--income); border-color:rgba(30,138,76,0.28); }
+  .role-pill.accounting { color:var(--forecast); border-color:rgba(47,111,145,0.28); }
+  .role-pill.viewer { color:var(--fixed); border-color:rgba(138,90,32,0.28); }
+  .role-warning { margin:0 0 14px; padding:11px 14px; border:1px solid var(--border-strong); border-radius:10px; background:var(--bg-secondary); color:var(--text-muted); font-size:12px; }
   .btn-cloud { padding:7px 12px; font-size:12px; }
 
   @media (max-width:768px) {
@@ -293,6 +298,7 @@
       text-align:left;
     }
     .cloud-pill,
+    .role-pill,
     .cloud-user,
     .topbar-date { grid-column:1 / -1; }
     .two-col { grid-template-columns:1fr; }
@@ -341,7 +347,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.17</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.18</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -382,8 +388,9 @@
       <div class="topbar-actions">
         <span class="cloud-pill warn" id="cloud-status">☁️ Bulut bekleniyor</span>
         <span class="cloud-user" id="cloud-user"></span>
+        <span class="role-pill viewer" id="role-pill" style="display:none">Rol</span>
         <button class="btn btn-cloud" onclick="manualCloudRefresh()" type="button">↻ Yenile</button>
-        <button class="btn btn-cloud btn-excel" onclick="createCloudBackup()" type="button">☁️ Yedek Al</button>
+        <button class="btn btn-cloud btn-excel" id="backup-btn" onclick="createCloudBackup()" type="button">☁️ Yedek Al</button>
         <button class="btn btn-cloud" id="install-app-btn" onclick="installPWA()" type="button" style="display:none">📱 Cihaza Kur</button>
         <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" type="button">🌙 Karanlık Mod</button>
         <button class="btn btn-cloud" onclick="authLogout()" type="button">Çıkış</button>
@@ -772,14 +779,18 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',daily:'Günlük Kayıt',fixed:'Sabit Giderler',forecast:'Tahminler',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Excel Dışa Aktar'};
 const STORAGE_KEY='firma_finansal_v3';
-const APP_VERSION='1.0.11';
+const APP_VERSION='1.0.18';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_W1AHDSfZwbWN0cCxW-hJ7g_6YMXuWPr';
-const CLOUD_TABLE='firma_finans_data';
-const BACKUP_TABLE='firma_finans_backups';
+const LEGACY_CLOUD_TABLE='firma_finans_data';
+const SHARED_DATA_RPC='firma_finans_get_shared_data';
+const SAVE_DATA_RPC='firma_finans_save_shared_data';
+const ADD_DAILY_RPC='firma_finans_add_daily_record';
+const BACKUP_RPC='firma_finans_create_company_backup';
 let charts={};
 let supabaseClient=null;
 let currentUser=null;
+let currentRole=null;
 let cloudReady=false;
 let cloudSaveTimer=null;
 let pendingCloudSave=null;
@@ -787,6 +798,45 @@ let cloudSyncInterval=null;
 let lastCloudUpdatedAt=null;
 let lastLocalSaveAt=0;
 let isApplyingCloudData=false;
+
+const ROLE_LABELS={admin:'Yönetici',accounting:'Muhasebe',viewer:'Rapor Kullanıcısı'};
+const ROLE_PAGE_ACCESS={
+  admin:['dashboard','daily','fixed','forecast','reports','plan5','categories','export'],
+  accounting:['dashboard','daily'],
+  viewer:['dashboard','reports','plan5','export']
+};
+function getUserRole(){return currentRole||'viewer';}
+function isAdmin(){return getUserRole()==='admin';}
+function isAccounting(){return getUserRole()==='accounting';}
+function canDailyAdd(){return isAdmin()||isAccounting();}
+function canFullEdit(){return isAdmin();}
+function canExportReports(){return isAdmin()||getUserRole()==='viewer';}
+function allowedPages(){return ROLE_PAGE_ACCESS[getUserRole()]||ROLE_PAGE_ACCESS.viewer;}
+function isPageAllowed(id){return allowedPages().includes(id);}
+function defaultPageForRole(){return allowedPages()[0]||'dashboard';}
+function denyAction(message){alert(message||'Bu işlem için yetkiniz yok.');return false;}
+function setRolePill(role){
+  const el=document.getElementById('role-pill');if(!el)return;
+  const r=role||getUserRole();
+  el.style.display='inline-flex';
+  el.className='role-pill '+r;
+  el.textContent='🔐 '+(ROLE_LABELS[r]||'Kullanıcı');
+}
+function findNavButton(id){
+  return Array.from(document.querySelectorAll('.nav-btn')).find(btn=>(btn.getAttribute('onclick')||'').includes("showPage('"+id+"'"));
+}
+function applyRoleUI(){
+  setRolePill(getUserRole());
+  const allowed=allowedPages();
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    const m=(btn.getAttribute('onclick')||'').match(/showPage\('([^']+)'/);
+    if(m) btn.style.display=allowed.includes(m[1])?'flex':'none';
+  });
+  const backup=document.getElementById('backup-btn');if(backup)backup.style.display=isAdmin()?'inline-flex':'none';
+  const active=document.querySelector('.page.active');
+  const activeId=active?active.id.replace('page-',''):null;
+  if(activeId&&!isPageAllowed(activeId)){showPage(defaultPageForRole(),findNavButton(defaultPageForRole()));}
+}
 
 const DEFAULT_CATS={
   income:['Satış','Hizmet','Kira Geliri','Faiz','Diğer'],
@@ -869,7 +919,7 @@ function saveData(d){
   const clean=normalizeAppData(d);
   data=clean;
   saveLocalOnly(clean);
-  queueCloudSave(clean);
+  if(canFullEdit()) queueCloudSave(clean);
 }
 let data=loadData();
 
@@ -892,7 +942,7 @@ function ensureSupabase(){
 }
 function showAuthScreen(){
   document.body.classList.remove('cloud-ready');document.body.classList.add('cloud-locked');
-  setCloudUser(null);setCloudStatus('☁️ Giriş bekleniyor','warn');
+  setCloudUser(null);currentRole=null;setRolePill(null);setCloudStatus('☁️ Giriş bekleniyor','warn');
 }
 function showAppScreen(){
   document.body.classList.remove('cloud-locked');document.body.classList.add('cloud-ready');
@@ -907,9 +957,9 @@ async function initSupabaseAuth(){
 }
 async function handleAuthSession(session,fromEvent){
   if(!session||!session.user){
-    currentUser=null;cloudReady=false;showAuthScreen();return;
+    currentUser=null;currentRole=null;cloudReady=false;showAuthScreen();return;
   }
-  currentUser=session.user;cloudReady=false;showAppScreen();setCloudUser(currentUser);setCloudStatus('☁️ Bulut yükleniyor','warn');
+  currentUser=session.user;cloudReady=false;showAppScreen();setCloudUser(currentUser);setCloudStatus('☁️ Yetki kontrol ediliyor','warn');
   await loadCloudData();
 }
 async function authLogin(){
@@ -937,35 +987,41 @@ async function authLogout(){
   const sb=ensureSupabase();if(!sb)return;
   await flushCloudSave();
   await sb.auth.signOut();
-  currentUser=null;cloudReady=false;showAuthScreen();
+  currentUser=null;currentRole=null;cloudReady=false;showAuthScreen();
   setAuthMessage('Çıkış yapıldı.','ok');
+}
+function getRpcRow(result){
+  if(Array.isArray(result)) return result[0]||null;
+  return result||null;
+}
+function applyCloudRow(row,statusMessage){
+  if(!row) return;
+  currentRole=row.user_role||row.role||currentRole||'viewer';
+  isApplyingCloudData=true;
+  data=normalizeAppData(row.app_data||row.data);
+  saveLocalOnly(data);
+  isApplyingCloudData=false;
+  lastCloudUpdatedAt=row.updated_at||new Date().toISOString();
+  cloudReady=true;
+  applyRoleUI();
+  renderAfterDataLoad();
+  setCloudStatus('☁️ '+(statusMessage||'Bulut bağlı'),'ok');
 }
 async function loadCloudData(){
   const sb=ensureSupabase();if(!sb||!currentUser)return;
   try{
-    const {data:row,error}=await sb.from(CLOUD_TABLE).select('data,updated_at').eq('user_id',currentUser.id).maybeSingle();
+    const {data:rpcData,error}=await sb.rpc(SHARED_DATA_RPC);
     if(error){
-      cloudReady=false;
-      setCloudStatus('☁️ SQL gerekli','error');
-      setAuthMessage('Bulut tablosu okunamadı. Aşağıdaki SQL kodunu Supabase SQL Editor’da çalıştırın. Hata: '+error.message,'error');
+      cloudReady=false;currentRole=null;
+      setCloudStatus('☁️ Yetki / SQL gerekli','error');
+      setAuthMessage('Bu kullanıcı için yetki tanımı yok veya rol SQL kurulumu yapılmadı. Hata: '+error.message,'error');
+      showAuthScreen();
       return;
     }
-    if(row&&row.data){
-      isApplyingCloudData=true;
-      data=normalizeAppData(row.data);
-      saveLocalOnly(data);
-      isApplyingCloudData=false;
-      lastCloudUpdatedAt=row.updated_at||new Date().toISOString();
-      setCloudStatus('☁️ Bulut bağlı','ok');
-    }else{
-      data=normalizeAppData(loadData());
-      saveLocalOnly(data);
-      await upsertCloudData(data,'İlk bulut kaydı oluşturuldu');
-    }
-    cloudReady=true;
-    renderAfterDataLoad();
+    applyCloudRow(getRpcRow(rpcData),'Bulut bağlı');
     startCloudPolling();
   }catch(e){
+    cloudReady=false;
     setCloudStatus('☁️ Bulut hatası','error');
     setAuthMessage('Bulut bağlantı hatası: '+(e.message||e),'error');
   }
@@ -975,7 +1031,7 @@ function renderAfterDataLoad(){
   rerenderActivePage();
 }
 function queueCloudSave(d){
-  if(isApplyingCloudData||!cloudReady||!currentUser)return;
+  if(isApplyingCloudData||!cloudReady||!currentUser||!canFullEdit())return;
   pendingCloudSave=JSON.parse(JSON.stringify(normalizeAppData(d)));
   lastLocalSaveAt=Date.now();
   setCloudStatus('☁️ Kaydediliyor','warn');
@@ -983,16 +1039,23 @@ function queueCloudSave(d){
   cloudSaveTimer=setTimeout(()=>flushCloudSave(),500);
 }
 async function flushCloudSave(){
-  if(!pendingCloudSave||!currentUser||!ensureSupabase())return;
+  if(!pendingCloudSave||!currentUser||!ensureSupabase()||!canFullEdit())return;
   const payload=pendingCloudSave;pendingCloudSave=null;
   await upsertCloudData(payload,'Kaydedildi');
 }
 async function upsertCloudData(payload,okMessage){
-  const sb=ensureSupabase();if(!sb||!currentUser)return;
-  const now=new Date().toISOString();
-  const {error}=await sb.from(CLOUD_TABLE).upsert({user_id:currentUser.id,data:normalizeAppData(payload),updated_at:now},{onConflict:'user_id'});
+  const sb=ensureSupabase();if(!sb||!currentUser||!canFullEdit())return;
+  const {data:rpcData,error}=await sb.rpc(SAVE_DATA_RPC,{p_data:normalizeAppData(payload)});
   if(error){setCloudStatus('☁️ Kayıt hatası','error');console.error(error);alert('Supabase kaydı başarısız: '+error.message);return;}
-  lastCloudUpdatedAt=now;setCloudStatus('☁️ '+(okMessage||'Kaydedildi'),'ok');
+  applyCloudRow(getRpcRow(rpcData),okMessage||'Kaydedildi');
+}
+async function addDailyRecordToCloud(kind,record){
+  const sb=ensureSupabase();
+  if(!sb||!currentUser||!canDailyAdd())return denyAction('Günlük gelir/gider ekleme yetkiniz yok.');
+  setCloudStatus('☁️ Kaydediliyor','warn');
+  const {data:rpcData,error}=await sb.rpc(ADD_DAILY_RPC,{p_kind:kind,p_record:record});
+  if(error){setCloudStatus('☁️ Kayıt hatası','error');alert('Kayıt eklenemedi: '+error.message);return;}
+  applyCloudRow(getRpcRow(rpcData),'Kaydedildi');
 }
 async function manualCloudRefresh(){
   await checkCloudForUpdates(true);
@@ -1004,32 +1067,29 @@ function startCloudPolling(){
 async function checkCloudForUpdates(force){
   const sb=ensureSupabase();if(!sb||!currentUser||pendingCloudSave)return;
   if(!force && Date.now()-lastLocalSaveAt<3000)return;
-  const {data:row,error}=await sb.from(CLOUD_TABLE).select('data,updated_at').eq('user_id',currentUser.id).maybeSingle();
+  const {data:rpcData,error}=await sb.rpc(SHARED_DATA_RPC);
   if(error){setCloudStatus('☁️ Senkron hatası','error');return;}
+  const row=getRpcRow(rpcData);
   if(!row||!row.updated_at){if(force)setCloudStatus('☁️ Bulutta kayıt yok','warn');return;}
   const incoming=new Date(row.updated_at).getTime();
   const current=lastCloudUpdatedAt?new Date(lastCloudUpdatedAt).getTime():0;
   if(force || incoming>current+250){
-    isApplyingCloudData=true;
-    data=normalizeAppData(row.data);
-    saveLocalOnly(data);
-    isApplyingCloudData=false;
-    lastCloudUpdatedAt=row.updated_at;
-    renderAfterDataLoad();
-    setCloudStatus(force?'☁️ Güncellendi':'☁️ Diğer cihazdan güncellendi','ok');
+    applyCloudRow(row,force?'Güncellendi':'Diğer cihazdan güncellendi');
   }else if(force){setCloudStatus('☁️ Zaten güncel','ok');}
 }
 async function createCloudBackup(){
   const sb=ensureSupabase();if(!sb||!currentUser){alert('Yedek almak için giriş yapın.');return;}
+  if(!canFullEdit())return denyAction('Yedek alma yetkisi yalnızca yönetici kullanıcıdadır.');
   await flushCloudSave();
   const payload=normalizeAppData(data);
   const label='Manuel yedek · V '+APP_VERSION+' · '+new Date().toLocaleString('tr-TR');
   try{localStorage.setItem(STORAGE_KEY+'_backup_'+Date.now(),JSON.stringify({label,data:payload,createdAt:new Date().toISOString()}));}catch(e){}
-  const {error}=await sb.from(BACKUP_TABLE).insert({user_id:currentUser.id,backup_name:label,data:payload});
+  const {error}=await sb.rpc(BACKUP_RPC,{p_backup_name:label,p_data:payload});
   if(error){alert('Bulut yedeği alınamadı: '+error.message);setCloudStatus('☁️ Yedek hatası','error');return;}
   setCloudStatus('☁️ Yedek alındı','ok');
-  alert('Yedek alındı. Supabase firma_finans_backups tablosuna kaydedildi.');
+  alert('Yedek alındı. Supabase firma_finans_company_backups tablosuna kaydedildi.');
 }
+
 
 const THEME_KEY='firma_finans_theme_mode';
 function applyTheme(theme,rerender){
@@ -1082,9 +1142,15 @@ function populateCatSelects(){
 }
 
 function showPage(id,btn){
+  if(currentRole && !isPageAllowed(id)){
+    id=defaultPageForRole();
+    btn=findNavButton(id);
+  }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
+  const page=document.getElementById('page-'+id);
+  if(!page)return;
+  page.classList.add('active');
   if(btn)btn.classList.add('active');
   document.getElementById('topbar-title').textContent=PAGE_TITLES[id]||'';
   populateCatSelects();
@@ -1374,17 +1440,25 @@ function renderInsights(inc,expAll,fixed,net,marginPct,prevInc,incChange){
 }
 
 /* ──────── DAILY ──────── */
-function addIncome(){
+async function addIncome(){
+  if(!canDailyAdd())return denyAction('Günlük gelir ekleme yetkiniz yok.');
   const d=document.getElementById('inc-date').value,desc=document.getElementById('inc-desc').value.trim(),amt=parseFloat(document.getElementById('inc-amount').value),cat=document.getElementById('inc-cat').value;
   if(!d||!desc||!amt||amt<=0){alert('Lütfen tüm alanları doldurun.');return;}
-  data.income.push({id:Date.now(),date:d,description:desc,amount:amt,category:cat});saveData(data);renderHistory();document.getElementById('inc-desc').value='';document.getElementById('inc-amount').value='';
+  const rec={id:makeId('inc'),date:d,description:desc,amount:amt,category:cat};
+  if(isAdmin()){data.income.push(rec);saveData(data);renderHistory();}
+  else {await addDailyRecordToCloud('income',rec);}
+  document.getElementById('inc-desc').value='';document.getElementById('inc-amount').value='';
 }
-function addExpense(){
+async function addExpense(){
+  if(!canDailyAdd())return denyAction('Günlük gider ekleme yetkiniz yok.');
   const d=document.getElementById('exp-date').value,desc=document.getElementById('exp-desc').value.trim(),amt=parseFloat(document.getElementById('exp-amount').value),cat=document.getElementById('exp-cat').value;
   if(!d||!desc||!amt||amt<=0){alert('Lütfen tüm alanları doldurun.');return;}
-  data.expense.push({id:Date.now(),date:d,description:desc,amount:amt,category:cat});saveData(data);renderHistory();document.getElementById('exp-desc').value='';document.getElementById('exp-amount').value='';
+  const rec={id:makeId('exp'),date:d,description:desc,amount:amt,category:cat};
+  if(isAdmin()){data.expense.push(rec);saveData(data);renderHistory();}
+  else {await addDailyRecordToCloud('expense',rec);}
+  document.getElementById('exp-desc').value='';document.getElementById('exp-amount').value='';
 }
-function deleteRecord(type,id){if(!confirm('Bu kaydı silmek istiyor musunuz?'))return;data[type]=data[type].filter(r=>r.id!==id);saveData(data);renderHistory();}
+function deleteRecord(type,id){if(!canFullEdit())return denyAction('Kayıt silme yetkisi yalnızca yönetici kullanıcıdadır.');if(!confirm('Bu kaydı silmek istiyor musunuz?'))return;data[type]=data[type].filter(r=>String(r.id)!==String(id));saveData(data);renderHistory();}
 function renderHistory(){
   const type=document.getElementById('hist-type').value;
   const from=document.getElementById('hist-from').value;
@@ -1398,12 +1472,17 @@ function renderHistory(){
   const tbody=document.getElementById('history-body');
   if(rows.length===0){tbody.innerHTML='';document.getElementById('history-empty').style.display='block';return;}
   document.getElementById('history-empty').style.display='none';
-  tbody.innerHTML=rows.map(r=>`<tr><td>${r.date}</td><td><span class="badge badge-${r._type}">${r._type==='income'?'Gelir':'Gider'}</span></td><td>${r.category}</td><td>${r.description}</td><td style="font-weight:600;color:${r._type==='income'?'var(--income)':'var(--expense)'}">${fmt(r.amount)}</td><td style="white-space:nowrap"><button class="btn btn-sm btn-edit" onclick="editRecord('${r._type==='income'?'income':'expense'}',${r.id})" title="Düzenle">✏️</button> <button class="btn btn-sm btn-del" onclick="deleteRecord('${r._type==='income'?'income':'expense'}',${r.id})" title="Sil">🗑</button></td></tr>`).join('');
+  const actionHead=canFullEdit();
+  tbody.innerHTML=rows.map(r=>{
+    const actions=actionHead?`<button class="btn btn-sm btn-edit" onclick="editRecord('${r._type==='income'?'income':'expense'}','${r.id}')" title="Düzenle">✏️</button> <button class="btn btn-sm btn-del" onclick="deleteRecord('${r._type==='income'?'income':'expense'}','${r.id}')" title="Sil">🗑</button>`:'<span style="font-size:11px;color:var(--text-hint)">Sadece görüntüleme</span>';
+    return `<tr><td>${r.date}</td><td><span class="badge badge-${r._type}">${r._type==='income'?'Gelir':'Gider'}</span></td><td>${r.category}</td><td>${r.description}</td><td style="font-weight:600;color:${r._type==='income'?'var(--income)':'var(--expense)'}">${fmt(r.amount)}</td><td style="white-space:nowrap">${actions}</td></tr>`;
+  }).join('');
 }
 function clearHistFilter(){document.getElementById('hist-from').value='';document.getElementById('hist-to').value='';document.getElementById('hist-type').value='all';renderHistory();}
 
 /* ──────── FIXED ──────── */
 function addFixed(){
+  if(!canFullEdit())return denyAction('Sabit kalem ekleme yetkisi yalnızca yönetici kullanıcıdadır.');
   const desc=document.getElementById('fix-desc').value.trim();
   const amt=parseFloat(document.getElementById('fix-amount').value);
   const cat=document.getElementById('fix-cat').value;
@@ -1420,8 +1499,9 @@ function addFixed(){
   document.getElementById('fix-end').value='';
 }
 function deleteFixed(id){
+  if(!canFullEdit())return denyAction('Sabit kalem silme yetkisi yalnızca yönetici kullanıcıdadır.');
   if(!confirm('Bu kaydı silmek istiyor musunuz?'))return;
-  data.fixed=data.fixed.filter(r=>r.id!==id);saveData(data);renderFixed();
+  data.fixed=data.fixed.filter(r=>String(r.id)!==String(id));saveData(data);renderFixed();
 }
 function renderFixed(){
   const tbody=document.getElementById('fixed-body');
@@ -1550,6 +1630,7 @@ function clearFcForm(){
   const prev=document.getElementById('fc-preview');if(prev)prev.style.display='none';
 }
 function addForecast(){
+  if(!canFullEdit())return denyAction('Tahmin ekleme/değiştirme yetkisi yalnızca yönetici kullanıcıdadır.');
   const m=getSelectedForecastMonth();
   const type=document.getElementById('fc-type').value;
   const desc=(document.getElementById('fc-desc').value||'').trim();
@@ -1566,6 +1647,7 @@ function addForecast(){
   renderDashboard();
 }
 function deleteForecast(id){
+  if(!canFullEdit())return denyAction('Tahmin silme yetkisi yalnızca yönetici kullanıcıdadır.');
   const rec=getForecastItems().find(f=>f.id===id);
   if(!rec)return;
   if(!confirm('Bu tahmin kalemini silmek istiyor musunuz?'))return;
@@ -1576,6 +1658,7 @@ function deleteForecast(id){
   renderDashboard();
 }
 function editForecast(id){
+  if(!canFullEdit())return denyAction('Tahmin düzenleme yetkisi yalnızca yönetici kullanıcıdadır.');
   const rec=getForecastItems().find(f=>f.id===id);if(!rec)return;
   editingForecastId=id;
   const parts=rec.month.split('-');
@@ -1729,6 +1812,7 @@ function renderCatList(type,containerId){
   el.innerHTML=cats.map((c,i)=>`<span class="cat-pill">${c}<button onclick="startRenameCategory('${type}',${i})" title="Yeniden adlandır" style="color:var(--forecast)">✏️</button><button onclick="deleteCategory('${type}',${i})" title="Sil">✕</button></span>`).join('');
 }
 function addCategory(type){
+  if(!canFullEdit())return denyAction('Kategori ekleme yetkisi yalnızca yönetici kullanıcıdadır.');
   const inputId=`new-${type}-cat`;
   const val=document.getElementById(inputId).value.trim();
   if(!val)return;
@@ -1738,6 +1822,7 @@ function addCategory(type){
   document.getElementById(inputId).value='';
 }
 function deleteCategory(type,idx){
+  if(!canFullEdit())return denyAction('Kategori silme yetkisi yalnızca yönetici kullanıcıdadır.');
   const cat=data.categories[type][idx];
   const inUse=(type==='income'?data.income:type==='expense'?data.expense:data.fixed).some(r=>r.category===cat);
   if(inUse&&!confirm(`"${cat}" kategorisi mevcut kayıtlarda kullanılıyor. Yine de silmek istiyor musunuz?`))return;
@@ -1746,12 +1831,14 @@ function deleteCategory(type,idx){
 }
 let _renameCtx={};
 function startRenameCategory(type,idx){
+  if(!canFullEdit())return denyAction('Kategori adlandırma yetkisi yalnızca yönetici kullanıcıdadır.');
   _renameCtx={type,idx};
   document.getElementById('rename-cat-input').value=data.categories[type][idx];
   openModal('modal-rename-cat');
   setTimeout(()=>document.getElementById('rename-cat-input').focus(),100);
 }
 function confirmRenameCategory(){
+  if(!canFullEdit())return denyAction('Kategori adlandırma yetkisi yalnızca yönetici kullanıcıdadır.');
   const{type,idx}=_renameCtx;if(type===undefined)return;
   const newName=document.getElementById('rename-cat-input').value.trim();
   if(!newName){alert('Kategori adı boş olamaz.');return;}
@@ -1774,8 +1861,9 @@ document.getElementById('modal-fixed').addEventListener('click',function(e){if(e
 document.getElementById('modal-rename-cat').addEventListener('click',function(e){if(e.target===this)closeModal('modal-rename-cat');});
 
 function editRecord(type,id){
+  if(!canFullEdit())return denyAction('Kayıt düzenleme yetkisi yalnızca yönetici kullanıcıdadır.');
   const arr=type==='income'?data.income:data.expense;
-  const rec=arr.find(r=>r.id===id);if(!rec)return;
+  const rec=arr.find(r=>String(r.id)===String(id));if(!rec)return;
   _editCtx={type,id};
   const cats=data.categories[type]||[];
   const catSel=document.getElementById('modal-cat');
@@ -1788,16 +1876,18 @@ function editRecord(type,id){
   openModal('modal-record');
 }
 function saveRecord(){
+  if(!canFullEdit())return denyAction('Kayıt düzenleme yetkisi yalnızca yönetici kullanıcıdadır.');
   const{type,id}=_editCtx;if(!type||!id)return;
   const d=document.getElementById('modal-date').value,desc=document.getElementById('modal-desc').value.trim(),amt=parseFloat(document.getElementById('modal-amount').value),cat=document.getElementById('modal-cat').value;
   if(!d||!desc||!amt||amt<=0){alert('Lütfen tüm alanları doldurun.');return;}
   const arr=type==='income'?data.income:data.expense;
-  const idx=arr.findIndex(r=>r.id===id);
+  const idx=arr.findIndex(r=>String(r.id)===String(id));
   if(idx>=0)arr[idx]={id,date:d,description:desc,amount:amt,category:cat};
   saveData(data);closeModal('modal-record');renderHistory();
 }
 function editFixed(id){
-  const rec=data.fixed.find(r=>r.id===id);if(!rec)return;
+  if(!canFullEdit())return denyAction('Sabit kalem düzenleme yetkisi yalnızca yönetici kullanıcıdadır.');
+  const rec=data.fixed.find(r=>String(r.id)===String(id));if(!rec)return;
   _editCtx={fixedId:id};
   const cats=data.categories.fixed||[];
   document.getElementById('mfix-cat').innerHTML=cats.map(c=>`<option${c===rec.category?' selected':''}>${c}</option>`).join('');
@@ -1810,6 +1900,7 @@ function editFixed(id){
   openModal('modal-fixed');
 }
 function saveFixed(){
+  if(!canFullEdit())return denyAction('Sabit kalem düzenleme yetkisi yalnızca yönetici kullanıcıdadır.');
   const{fixedId}=_editCtx;if(!fixedId)return;
   const desc=document.getElementById('mfix-desc').value.trim();
   const amt=parseFloat(document.getElementById('mfix-amount').value);
@@ -1820,7 +1911,7 @@ function saveFixed(){
   const end=document.getElementById('mfix-end').value;
   if(!desc||!amt||amt<=0){alert('Lütfen açıklama ve tutar girin.');return;}
   if(!start){alert('Lütfen başlangıç tarihi girin.');return;}
-  const idx=data.fixed.findIndex(r=>r.id===fixedId);
+  const idx=data.fixed.findIndex(r=>String(r.id)===String(fixedId));
   if(idx>=0)data.fixed[idx]={id:fixedId,description:desc,amount:amt,category:cat,fixedType:type,period,startDate:start,endDate:end||null};
   saveData(data);closeModal('modal-fixed');renderFixed();
 }
@@ -2012,6 +2103,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportCSV(){
+  if(!canExportReports())return denyAction('Rapor dışa aktarma yetkiniz yok.');
   const report=buildExportReport();
   const rows=[['Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Not']];
   rows.push(['Rapor Özeti',`${report.range.fromStr||'Tüm'} / ${report.range.toStr||'Tüm'}`,'','','Toplam Net Hareket','',report.totals.actualIncome,report.totals.actualExpense,report.totals.forecastIncome,report.totals.forecastExpense,report.totals.combinedNet,report.totals.endingCash,'Açılış kasa 0 TL']);
@@ -2027,6 +2119,7 @@ function exportCSV(){
 }
 
 function exportHtmlReport(){
+  if(!canExportReports())return denyAction('Rapor dışa aktarma yetkiniz yok.');
   const report=buildExportReport();
   const html=buildStandaloneHtmlReport(report);
   const fn=`firma-finans-gorsel-rapor${report.range.fromStr?'-'+report.range.fromStr:''}${report.range.toStr?'-'+report.range.toStr:''}.html`;
@@ -2035,6 +2128,7 @@ function exportHtmlReport(){
 }
 
 function exportExcel(){
+  if(!canExportReports())return denyAction('Excel raporu alma yetkiniz yok.');
   const flags=getSelectedExportFlags();
   if(!flags.income&&!flags.expense&&!flags.fixed&&!flags.forecast&&!flags.summary){alert('En az bir sekme seçmelisiniz.');return;}
   const report=buildExportReport();
@@ -2051,7 +2145,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.17 — Stil destekli Excel çıktısı.
+  // V: 1.0.18 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -2379,7 +2473,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.17 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.18 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -2455,7 +2549,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.17 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.18 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }

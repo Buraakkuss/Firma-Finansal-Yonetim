@@ -9,9 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.13</title>
+<title>Firma Finansal Yönetim — V: 1.0.14</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
   :root {
     --income: #1E8A4C;
@@ -340,7 +341,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.13</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.14</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -2039,10 +2040,82 @@ function exportExcel(){
   const report=buildExportReport();
   const sheets=buildWorkbookSheets(report,flags);
   if(sheets.length===0){alert('Seçilen aralıkta rapor oluşturulacak veri bulunamadı.');return;}
-  const wb=buildXLSX(sheets);
   const fn=`firma-finans-rapor${report.range.fromStr?'-'+report.range.fromStr:''}${report.range.toStr?'-'+report.range.toStr:''}.xlsx`;
-  downloadBlob(wb,fn,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  showExportPreview(sheets,report);
+  try{
+    exportExcelWithSheetJS(sheets,fn);
+    showExportPreview(sheets,report);
+  }catch(err){
+    console.error('Excel oluşturma hatası:',err);
+    alert('Excel dosyası oluşturulurken hata oluştu. Sayfayı yenileyip tekrar deneyin. Detay: '+(err&&err.message?err.message:err));
+  }
+}
+
+function exportExcelWithSheetJS(sheets,filename){
+  // V: 1.0.14 — Eski elde yazılmış XLSX paketleyici yerine SheetJS kullanılır.
+  // Böylece Excel Mac/Windows dosya onarma uyarısı vermeden geçerli .xlsx açar.
+  if(!window.XLSX){
+    throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
+  }
+  const workbook=XLSX.utils.book_new();
+  const usedNames={};
+  sheets.forEach((sheet,idx)=>{
+    const name=uniqueSheetName(sheetNameSafe(sheet.name,idx+1),usedNames);
+    const aoa=(sheet.rows||[]).map(row=>(row||[]).map(cellToExportValue));
+    const ws=XLSX.utils.aoa_to_sheet(aoa);
+    applySheetLayout(ws,sheet,aoa);
+    XLSX.utils.book_append_sheet(workbook,ws,name);
+  });
+  workbook.Props={
+    Title:'Firma Finansal Yönetim Raporu',
+    Subject:'Gelir, gider, sabit kalem ve tahmin raporu',
+    Author:'Firma Finansal Yönetim',
+    CreatedDate:new Date()
+  };
+  const output=XLSX.write(workbook,{bookType:'xlsx',type:'array',compression:true});
+  downloadBlob(output,filename,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+}
+
+function cellToExportValue(cell){
+  if(cell&&typeof cell==='object'&&Object.prototype.hasOwnProperty.call(cell,'v')) return cell.v;
+  return cell;
+}
+function uniqueSheetName(base,used){
+  let name=String(base||'Sayfa').replace(/[\\\/\?\*\[\]:]/g,' ').trim().slice(0,31)||'Sayfa';
+  let out=name, n=2;
+  while(used[out]){
+    const suffix=' '+n++;
+    out=name.slice(0,31-suffix.length)+suffix;
+  }
+  used[out]=true;
+  return out;
+}
+function applySheetLayout(ws,sheet,aoa){
+  const colCount=Math.max(1,...aoa.map(r=>r.length));
+  const rowCount=Math.max(1,aoa.length);
+  if(sheet.cols&&sheet.cols.length){
+    ws['!cols']=sheet.cols.map(w=>({wch:Math.max(8,Math.min(42,Number(w)||14))}));
+  }else{
+    ws['!cols']=Array.from({length:colCount},(_,i)=>({wch:i===0?18:16}));
+  }
+  const range=XLSX.utils.decode_range(ws['!ref']||`A1:${colName(colCount-1)}${rowCount}`);
+  for(let R=range.s.r;R<=range.e.r;R++){
+    for(let C=range.s.c;C<=range.e.c;C++){
+      const addr=XLSX.utils.encode_cell({r:R,c:C});
+      const cell=ws[addr];
+      if(!cell) continue;
+      if(typeof cell.v==='number'){
+        const header=String((aoa[0]&&aoa[0][C])||'').toLowerCase();
+        const nearby=String((aoa[R]&&aoa[R][0])||'').toLowerCase();
+        if(header.includes('oran')||header.includes('marj')||nearby.includes('marj')) cell.z='0.0%';
+        else cell.z='#,##0 \"₺\";[Red]-#,##0 \"₺\";0 \"₺\"';
+      }
+    }
+  }
+  if(sheet.autoFilter&&rowCount>=sheet.autoFilter.row){
+    const ar=Math.max(1,Number(sheet.autoFilter.row)||1);
+    const ac=Math.max(1,Number(sheet.autoFilter.cols)||colCount);
+    ws['!autofilter']={ref:`A${ar}:${XLSX.utils.encode_col(ac-1)}${Math.max(ar,rowCount)}`};
+  }
 }
 
 function showExportPreview(sheets,report){

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'firma-finansal-v1-0-15';
+const CACHE_NAME = 'firma-finansal-v1-0-16';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
@@ -12,9 +12,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.hostname.includes('supabase.co') || event.request.method !== 'GET') return;
-  event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
-    const clone = response.clone();
-    if (response.ok && url.origin === location.origin) caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-    return response;
-  }).catch(() => caches.match('./index.html'))));
+  event.respondWith(
+    caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
+      const clone = response.clone();
+      if (response.ok && url.origin === location.origin) caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+      return response;
+    }).catch(() => caches.match('./index.html')))
+  );
 });

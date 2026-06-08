@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.15</title>
+<title>Firma Finansal Yönetim — V: 1.0.16</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -341,7 +341,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.15</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.16</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -2051,7 +2051,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.15 — Stil destekli Excel çıktısı.
+  // V: 1.0.16 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -2376,6 +2376,226 @@ function downloadBlob(data,name,mime){
 }
 
 
+
+
+
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.16 ────────
+   Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
+function buildWorkbookSheets(report,flags){
+  const sheets=[];
+  const maxNet=Math.max(1,...report.monthly.map(r=>Math.abs(r.combinedNet)));
+  if(flags.summary){
+    const rows=[];
+    rows.push(['Firma Finansal Yönetim Raporu','','','','','','','']);
+    rows.push(['Dönem',`${report.range.fromStr||'Tüm'} / ${report.range.toStr||'Tüm'}`,'Oluşturma',report.generatedAt.toLocaleString('tr-TR'),'Açılış Bakiyesi','0 TL','Para Birimi','TL']);
+    rows.push(['','','','','','','','']);
+    rows.push(['TOPLAM GELİR','','TOPLAM GİDER','','NET HAREKET','','DÖNEM SONU KASA','']);
+    rows.push([report.totals.combinedIncome,'',report.totals.combinedExpense,'',report.totals.combinedNet,'',report.totals.endingCash,'']);
+    rows.push(['Gerçek + tahmini gelir','',`Gider + sabit + tahmin`,'',`Kâr marjı: ${(report.totals.margin*100).toFixed(1)}%`,'','Açılış 0 TL kabul edilir','']);
+    rows.push(['','','','','','','','']);
+    rows.push(['AYLIK PERFORMANS ÖZETİ','','','','','','','']);
+    rows.push(['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Bar']);
+    report.monthly.forEach(r=>rows.push([r.label,r.actualIncome,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,makeBar(r.combinedNet,maxNet)]));
+    rows.push(['','','','','','','','']);
+    rows.push(['KAYIT ÖZETİ','','','','','','','']);
+    rows.push(['Gelir Kaydı',report.totals.incomeCount,'Gider Kaydı',report.totals.expenseCount,'Sabit Kalem',report.totals.fixedCount,'Tahmin Kalemi',report.totals.forecastCount]);
+    rows.push(['Not','Bu rapor Excel Dışa Aktar ekranından otomatik oluşturulmuştur. Açılış bakiyesi 0 TL varsayılmıştır.','','','','','','']);
+    sheets.push({name:'Yönetim Özeti',excelKind:'dashboard',rows,cols:[20,18,24,18,20,18,22,22],freezeRow:9,autoFilter:{row:9,cols:8}});
+
+    const catRows=[['Bölüm','Kategori','Tutar','Oran']];
+    const incTotal=Object.values(report.incomeCats).reduce((s,v)=>s+v,0);
+    Object.entries(report.incomeCats).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>catRows.push(['Gelir',k,v,incTotal?v/incTotal:0]));
+    const expTotal=Object.values(report.expenseCats).reduce((s,v)=>s+Math.max(0,v),0);
+    Object.entries(report.expenseCats).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).forEach(([k,v])=>catRows.push(['Gider/Sabit',k,v,expTotal?Math.abs(v)/expTotal:0]));
+    sheets.push({name:'Kategori Özeti',excelKind:'table',rows:catRows,cols:[18,34,18,14],freezeRow:1,autoFilter:{row:1,cols:4}});
+
+    const graphRows=[['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Bar']];
+    report.monthly.forEach(r=>graphRows.push([r.label,r.actualIncome,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,makeBar(r.combinedNet,maxNet)]));
+    sheets.push({name:'Grafik Verisi',excelKind:'table',rows:graphRows,cols:[18,18,22,18,18,18,20,30],freezeRow:1,autoFilter:{row:1,cols:8}});
+  }
+  if(flags.income){
+    const rows=[['Tarih','Kategori','Açıklama','Tutar']];
+    report.incomeRecords.forEach(r=>rows.push([dmy(r.date),r.category||'',r.description||'',n(r.amount)]));
+    rows.push(['','','TOPLAM',report.incomeRecords.reduce((s,r)=>s+n(r.amount),0)]);
+    sheets.push({name:'Gelirler',excelKind:'table',rows,cols:[16,24,50,18],freezeRow:1,autoFilter:{row:1,cols:4}});
+  }
+  if(flags.expense){
+    const rows=[['Tarih','Kategori','Açıklama','Tutar']];
+    report.expenseRecords.forEach(r=>rows.push([dmy(r.date),r.category||'',r.description||'',n(r.amount)]));
+    rows.push(['','','TOPLAM',report.expenseRecords.reduce((s,r)=>s+n(r.amount),0)]);
+    sheets.push({name:'Giderler',excelKind:'table',rows,cols:[16,24,50,18],freezeRow:1,autoFilter:{row:1,cols:4}});
+  }
+  if(flags.fixed){
+    const rows=[['Açıklama','Tür','Kategori','Tutar','Periyot','Aylık Karşılık','Yıllık Karşılık','Başlangıç','Bitiş','Durum']];
+    report.fixedItems.forEach(f=>{
+      const monthly=fixedMonthlyEquivalent(f);
+      rows.push([f.description||'',f.fixedType==='income'?'Gelir':'Gider',f.category||'',n(f.amount),PERIOD_LABELS[f.period||'monthly']||f.period||'Aylık',monthly,monthly*12,dmy(f.startDate),f.endDate?dmy(f.endDate):'Süresiz','Aktif']);
+    });
+    sheets.push({name:'Sabit Kalemler',excelKind:'table',rows,cols:[36,14,24,18,18,20,20,16,16,14],freezeRow:1,autoFilter:{row:1,cols:10}});
+  }
+  if(flags.forecast){
+    const rows=[['Ay','Tür','Açıklama','Tutar','Ay Toplam Tahmini Gelir','Ay Toplam Tahmini Gider','Ay Tahmini Net','Gerçek Gelir','Gerçek Gider + Sabit','Gerçek Net','Sapma']];
+    report.forecastItems.forEach(f=>{
+      const totals=getForecastTotals(f.month);
+      const p=f.month.split('-');
+      const mf=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,1),mt=lastOfMonth(mf);
+      const ri=filterByPeriod(data.income,mf,mt).reduce((s,r)=>s+n(r.amount),0);
+      const re=filterByPeriod(data.expense,mf,mt).reduce((s,r)=>s+n(r.amount),0)+getFixedForMonth(mf);
+      const rNet=ri-re;const hasActual=(ri>0||re>0);
+      rows.push([ymLabel(f.month),f.type==='income'?'Gelir':'Gider',f.description||'',n(f.amount),totals.income,totals.expense,totals.net,ri,re,hasActual?rNet:'',hasActual?rNet-totals.net:'']);
+    });
+    sheets.push({name:'Tahmin Kalemleri',excelKind:'table',rows,cols:[18,14,46,18,24,24,18,18,22,18,18],freezeRow:1,autoFilter:{row:1,cols:11}});
+  }
+  if(flags.summary){
+    const rows=[['Ay','Gerçek Gelir','Değişken Gider','Sabit Net','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Birleşik Net','Kümülatif Kasa','Tahmin Kalemi']];
+    report.monthly.forEach(r=>rows.push([r.label,r.actualIncome,r.variableExpense,r.fixedNet,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,r.forecastCount]));
+    sheets.push({name:'Aylık Rapor',excelKind:'table',rows,cols:[18,18,18,18,22,18,18,18,20,16],freezeRow:1,autoFilter:{row:1,cols:10}});
+  }
+  return sheets;
+}
+
+function exportExcelWithSheetJS(sheets,filename){
+  // V: 1.0.16 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  if(!window.XLSX){
+    throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
+  }
+  const workbook=XLSX.utils.book_new();
+  const usedNames={};
+  sheets.forEach((sheet,idx)=>{
+    const name=uniqueSheetName(sheetNameSafe(sheet.name,idx+1),usedNames);
+    const aoa=(sheet.rows||[]).map(row=>(row||[]).map(cellToExportValue));
+    const ws=XLSX.utils.aoa_to_sheet(aoa);
+    applyProfessionalSheetLayout(ws,sheet,aoa);
+    XLSX.utils.book_append_sheet(workbook,ws,name);
+  });
+  workbook.Props={
+    Title:'Firma Finansal Yönetim Raporu',
+    Subject:'Gelir, gider, sabit kalem ve tahmin raporu',
+    Author:'Firma Finansal Yönetim',
+    Company:'Marmara Teknik',
+    CreatedDate:new Date()
+  };
+  const output=XLSX.write(workbook,{bookType:'xlsx',type:'array',compression:true,cellStyles:true});
+  downloadBlob(output,filename,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+}
+
+function shouldFormatPercent(aoa,R,C){
+  const header=String((aoa[0]&&aoa[0][C])||'').toLowerCase();
+  const rowLabel=String((aoa[R]&&aoa[R][0])||'').toLowerCase();
+  const left=String((aoa[R]&&aoa[R][C-1])||'').toLowerCase();
+  return header.includes('oran')||header.includes('marj')||rowLabel.includes('marj')||left.includes('marj');
+}
+function isCurrencyColumn(aoa,R,C){
+  const headerRow=(R>=8&&aoa[8])?aoa[8]:aoa[0]||[];
+  const header=String(headerRow[C]||'').toLowerCase();
+  const label=String((aoa[R]&&aoa[R][0])||'').toLowerCase();
+  return /gelir|gider|tutar|net|kasa|karşılık|hareket|bakiye/.test(header+' '+label);
+}
+function excelFill(rgb){return{patternType:'solid',fgColor:{rgb}};}
+function excelFont(opts){return Object.assign({name:'Calibri',sz:11,color:{rgb:EXCEL_THEME.black}},opts||{});}
+function baseCellStyle(){return{font:excelFont(),alignment:{vertical:'center',wrapText:false},border:thinBorder};}
+function setCellStyle(ws,addr,style){ if(ws[addr]) ws[addr].s=style; }
+function applyProfessionalSheetLayout(ws,sheet,aoa){
+  const kind=sheet.excelKind||'';
+  const wsName=String(sheet.name||'');
+  const colCount=Math.max(1,...aoa.map(r=>r.length));
+  const rowCount=Math.max(1,aoa.length);
+  const widths=(sheet.cols&&sheet.cols.length?sheet.cols:Array.from({length:colCount},(_,i)=>i===0?18:16));
+  ws['!cols']=Array.from({length:colCount},(_,i)=>({wch:Math.max(10,Math.min(56,Number(widths[i])||16))}));
+  ws['!rows']=Array.from({length:rowCount},()=>({hpt:21}));
+  ws['!views']=[{showGridLines:false}];
+
+  const ref=ws['!ref']||`A1:${XLSX.utils.encode_col(colCount-1)}${rowCount}`;
+  const range=XLSX.utils.decode_range(ref);
+  for(let R=range.s.r;R<=range.e.r;R++){
+    for(let C=range.s.c;C<=range.e.c;C++){
+      const addr=XLSX.utils.encode_cell({r:R,c:C});
+      const cell=ws[addr];
+      if(!cell) continue;
+      let style=baseCellStyle();
+      const val=cell.v;
+      const blankRow=(aoa[R]||[]).every(v=>v===null||v===undefined||String(v).trim()==='');
+      if(blankRow){cell.s={fill:excelFill('FFFFFF')};continue;}
+
+      if(kind==='dashboard'){
+        if(R===0){
+          style={font:excelFont({bold:true,sz:18,color:{rgb:EXCEL_THEME.white}}),fill:excelFill(EXCEL_THEME.brown),alignment:{horizontal:'left',vertical:'center'},border:thinBorder};
+        }else if(R===1){
+          style={font:excelFont({bold:C%2===0,color:{rgb:C%2===0?EXCEL_THEME.muted:EXCEL_THEME.black}}),fill:excelFill(EXCEL_THEME.cream2),alignment:{horizontal:C%2===0?'left':'left',vertical:'center'},border:thinBorder};
+        }else if(R===3){
+          const colors=[EXCEL_THEME.income,EXCEL_THEME.income,EXCEL_THEME.expense,EXCEL_THEME.expense,EXCEL_THEME.forecast,EXCEL_THEME.forecast,EXCEL_THEME.gold,EXCEL_THEME.gold];
+          style={font:excelFont({bold:true,sz:10,color:{rgb:EXCEL_THEME.white}}),fill:excelFill(colors[C]||EXCEL_THEME.brown),alignment:{horizontal:'center',vertical:'center'},border:thinBorder};
+        }else if(R===4){
+          const valColor=(C>=2&&C<=3)?EXCEL_THEME.expense:(C>=4&&C<=5&&typeof val==='number'&&val<0)?EXCEL_THEME.expense:EXCEL_THEME.income;
+          style={font:excelFont({bold:true,sz:18,color:{rgb:valColor}}),fill:excelFill('FFFFFF'),alignment:{horizontal:'center',vertical:'center'},border:thinBorder};
+        }else if(R===5){
+          style={font:excelFont({sz:10,color:{rgb:EXCEL_THEME.muted}}),fill:excelFill(EXCEL_THEME.cream),alignment:{horizontal:'center',vertical:'center'},border:thinBorder};
+        }else if(R===7){
+          style={font:excelFont({bold:true,sz:13,color:{rgb:EXCEL_THEME.white}}),fill:excelFill(EXCEL_THEME.forecast),alignment:{horizontal:'left',vertical:'center'},border:thinBorder};
+        }else if(R===8){
+          style={font:excelFont({bold:true,sz:10,color:{rgb:EXCEL_THEME.white}}),fill:excelFill(EXCEL_THEME.brown2),alignment:{horizontal:'center',vertical:'center'},border:thinBorder};
+        }else if(R>=9 && R < 9+(aoa.length-14)){
+          style.fill=excelFill(R%2===0?EXCEL_THEME.cream:'FFFFFF');
+          style.border=thinBorder;
+        }else if(R===aoa.length-3){
+          style={font:excelFont({bold:true,sz:12,color:{rgb:EXCEL_THEME.white}}),fill:excelFill(EXCEL_THEME.brown),alignment:{horizontal:'left',vertical:'center'},border:thinBorder};
+        }else if(R===aoa.length-2){
+          style={font:excelFont({bold:C%2===0,color:{rgb:C%2===0?EXCEL_THEME.muted:EXCEL_THEME.black}}),fill:excelFill(EXCEL_THEME.cream2),alignment:{horizontal:'center',vertical:'center'},border:thinBorder};
+        }else if(R===aoa.length-1){
+          style={font:excelFont({italic:true,sz:10,color:{rgb:EXCEL_THEME.muted}}),fill:excelFill('FFFFFF'),alignment:{horizontal:'left',vertical:'center',wrapText:true},border:thinBorder};
+        }
+      }else{
+        if(R===0){
+          style={font:excelFont({bold:true,sz:11,color:{rgb:EXCEL_THEME.white}}),fill:excelFill(EXCEL_THEME.brown),alignment:{horizontal:'center',vertical:'center',wrapText:true},border:thinBorder};
+        }else{
+          style.fill=excelFill(R%2===0?EXCEL_THEME.cream:'FFFFFF');
+          const rowText=(aoa[R]||[]).join(' ').toLowerCase();
+          if(rowText.includes('toplam')){style.fill=excelFill(EXCEL_THEME.cream2);style.font=excelFont({bold:true});}
+        }
+      }
+
+      if(typeof val==='number'){
+        cell.t='n';
+        if(shouldFormatPercent(aoa,R,C)){cell.z=percentFmt;style.numFmt=percentFmt;}
+        else if(isCurrencyColumn(aoa,R,C)){cell.z=moneyFmt;style.numFmt=moneyFmt;}
+        style.alignment=Object.assign({},style.alignment||{}, {horizontal:'right',vertical:'center'});
+        if(val<0) style.font=excelFont({bold:style.font&&style.font.bold,sz:style.font&&style.font.sz,color:{rgb:EXCEL_THEME.expense}});
+      }else{
+        style.alignment=Object.assign({},style.alignment||{}, {horizontal:(kind==='dashboard'&&(R===3||R===4||R===5))?'center':'left',vertical:'center',wrapText:R===aoa.length-1});
+      }
+      cell.s=style;
+    }
+  }
+
+  const merges=[];
+  if(kind==='dashboard'){
+    merges.push({s:{r:0,c:0},e:{r:0,c:7}});
+    merges.push({s:{r:3,c:0},e:{r:3,c:1}},{s:{r:3,c:2},e:{r:3,c:3}},{s:{r:3,c:4},e:{r:3,c:5}},{s:{r:3,c:6},e:{r:3,c:7}});
+    merges.push({s:{r:4,c:0},e:{r:4,c:1}},{s:{r:4,c:2},e:{r:4,c:3}},{s:{r:4,c:4},e:{r:4,c:5}},{s:{r:4,c:6},e:{r:4,c:7}});
+    merges.push({s:{r:5,c:0},e:{r:5,c:1}},{s:{r:5,c:2},e:{r:5,c:3}},{s:{r:5,c:4},e:{r:5,c:5}},{s:{r:5,c:6},e:{r:5,c:7}});
+    merges.push({s:{r:7,c:0},e:{r:7,c:7}});
+    merges.push({s:{r:aoa.length-3,c:0},e:{r:aoa.length-3,c:7}});
+    merges.push({s:{r:aoa.length-1,c:1},e:{r:aoa.length-1,c:7}});
+    for(let m of merges){
+      const source=XLSX.utils.encode_cell(m.s);
+      const sourceStyle=ws[source]&&ws[source].s;
+      for(let r=m.s.r;r<=m.e.r;r++)for(let c=m.s.c;c<=m.e.c;c++){
+        const addr=XLSX.utils.encode_cell({r,c});
+        ws[addr]=ws[addr]||{t:'s',v:''};
+        if(sourceStyle) ws[addr].s=sourceStyle;
+      }
+    }
+    ws['!rows'][0]={hpt:32}; ws['!rows'][2]={hpt:8}; ws['!rows'][3]={hpt:23}; ws['!rows'][4]={hpt:34}; ws['!rows'][5]={hpt:22}; ws['!rows'][6]={hpt:10}; ws['!rows'][7]={hpt:24}; ws['!rows'][8]={hpt:24};
+  }
+  if(merges.length) ws['!merges']=merges;
+  if(sheet.autoFilter&&rowCount>=sheet.autoFilter.row){
+    const ar=Math.max(1,Number(sheet.autoFilter.row)||1);
+    const ac=Math.max(1,Number(sheet.autoFilter.cols)||colCount);
+    ws['!autofilter']={ref:`A${ar}:${XLSX.utils.encode_col(ac-1)}${Math.max(ar,rowCount)}`};
+  }
+  ws['!margins']={left:0.35,right:0.35,top:0.5,bottom:0.5,header:0.2,footer:0.2};
+  ws['!pageSetup']={orientation:'landscape',fitToWidth:1,fitToHeight:0};
+}
 
 document.addEventListener('DOMContentLoaded',()=>{
   const pass=document.getElementById('auth-password');

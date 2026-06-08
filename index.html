@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.19</title>
+<title>Firma Finansal Yönetim — V: 1.0.20</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -347,7 +347,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.19</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.20</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -2104,18 +2104,102 @@ function buildWorkbookSheets(report,flags){
   return sheets;
 }
 
+function csvMoney(v){
+  return Math.round(n(v)).toLocaleString('tr-TR') + ' ₺';
+}
+function csvPercent(v){
+  return '%' + ((n(v))*100).toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
+}
 function exportCSV(){
   if(!canExportReports())return denyAction('Rapor dışa aktarma yetkiniz yok.');
   const report=buildExportReport();
-  const rows=[['Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Not']];
-  rows.push(['Rapor Özeti',`${report.range.fromStr||'Tüm'} / ${report.range.toStr||'Tüm'}`,'','','Toplam Net Hareket','',report.totals.actualIncome,report.totals.actualExpense,report.totals.forecastIncome,report.totals.forecastExpense,report.totals.combinedNet,report.totals.endingCash,'Açılış kasa 0 TL']);
-  report.monthly.forEach(r=>rows.push(['Aylık Rapor',r.label,'Ay Özeti','',`${r.forecastCount} tahmin kalemi`, '', r.actualIncome,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,'']));
-  report.incomeRecords.forEach(r=>rows.push(['Gelir Kaydı',dmy(r.date),'Gelir',r.category||'',r.description||'',n(r.amount),'','','','','','','']));
-  report.expenseRecords.forEach(r=>rows.push(['Gider Kaydı',dmy(r.date),'Gider',r.category||'',r.description||'',n(r.amount),'','','','','','','']));
-  report.fixedItems.forEach(f=>rows.push(['Sabit Kalem',`${dmy(f.startDate)} - ${f.endDate?dmy(f.endDate):'Süresiz'}`,f.fixedType==='income'?'Gelir':'Gider',f.category||'',f.description||'',n(f.amount),'','','','','', '',`${PERIOD_LABELS[f.period||'monthly']||''} · Aylık karşılık: ${fixedMonthlyEquivalent(f)}`]));
-  report.forecastItems.forEach(f=>rows.push(['Tahmin Kalemi',ymLabel(f.month),f.type==='income'?'Tahmini Gelir':'Tahmini Gider','',f.description||'',n(f.amount),'','','','','','','']));
+  const rows=[];
+
+  // CSV renk, birleşik hücre ve grafik taşıyamaz. Bu nedenle çıktıyı Excel raporuna benzer
+  // şekilde bölümlere ayrılmış, okunabilir ve yazdırılabilir düz rapor olarak hazırlarız.
+  rows.push(['Firma Finansal Yönetim Raporu']);
+  rows.push(['Dönem',`${report.range.fromStr||'Tüm'} / ${report.range.toStr||'Tüm'}`,'Oluşturma',report.generatedAt.toLocaleString('tr-TR'),'Açılış Bakiyesi','0 TL','Para Birimi','TL']);
+  rows.push([]);
+
+  rows.push(['YÖNETİM ÖZETİ']);
+  rows.push(['Gösterge','Tutar / Adet','Açıklama','Durum']);
+  rows.push(['Toplam Gelir',csvMoney(report.totals.combinedIncome),'Gerçek + tahmini gelir',report.totals.combinedIncome>0?'Var':'Yok']);
+  rows.push(['Toplam Gider',csvMoney(report.totals.combinedExpense),'Gider + sabit + tahmin','']);
+  rows.push(['Net Hareket',csvMoney(report.totals.combinedNet),'Gelir - gider',report.totals.combinedNet>=0?'Pozitif':'Negatif']);
+  rows.push(['Dönem Sonu Kasa',csvMoney(report.totals.endingCash),'Açılış 0 TL kabul edilir',report.totals.endingCash>=0?'Pozitif':'Negatif']);
+  rows.push(['Kâr Marjı',csvPercent(report.totals.margin),'Net / toplam gelir','']);
+  rows.push(['Gelir Kaydı',`${report.totals.incomeCount} adet`,'Günlük gelir kayıtları','']);
+  rows.push(['Gider Kaydı',`${report.totals.expenseCount} adet`,'Günlük gider kayıtları','']);
+  rows.push(['Sabit Kalem',`${report.totals.fixedCount} adet`,'Sabit gelir/gider kalemleri','']);
+  rows.push(['Tahmin Kalemi',`${report.totals.forecastCount} adet`,'Tahminler bölümü','']);
+  rows.push([]);
+
+  rows.push(['AYLIK PERFORMANS ÖZETİ']);
+  rows.push(['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Seviye','Not']);
+  const maxNet=Math.max(1,...report.monthly.map(r=>Math.abs(r.combinedNet)));
+  report.monthly.forEach(r=>rows.push([
+    r.label,
+    csvMoney(r.actualIncome),
+    csvMoney(r.actualExpense),
+    csvMoney(r.forecastIncome),
+    csvMoney(r.forecastExpense),
+    csvMoney(r.combinedNet),
+    csvMoney(r.cumulativeCash),
+    makeBar(r.combinedNet,maxNet),
+    `${r.forecastCount} tahmin kalemi`
+  ]));
+  rows.push([]);
+
+  rows.push(['GELİR KAYITLARI']);
+  rows.push(['Tarih','Kategori','Açıklama','Tutar']);
+  if(report.incomeRecords.length){
+    report.incomeRecords.forEach(r=>rows.push([dmy(r.date),r.category||'',r.description||'',csvMoney(r.amount)]));
+    rows.push(['','','TOPLAM',csvMoney(report.incomeRecords.reduce((s,r)=>s+n(r.amount),0))]);
+  }else{
+    rows.push(['Kayıt yok','','','']);
+  }
+  rows.push([]);
+
+  rows.push(['GİDER KAYITLARI']);
+  rows.push(['Tarih','Kategori','Açıklama','Tutar']);
+  if(report.expenseRecords.length){
+    report.expenseRecords.forEach(r=>rows.push([dmy(r.date),r.category||'',r.description||'',csvMoney(r.amount)]));
+    rows.push(['','','TOPLAM',csvMoney(report.expenseRecords.reduce((s,r)=>s+n(r.amount),0))]);
+  }else{
+    rows.push(['Kayıt yok','','','']);
+  }
+  rows.push([]);
+
+  rows.push(['SABİT KALEMLER']);
+  rows.push(['Açıklama','Tür','Kategori','Tutar','Periyot','Aylık Karşılık','Başlangıç','Bitiş']);
+  if(report.fixedItems.length){
+    report.fixedItems.forEach(f=>rows.push([
+      f.description||'',
+      f.fixedType==='income'?'Gelir':'Gider',
+      f.category||'',
+      csvMoney(f.amount),
+      PERIOD_LABELS[f.period||'monthly']||f.period||'Aylık',
+      csvMoney(fixedMonthlyEquivalent(f)),
+      dmy(f.startDate),
+      f.endDate?dmy(f.endDate):'Süresiz'
+    ]));
+  }else{
+    rows.push(['Kayıt yok','','','','','','','']);
+  }
+  rows.push([]);
+
+  rows.push(['TAHMİN KALEMLERİ']);
+  rows.push(['Ay','Tür','Açıklama','Tutar']);
+  if(report.forecastItems.length){
+    report.forecastItems.forEach(f=>rows.push([ymLabel(f.month),f.type==='income'?'Tahmini Gelir':'Tahmini Gider',f.description||'',csvMoney(f.amount)]));
+  }else{
+    rows.push(['Kayıt yok','','','']);
+  }
+  rows.push([]);
+  rows.push(['Not','CSV dosyaları renk, grafik, birleşik hücre ve gelişmiş Excel biçimleri taşımaz. Kurumsal tasarımlı çıktı için Düzenli Excel veya Görsel HTML Rapor kullanın.']);
+
   const csv='\uFEFF'+rows.map(r=>r.map(csvCell).join(';')).join('\r\n');
-  const fn=`firma-finans-rapor${report.range.fromStr?'-'+report.range.fromStr:''}${report.range.toStr?'-'+report.range.toStr:''}.csv`;
+  const fn=`firma-finans-temiz-rapor${report.range.fromStr?'-'+report.range.fromStr:''}${report.range.toStr?'-'+report.range.toStr:''}.csv`;
   downloadText(csv,fn,'text/csv;charset=utf-8;');
   showExportPreview(buildWorkbookSheets(report,getSelectedExportFlags()),report);
 }
@@ -2147,7 +2231,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.19 — Stil destekli Excel çıktısı.
+  // V: 1.0.20 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -2475,7 +2559,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.19 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.20 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -2551,7 +2635,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.19 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.20 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }

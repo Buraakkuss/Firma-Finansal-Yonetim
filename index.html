@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.36</title>
+<title>Firma Finansal Yönetim — V: 1.0.37</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -371,7 +371,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.36</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.37</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -811,7 +811,11 @@
     </div>
     <div class="form-grid form-grid-2">
       <div class="form-group"><label>Açıklama</label><input type="text" id="modal-desc" placeholder="Açıklama..."></div>
-      <div class="form-group"><label>Tutar</label><input type="number" id="modal-amount" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>Tutar</label><input type="number" id="modal-amount" placeholder="0.00" min="0" step="0.01" oninput="updateCurrencyPreview('modal')"></div>
+    </div>
+    <div class="form-grid form-grid-2">
+      <div class="form-group"><label>Para Birimi</label><select id="modal-currency" onchange="onCurrencyChange('modal')"><option value="TRY">TL</option><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
+      <div class="form-group"><label>Kayıt Kuru / TL Karşılığı</label><input type="number" id="modal-rate" value="1" min="0" step="0.0001" oninput="updateCurrencyPreview('modal')"><div id="modal-fx-preview" class="currency-preview"></div></div>
     </div>
     <div class="modal-footer"><button class="btn" onclick="closeModal('modal-record')">İptal</button><button class="btn btn-primary" onclick="saveRecord()">Kaydet</button></div>
   </div>
@@ -852,7 +856,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',daily:'Günlük Kayıt',fixed:'Sabit Giderler',forecast:'Tahminler',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Excel Dışa Aktar'};
 const STORAGE_KEY='firma_finansal_v3';
-const APP_VERSION='1.0.34';
+const APP_VERSION='1.0.37';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_W1AHDSfZwbWN0cCxW-hJ7g_6YMXuWPr';
 const AUTH_MIRROR_KEY='firma_finansal_supabase_session_v1';
@@ -1347,7 +1351,7 @@ async function fetchTcmbRates(force){
   const targetKey=ymdLocal(targetInfo.target);
   if(!force && currentFxRates && currentFxRates.targetKey===targetKey && currentFxRates.rates && currentFxRates.rates.EUR && currentFxRates.rates.USD) return currentFxRates;
 
-  // V: 1.0.36 — TCMB XML kur çekme işlemi artık önce Supabase/Postgres RPC üzerinden denenir.
+  // V: 1.0.37 — TCMB XML kur çekme işlemi artık önce Supabase/Postgres RPC üzerinden denenir.
   // GitHub Pages üzerindeki tarayıcı tarafı doğrudan TCMB XML okurken CORS/ağ kısıtlarına takılabilir.
   try{
     const client=ensureSupabase();
@@ -2414,7 +2418,13 @@ function editRecord(type,id){
   document.getElementById('modal-record-title').textContent=type==='income'?'✏️ Geliri Düzenle':'✏️ Gideri Düzenle';
   document.getElementById('modal-date').value=rec.date;
   document.getElementById('modal-desc').value=rec.description;
-  document.getElementById('modal-amount').value=rec.amount;
+  document.getElementById('modal-amount').value=amountOriginal(rec);
+  const curEl=document.getElementById('modal-currency');
+  const rateEl=document.getElementById('modal-rate');
+  if(curEl)curEl.value=itemCurrency(rec);
+  if(rateEl)rateEl.value=itemCurrency(rec)==='TRY'?'1':(itemRate(rec)||'');
+  onCurrencyChange('modal');
+  updateCurrencyPreview('modal');
   openModal('modal-record');
 }
 function saveRecord(){
@@ -2422,10 +2432,14 @@ function saveRecord(){
   const{type,id}=_editCtx;if(!type||!id)return;
   const d=document.getElementById('modal-date').value,desc=document.getElementById('modal-desc').value.trim(),amt=parseFloat(document.getElementById('modal-amount').value),cat=document.getElementById('modal-cat').value;
   if(!d||!desc||!amt||amt<=0){alert('Lütfen tüm alanları doldurun.');return;}
+  if(!validateMoneyInput('modal'))return;
   const arr=type==='income'?data.income:data.expense;
   const idx=arr.findIndex(r=>String(r.id)===String(id));
-  if(idx>=0)arr[idx]={id,date:d,description:desc,amount:amt,category:cat};
-  saveData(data);closeModal('modal-record');renderHistory();
+  if(idx>=0){
+    const existing=arr[idx]||{};
+    arr[idx]=withMoneyMeta(Object.assign({},existing,{id,date:d,description:desc,amount:amt,category:cat}), 'modal');
+  }
+  saveData(data);closeModal('modal-record');renderHistory();renderDashboard();
 }
 function editFixed(id){
   if(!canFullEdit())return denyAction('Sabit kalem düzenleme yetkisi yalnızca yönetici kullanıcıdadır.');
@@ -2682,7 +2696,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.36'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.37'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2816,7 +2830,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.36 — Stil destekli Excel çıktısı.
+  // V: 1.0.37 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -3092,7 +3106,7 @@ function buildStandaloneHtmlReport(report){
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.36</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.37</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -3177,7 +3191,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.36 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.37 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -3256,7 +3270,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.36 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.37 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }
@@ -3452,7 +3466,7 @@ async function initApp(){
   initCurrencyControls();
   renderDashboard();
 
-  // V: 1.0.36
+  // V: 1.0.37
   // Oturum kontrolü TCMB kur çekme işleminden önce yapılır.
   // Böylece sayfa yenilendiğinde kur servisi beklenirken kullanıcı gereksiz yere giriş ekranına düşmez.
   await initSupabaseAuth();

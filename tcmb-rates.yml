@@ -1,4 +1,4 @@
-name: Fetch TCMB Currency Rates
+name: .github/workflows/tcmb-rates.yml
 
 on:
   schedule:

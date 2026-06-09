@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.48</title>
+<title>Firma Finansal Yönetim — V: 1.0.49</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -376,7 +376,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.48</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.49</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -884,7 +884,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',daily:'Günlük Kayıt',fixed:'Sabit Giderler',forecast:'Tahminler',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Excel Dışa Aktar'};
 const STORAGE_KEY='firma_finansal_v3';
-const APP_VERSION='1.0.48';
+const APP_VERSION='1.0.49';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_W1AHDSfZwbWN0cCxW-hJ7g_6YMXuWPr';
 const AUTH_MIRROR_KEY='firma_finansal_supabase_session_v1';
@@ -1400,7 +1400,7 @@ async function fetchTcmbRates(force){
   const storedIsManual=/manuel|manual/i.test(storedSource) || !!(currentFxRates&&currentFxRates.manual);
   if(!force && hasStoredRates && !storedIsManual && !(currentFxRates&&currentFxRates.stale)) return currentFxRates;
 
-  // V: 1.0.48 — GitHub Actions'in Supabase cache tablosuna yazdığı son TCMB kuru doğrudan okunur.
+  // V: 1.0.49 — GitHub Actions'in Supabase cache tablosuna yazdığı son TCMB kuru doğrudan okunur.
   // Böylece tarayıcı veya Supabase RPC canlı TCMB sunucusuna bağlanamasa bile uygulama otomatik kur kaydını kullanır.
   try{
     const client=ensureSupabase();
@@ -1427,7 +1427,7 @@ async function fetchTcmbRates(force){
     console.warn('Supabase FX cache okunamadı, RPC denenecek:',e);
   }
 
-  // V: 1.0.48 — TCMB XML kur çekme işlemi yedek olarak Supabase/Postgres RPC üzerinden denenir.
+  // V: 1.0.49 — TCMB XML kur çekme işlemi yedek olarak Supabase/Postgres RPC üzerinden denenir.
   // GitHub Pages üzerindeki tarayıcı tarafı doğrudan TCMB XML okurken CORS/ağ kısıtlarına takılabilir.
   try{
     const client=ensureSupabase();
@@ -2761,6 +2761,7 @@ function buildExportReport(){
   const fxTransfers=filterByPeriod(data.fxTransfers||[],from,to).sort((a,b)=>a.date.localeCompare(b.date));
   const monthly=[];
   let cumulativeCash=0;
+  const currentMonthStart=firstOfMonth(new Date());
   months.forEach(m=>{
     const mf=firstOfMonth(m), mt=lastOfMonth(m), key=monthKeyFromDate(m);
     const actualIncome=filterByPeriod(data.income,mf,mt).reduce((s,r)=>s+amountTL(r),0);
@@ -2771,13 +2772,16 @@ function buildExportReport(){
     const actualExpense=variableExpense+fixedNet;
     const actualNet=actualIncome-actualExpense;
     const combinedIncome=actualIncome+forecast.income;
-    const combinedExpense=actualExpense+forecast.expense+variableEstimateOpen;
+    const forecastExpenseOnly=forecast.expense;
+    const combinedExpense=actualExpense+forecastExpenseOnly+variableEstimateOpen;
     const combinedNet=combinedIncome-combinedExpense;
-    cumulativeCash+=combinedNet;
+    const actualPortfolio=getCumulativePortfolioForMonth(m,false,false);
+    const projectedPortfolio=(mf>=currentMonthStart)?getCumulativePortfolioForMonth(m,true,true):actualPortfolio;
+    cumulativeCash=projectedPortfolio;
     monthly.push({
       month:key,label:ymLabel(key),actualIncome,variableExpense,fixedNet,variableEstimateOpen,actualExpense,actualNet,
-      forecastIncome:forecast.income,forecastExpense:forecast.expense+variableEstimateOpen,forecastNet:forecast.net-variableEstimateOpen,forecastCount:forecast.count,
-      combinedIncome,combinedExpense,combinedNet,cumulativeCash
+      forecastIncome:forecast.income,forecastExpense:forecastExpenseOnly,forecastExpenseWithOpen:forecastExpenseOnly+variableEstimateOpen,forecastNet:forecast.net-variableEstimateOpen,forecastCount:forecast.count,
+      combinedIncome,combinedExpense,combinedNet,actualPortfolio,projectedPortfolio,cumulativeCash
     });
   });
   const totals={
@@ -2797,7 +2801,12 @@ function buildExportReport(){
     forecastCount:forecastItems.length,
     fixedCount:fixedItems.length
   };
-  totals.margin=totals.combinedIncome>0?(totals.combinedNet/totals.combinedIncome):0;
+  totals.reportActualExpense=totals.actualExpense;
+  totals.reportPeriodNet=(totals.actualIncome+totals.forecastIncome)-(totals.actualExpense+totals.forecastExpense);
+  totals.actualPortfolio=monthly.length?monthly[monthly.length-1].actualPortfolio:0;
+  totals.projectedPortfolio=monthly.length?monthly[monthly.length-1].projectedPortfolio:0;
+  totals.endingCash=totals.projectedPortfolio;
+  totals.margin=(totals.actualIncome+totals.forecastIncome)>0?(totals.reportPeriodNet/(totals.actualIncome+totals.forecastIncome)):0;
   const incomeCats={};incomeRecords.forEach(r=>{incomeCats[r.category||'Diğer']=(incomeCats[r.category||'Diğer']||0)+amountTL(r);});
   const expenseCats={};expenseRecords.forEach(r=>{expenseCats[r.category||'Diğer']=(expenseCats[r.category||'Diğer']||0)+amountTL(r);});
   fixedItems.forEach(f=>{
@@ -2913,7 +2922,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.48'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.49'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2922,10 +2931,10 @@ function exportCSV(){
   };
 
   addRow('Rapor Bilgisi',`${report.range.fromStr||'Tüm'} / ${report.range.toStr||'Tüm'}`,'Dönem','','Rapor tarihi: '+report.generatedAt.toLocaleString('tr-TR'),'','','','','','','','Açılış bakiyesi 0 TL');
-  addRow('Yönetim Özeti','','Toplam Gelir','','Gerçek + tahmini gelir','',report.totals.combinedIncome,'','','','','',report.totals.combinedIncome>0?'Veri var':'Veri yok');
-  addRow('Yönetim Özeti','','Toplam Gider','','Gider + sabit + tahmin','','',report.totals.combinedExpense,'','','','','');
-  addRow('Yönetim Özeti','','Net Hareket','','Gelir - gider','','','',report.totals.combinedNet,report.totals.endingCash,csvPercent(report.totals.margin),'','');
-  addRow('Yönetim Özeti','','Dönem Sonu Kasa','','Açılış 0 TL kabul edilir','','','','',report.totals.endingCash,'','',report.totals.endingCash>=0?'Pozitif':'Negatif');
+  addRow('Yönetim Özeti','','Toplam Portföy','','Gerçek TL kasa + EUR/USD güncel satış kuru','',report.totals.actualPortfolio,'','','',report.totals.actualPortfolio,'','',report.totals.actualPortfolio>=0?'Pozitif':'Negatif');
+  addRow('Yönetim Özeti','','Tahmini Portföy','','Bekleyen değişken tahminler sonrası','',report.totals.projectedPortfolio,'','','',report.totals.projectedPortfolio,'','',report.totals.projectedPortfolio>=0?'Pozitif':'Negatif');
+  addRow('Yönetim Özeti','','Dönem Net','','Gelir kayıt değeri - gerçek/kesin gider','','','',report.totals.reportPeriodNet,'',csvPercent(report.totals.margin),'','');
+  addRow('Yönetim Özeti','','Bekleyen Tahmini Fatura','','Kapanmamış değişken fatura tahminleri','',report.totals.variableEstimateOpen,'',report.totals.variableEstimateOpen,'','','','');
   addRow('Kayıt Özeti','','Gelir Kaydı','','Günlük gelir kayıtları','','','','','','',`${report.totals.incomeCount} adet`,'');
   addRow('Kayıt Özeti','','Gider Kaydı','','Günlük gider kayıtları','','','','','','',`${report.totals.expenseCount} adet`,'');
   addRow('Kayıt Özeti','','Sabit Kalem','','Sabit gelir/gider kalemleri','','','','','','',`${report.totals.fixedCount} adet`,'');
@@ -2939,10 +2948,10 @@ function exportCSV(){
     '',
     `${r.forecastCount} tahmin kalemi`,
     '',
-    r.combinedIncome,
-    r.combinedExpense,
-    r.combinedNet,
-    r.cumulativeCash,
+    r.actualIncome,
+    r.actualExpense,
+    r.actualNet,
+    r.projectedPortfolio,
     makeBar(r.combinedNet,maxNet),
     '',
     ''
@@ -3047,7 +3056,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.48 — Stil destekli Excel çıktısı.
+  // V: 1.0.49 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -3259,10 +3268,10 @@ function showExportPreview(sheets,report){
   const r=report||buildExportReport();
   const kpis=`
     <div class="metrics-grid" style="margin-bottom:16px">
-      <div class="metric"><div class="metric-label">Toplam Gelir</div><div class="metric-value positive">${fmt(r.totals.combinedIncome)}</div><div class="metric-sub">Gerçek + tahmini</div></div>
-      <div class="metric"><div class="metric-label">Toplam Gider</div><div class="metric-value negative">${fmt(r.totals.combinedExpense)}</div><div class="metric-sub">Değişken + sabit + tahmini</div></div>
-      <div class="metric"><div class="metric-label">Net Hareket</div><div class="metric-value ${r.totals.combinedNet>=0?'positive':'negative'}">${fmt(r.totals.combinedNet)}</div><div class="metric-sub">Seçili dönem</div></div>
-      <div class="metric"><div class="metric-label">Dönem Sonu Kasa</div><div class="metric-value ${r.totals.endingCash>=0?'positive':'negative'}">${fmt(r.totals.endingCash)}</div><div class="metric-sub">Açılış 0 TL</div></div>
+      <div class="metric"><div class="metric-label">Toplam Portföy</div><div class="metric-value ${r.totals.actualPortfolio>=0?'positive':'negative'}">${fmtTL(r.totals.actualPortfolio)}</div><div class="metric-sub">Gerçek kasa + döviz değerleme</div></div>
+      <div class="metric"><div class="metric-label">Tahmini Portföy</div><div class="metric-value ${r.totals.projectedPortfolio>=0?'positive':'negative'}">${fmtTL(r.totals.projectedPortfolio)}</div><div class="metric-sub">Bekleyen tahminler sonrası</div></div>
+      <div class="metric"><div class="metric-label">Dönem Net</div><div class="metric-value ${r.totals.reportPeriodNet>=0?'positive':'negative'}">${fmt(r.totals.reportPeriodNet)}</div><div class="metric-sub">Gelir - gerçek/kesin gider</div></div>
+      <div class="metric"><div class="metric-label">Bekleyen Tahmin</div><div class="metric-value" style="color:#BF6A00">${fmt(r.totals.variableEstimateOpen)}</div><div class="metric-sub">Kapanmamış değişken faturalar</div></div>
     </div>`;
   prev.innerHTML=kpis+sheets.map(s=>`
     <div style="margin-bottom:20px">
@@ -3275,26 +3284,26 @@ function showExportPreview(sheets,report){
 function htmlEsc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function moneyHtml(v){return Math.round(n(v)).toLocaleString('tr-TR')+' TL';}
 function buildStandaloneHtmlReport(report){
-  const maxVal=Math.max(1,...report.monthly.map(r=>Math.max(r.combinedIncome,r.combinedExpense,Math.abs(r.combinedNet),Math.abs(r.cumulativeCash))));
+  const maxVal=Math.max(1,...report.monthly.map(r=>Math.max(r.combinedIncome,r.combinedExpense,Math.abs(r.combinedNet),Math.abs(r.projectedPortfolio))));
   const formatPct=(v)=>((Number(v||0)*100).toFixed(1).replace('.',','))+'%';
   const barWidth=(v)=>Math.max(2,Math.min(100,Math.round(Math.abs(Number(v||0))/maxVal*100)));
   const safeRows=(arr,emptyHtml)=>arr && arr.length ? arr.join('') : emptyHtml;
   const monthlyRows=report.monthly.map(r=>{
-    const incW=barWidth(r.combinedIncome);
-    const expW=barWidth(r.combinedExpense);
-    const netW=barWidth(r.combinedNet);
-    const cashW=barWidth(r.cumulativeCash);
-    const netClass=r.combinedNet>=0?'pos':'neg';
+    const incW=barWidth(r.actualIncome);
+    const expW=barWidth(r.actualExpense);
+    const netW=barWidth(r.actualNet);
+    const portW=barWidth(r.projectedPortfolio);
+    const netClass=r.actualNet>=0?'pos':'neg';
     return `<tr>
       <td class="strong">${htmlEsc(r.label)}</td>
-      <td class="num pos">${moneyHtml(r.combinedIncome)}</td>
+      <td class="num pos">${moneyHtml(r.actualIncome)}</td>
       <td><div class="mini-bar"><span class="inc" style="width:${incW}%"></span></div></td>
-      <td class="num neg">${moneyHtml(r.combinedExpense)}</td>
+      <td class="num neg">${moneyHtml(r.actualExpense)}</td>
       <td><div class="mini-bar"><span class="exp" style="width:${expW}%"></span></div></td>
-      <td class="num ${netClass}">${moneyHtml(r.combinedNet)}</td>
+      <td class="num ${netClass}">${moneyHtml(r.actualNet)}</td>
       <td><div class="mini-bar"><span class="${netClass==='pos'?'inc':'exp'}" style="width:${netW}%"></span></div></td>
-      <td class="num ${r.cumulativeCash>=0?'pos':'neg'}">${moneyHtml(r.cumulativeCash)}</td>
-      <td class="muted-cell">${r.forecastCount||0} tahmin</td>
+      <td class="num ${r.projectedPortfolio>=0?'pos':'neg'}">${moneyHtml(r.projectedPortfolio)}</td>
+      <td class="muted-cell">${r.variableEstimateOpen>0?'Bekleyen '+moneyHtml(r.variableEstimateOpen):(r.forecastCount||0)+' tahmin'}</td>
     </tr>`;
   }).join('');
   const incomeCats=Object.entries(report.incomeCats).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k,v])=>`<tr><td>${htmlEsc(k)}</td><td class="num pos">${moneyHtml(v)}</td></tr>`);
@@ -3318,12 +3327,12 @@ function buildStandaloneHtmlReport(report){
     @media print{html,body{width:297mm;min-height:210mm}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{background:white!important;padding:0!important;font-size:11px}.wrap{max-width:none;width:100%;margin:0}.print-btn{display:none!important}.hero{grid-template-columns:1.35fr .65fr;gap:10px;margin-bottom:10px}.hero-main{padding:16px 18px;border-radius:14px;background:#4b3f35!important;color:white!important;box-shadow:none!important}.hero h1{font-size:22px}.hero-side{padding:14px;border-radius:14px;box-shadow:none!important}.kpis{grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0 10px}.kpi{padding:12px;border-radius:12px;box-shadow:none!important}.kpi .val{font-size:20px}.kpi .sub{font-size:10px}.section{margin-top:10px;break-inside:auto;page-break-inside:auto}.section h2{font-size:17px}.section-head{margin-bottom:6px}.table-card{border-radius:12px;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid}th{font-size:8.5px;padding:5px 6px}td{font-size:9px;padding:5px 6px}.mini-bar{width:70px;height:6px}.two,.detail-grid{grid-template-columns:1fr 1fr;gap:10px}.footer{font-size:10px;margin-top:12px;padding-top:8px}.pill{font-size:9px;padding:3px 7px}thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}}
   </style></head><body><button class="print-btn" onclick="window.print()" title="PDF alırken tarayıcı başlık/altlık kapalı, arka plan grafikleri açık olmalı.">Yazdır / PDF</button><div class="wrap">
     <div class="hero"><div class="hero-main"><div class="eyebrow">Marmara Teknik · Finans Raporu</div><h1>Firma Finansal Yönetim Raporu</h1><div class="hero-meta"><span class="chip">Dönem: ${htmlEsc(report.range.fromStr||'Tüm')} / ${htmlEsc(report.range.toStr||'Tüm')}</span><span class="chip">Kâr Marjı: ${formatPct(margin)}</span><span class="chip">Açılış Kasa: 0 TL</span></div></div><div class="hero-side"><div class="side-row"><span>Oluşturma</span><span>${htmlEsc(report.generatedAt.toLocaleString('tr-TR'))}</span></div><div class="side-row"><span>Para Birimi</span><span>TL</span></div><div class="side-row"><span>Rapor Tipi</span><span>Görsel HTML</span></div></div></div>
-    <div class="kpis"><div class="kpi"><div class="label">Toplam Gelir</div><div class="val pos">${moneyHtml(report.totals.combinedIncome)}</div><div class="sub">Gerçek + tahmini gelir</div></div><div class="kpi"><div class="label">Toplam Gider</div><div class="val neg">${moneyHtml(report.totals.combinedExpense)}</div><div class="sub">Gider + sabit + tahmin</div></div><div class="kpi"><div class="label">Net Hareket</div><div class="val ${resultClass}">${moneyHtml(report.totals.combinedNet)}</div><div class="sub">Seçili dönem net sonucu</div></div><div class="kpi"><div class="label">Dönem Sonu Kasa</div><div class="val ${report.totals.endingCash>=0?'pos':'neg'}">${moneyHtml(report.totals.endingCash)}</div><div class="sub">Açılış 0 TL kabul edilir</div></div></div>
-    <div class="section"><div class="section-head"><h2>Aylık Performans</h2><div class="section-note">Gelir, gider, net ve kümülatif kasa hareketi</div></div><div class="table-card wide-table"><table><thead><tr><th>Ay</th><th>Gelir</th><th>Gelir Grafik</th><th>Gider</th><th>Gider Grafik</th><th>Net</th><th>Net Grafik</th><th>Kümülatif Kasa</th><th>Tahmin</th></tr></thead><tbody>${monthlyRows}</tbody></table></div></div>
+    <div class="kpis"><div class="kpi"><div class="label">Toplam Portföy</div><div class="val ${report.totals.actualPortfolio>=0?'pos':'neg'}">${moneyHtml(report.totals.actualPortfolio)}</div><div class="sub">Gerçek kasa + döviz değerleme</div></div><div class="kpi"><div class="label">Tahmini Portföy</div><div class="val ${report.totals.projectedPortfolio>=0?'pos':'neg'}">${moneyHtml(report.totals.projectedPortfolio)}</div><div class="sub">Bekleyen tahminler sonrası</div></div><div class="kpi"><div class="label">Dönem Net</div><div class="val ${report.totals.reportPeriodNet>=0?'pos':'neg'}">${moneyHtml(report.totals.reportPeriodNet)}</div><div class="sub">Gelir - gerçek/kesin gider</div></div><div class="kpi"><div class="label">Bekleyen Tahmin</div><div class="val neg">${moneyHtml(report.totals.variableEstimateOpen)}</div><div class="sub">Kapanmamış değişken faturalar</div></div></div>
+    <div class="section"><div class="section-head"><h2>Aylık Performans</h2><div class="section-note">Gelir, gider, net ve portföy hareketi</div></div><div class="table-card wide-table"><table><thead><tr><th>Ay</th><th>Gelir</th><th>Gelir Grafik</th><th>Gider</th><th>Gider Grafik</th><th>Dönem Net</th><th>Net Grafik</th><th>Tahmini Portföy</th><th>Tahmin</th></tr></thead><tbody>${monthlyRows}</tbody></table></div></div>
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.48</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.49</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -3408,7 +3417,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.48 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.49 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -3416,15 +3425,15 @@ function buildWorkbookSheets(report,flags){
   if(flags.summary){
     const rows=[];
     rows.push(['Firma Finansal Yönetim Raporu','','','','','','','']);
-    rows.push(['Dönem',`${report.range.fromStr||'Tüm'} / ${report.range.toStr||'Tüm'}`,'Oluşturma',report.generatedAt.toLocaleString('tr-TR'),'Açılış Bakiyesi','0 TL','Para Birimi','TL']);
+    rows.push(['Dönem',`${report.range.fromStr||'Tüm'} / ${report.range.toStr||'Tüm'}`,'Oluşturma',report.generatedAt.toLocaleString('tr-TR'),'Kur Yayın Tarihi',(currentFxRates&&currentFxRates.date)||'','Para Birimi','TL']);
     rows.push(['','','','','','','','']);
-    rows.push(['TOPLAM GELİR','','TOPLAM GİDER','','NET HAREKET','','DÖNEM SONU KASA','']);
-    rows.push([report.totals.combinedIncome,'',report.totals.combinedExpense,'',report.totals.combinedNet,'',report.totals.endingCash,'']);
-    rows.push(['Gerçek + tahmini gelir','',`Gider + sabit + tahmin`,'',`Kâr marjı: ${(report.totals.margin*100).toFixed(1)}%`,'','Açılış 0 TL kabul edilir','']);
+    rows.push(['TOPLAM PORTFÖY','','TAHMİNİ PORTFÖY','','DÖNEM NET DEĞERLEME','','BEKLEYEN TAHMİNİ FATURA','']);
+    rows.push([report.totals.actualPortfolio,'',report.totals.projectedPortfolio,'',report.totals.reportPeriodNet,'',report.totals.variableEstimateOpen,'']);
+    rows.push(['Gerçek TL kasa + EUR/USD güncel satış kuru','',`Portföy - kapanmamış değişken tahminler`,'',`Gelir kayıt değeri - gerçek/sabit gider`,'','Önceki ve seçili dönem kapanmamış değişken tahminler','']);
     rows.push(['','','','','','','','']);
     rows.push(['AYLIK PERFORMANS ÖZETİ','','','','','','','']);
-    rows.push(['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Seviye']);
-    report.monthly.forEach(r=>rows.push([r.label,r.actualIncome,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,makeBar(r.combinedNet,maxNet)]));
+    rows.push(['Ay','Gerçek Gelir','Gerçek/Kesin Gider','Bekleyen Tahmin','Dönem Net','Gerçek Portföy','Tahmini Portföy','Net Seviye']);
+    report.monthly.forEach(r=>rows.push([r.label,r.actualIncome,r.actualExpense,r.variableEstimateOpen,r.actualNet,r.actualPortfolio,r.projectedPortfolio,makeBar(r.combinedNet,maxNet)]));
     rows.push(['','','','','','','','']);
     rows.push(['KAYIT ÖZETİ','','','','','','','']);
     rows.push(['Gelir Kaydı',`${report.totals.incomeCount} adet`,'Gider Kaydı',`${report.totals.expenseCount} adet`,'Sabit Kalem',`${report.totals.fixedCount} adet`,'Tahmin Kalemi',`${report.totals.forecastCount} adet`]);
@@ -3438,9 +3447,9 @@ function buildWorkbookSheets(report,flags){
     Object.entries(report.expenseCats).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1])).forEach(([k,v])=>catRows.push(['Gider/Sabit',k,v,expTotal?Math.abs(v)/expTotal:0]));
     sheets.push({name:'Kategori Özeti',excelKind:'table',rows:catRows,cols:[18,34,18,14],freezeRow:1,autoFilter:{row:1,cols:4}});
 
-    const graphRows=[['Ay','Gerçek Gelir','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Net','Kümülatif Kasa','Net Seviye']];
-    report.monthly.forEach(r=>graphRows.push([r.label,r.actualIncome,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,makeBar(r.combinedNet,maxNet)]));
-    sheets.push({name:'Grafik Verisi',excelKind:'table',rows:graphRows,cols:[18,18,22,18,18,18,20,16],freezeRow:1,autoFilter:{row:1,cols:8}});
+    const graphRows=[['Ay','Gerçek Gelir','Gerçek/Kesin Gider','Bekleyen Tahmin','Dönem Net','Gerçek Portföy','Tahmini Portföy','Net Seviye']];
+    report.monthly.forEach(r=>graphRows.push([r.label,r.actualIncome,r.actualExpense,r.variableEstimateOpen,r.actualNet,r.actualPortfolio,r.projectedPortfolio,makeBar(r.combinedNet,maxNet)]));
+    sheets.push({name:'Grafik Verisi',excelKind:'table',rows:graphRows,cols:[18,18,22,18,18,20,20,16],freezeRow:1,autoFilter:{row:1,cols:8}});
   }
   if(flags.income){
     const rows=[['Tarih','Kategori','Açıklama','Tutar','Para Birimi','Kur','TL Karşılığı']];
@@ -3476,9 +3485,9 @@ function buildWorkbookSheets(report,flags){
     sheets.push({name:'Tahmin Kalemleri',excelKind:'table',rows,cols:[18,14,46,18,24,24,18,18,22,18,18],freezeRow:1,autoFilter:{row:1,cols:11}});
   }
   if(flags.summary){
-    const rows=[['Ay','Gerçek Gelir','Değişken Gider','Sabit Net','Gerçek Gider + Sabit','Tahmini Gelir','Tahmini Gider','Birleşik Net','Kümülatif Kasa','Tahmin Kalemi']];
-    report.monthly.forEach(r=>rows.push([r.label,r.actualIncome,r.variableExpense,r.fixedNet,r.actualExpense,r.forecastIncome,r.forecastExpense,r.combinedNet,r.cumulativeCash,r.forecastCount]));
-    sheets.push({name:'Aylık Rapor',excelKind:'table',rows,cols:[18,18,18,18,22,18,18,18,20,16],freezeRow:1,autoFilter:{row:1,cols:10}});
+    const rows=[['Ay','Gerçek Gelir','Değişken Gider','Kesin Sabit Net','Gerçek/Kesin Gider','Bekleyen Tahmin','Dönem Net','Gerçek Portföy','Tahmini Portföy','Tahmin Kalemi']];
+    report.monthly.forEach(r=>rows.push([r.label,r.actualIncome,r.variableExpense,r.fixedNet,r.actualExpense,r.variableEstimateOpen,r.actualNet,r.actualPortfolio,r.projectedPortfolio,r.forecastCount]));
+    sheets.push({name:'Aylık Rapor',excelKind:'table',rows,cols:[18,18,18,18,22,18,18,20,20,16],freezeRow:1,autoFilter:{row:1,cols:10}});
     const fxRows=[['Tarih','Kaynak Para','Kaynak Tutar','Hedef Para','Hedef Tutar','Kur','Açıklama']];
     (report.fxTransfers||[]).forEach(t=>fxRows.push([dmy(t.date),t.fromCurrency,n(t.fromAmount),t.toCurrency,n(t.toAmount),n(t.rate),t.description||'']));
     sheets.push({name:'Döviz Çevrimleri',excelKind:'table',rows:fxRows,cols:[16,16,18,16,18,14,42],freezeRow:1,autoFilter:{row:1,cols:7}});
@@ -3487,7 +3496,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.48 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.49 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }
@@ -3683,7 +3692,7 @@ async function initApp(){
   initCurrencyControls();
   renderDashboard();
 
-  // V: 1.0.48
+  // V: 1.0.49
   // Oturum kontrolü TCMB kur çekme işleminden önce yapılır.
   // Böylece sayfa yenilendiğinde kur servisi beklenirken kullanıcı gereksiz yere giriş ekranına düşmez.
   await initSupabaseAuth();

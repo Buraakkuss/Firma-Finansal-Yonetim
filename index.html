@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.39</title>
+<title>Firma Finansal Yönetim — V: 1.0.40</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -371,7 +371,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.39</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.40</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -467,7 +467,7 @@
             </select>
             <span style="padding:5px 10px;border-radius:8px;background:var(--bg-card);border:1px solid var(--border);font-size:12px;color:var(--text-muted)">Grafik portföy çizgisi: <strong style="color:var(--text)">birikimli kasa</strong></span>
           </div>
-          <div style="font-size:11px;color:var(--text-hint);margin:-4px 0 12px">Grafikteki çubuklar seçili ay çevresindeki dönem gelir/gider performansını gösterir. Mavi çizgi ise üstteki kasa kartlarıyla aynı mantıkta, ilgili ay sonuna kadar birikimli TL/EUR/USD portföy bakiyesini gösterir.</div>
+          <div style="font-size:11px;color:var(--text-hint);margin:-4px 0 12px">Grafikteki çubuklar seçili ay çevresindeki dönem gelir/gider performansını gösterir. Mavi çizgi geçmiş aylarda gerçekleşmiş birikimli portföyü, seçili ay ve gelecek aylarda ise bekleyen tahminler dahil beklenen ay sonu portföyünü gösterir.</div>
           <div class="chart-wrap" style="height:300px"><canvas id="c-cash-flow"></canvas></div>
           <div id="cash-flow-summary" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--text-muted)"></div>
         </div>
@@ -1351,7 +1351,7 @@ async function fetchTcmbRates(force){
   const targetKey=ymdLocal(targetInfo.target);
   if(!force && currentFxRates && currentFxRates.targetKey===targetKey && currentFxRates.rates && currentFxRates.rates.EUR && currentFxRates.rates.USD) return currentFxRates;
 
-  // V: 1.0.39 — TCMB XML kur çekme işlemi artık önce Supabase/Postgres RPC üzerinden denenir.
+  // V: 1.0.40 — TCMB XML kur çekme işlemi artık önce Supabase/Postgres RPC üzerinden denenir.
   // GitHub Pages üzerindeki tarayıcı tarafı doğrudan TCMB XML okurken CORS/ağ kısıtlarına takılabilir.
   try{
     const client=ensureSupabase();
@@ -1890,14 +1890,15 @@ function renderCashFlowChart(){
     }else if(offset===0){
       var a0 = getMonthActuals(d);
       var t0 = getForecastTotals(monthKey(d));
+      var openVariable0 = getVariableEstimateOpenForMonth(d);
       actualIncome.push(Math.round(a0.income));
       actualExpense.push(Math.round(a0.expense));
       forecastIncome.push(t0.income>0 ? Math.round(t0.income) : null);
-      forecastExpense.push(t0.expense>0 ? Math.round(t0.expense) : null);
-      monthNet.push(a0.net + t0.net - getVariableEstimateOpenForMonth(d));
-      forecastMarkers.push(t0.count>0);
-      // Seçili ay noktası, üstteki kasa kartlarıyla aynı gerçek birikimli portföy değeridir.
-      portfolioData.push(Math.round(getCumulativePortfolioForMonth(d,false,false)));
+      forecastExpense.push((t0.expense + openVariable0)>0 ? Math.round(t0.expense + openVariable0) : null);
+      monthNet.push(a0.net + t0.income - t0.expense - openVariable0);
+      forecastMarkers.push(t0.count>0 || openVariable0>0);
+      // Seçili ay noktası ay sonu beklentisini gösterir: gerçek birikimli portföy + açık tahminler.
+      portfolioData.push(Math.round(getCumulativePortfolioForMonth(d,true,true)));
     }else{
       var f = getMonthForecast(d);
       actualIncome.push(null);
@@ -1934,8 +1935,8 @@ function renderCashFlowChart(){
     summary.innerHTML = `
       <span style="padding:6px 10px;border-radius:8px;background:var(--bg-secondary)">Seçim: <strong>${pastMonths} ay geçmiş</strong> + <strong>${futureMonths} ay gelecek</strong></span>
       <span style="padding:6px 10px;border-radius:8px;background:var(--bg-secondary)">Başlangıç portföy: <strong>${fmtTL(openingPortfolio)}</strong></span>
-      <span style="padding:6px 10px;border-radius:8px;background:var(--bg-secondary)">Seçili ay sonu portföy: <strong style="color:${selectedPortfolio>=0?'var(--income)':'var(--expense)'}">${fmtTL(selectedPortfolio)}</strong></span>
-      <span style="padding:6px 10px;border-radius:8px;background:var(--bg-secondary)">Seçili aya kadar dönem neti: <strong style="color:${pastNet>=0?'var(--income)':'var(--expense)'}">${fmt(pastNet)}</strong></span>
+      <span style="padding:6px 10px;border-radius:8px;background:var(--bg-secondary)">Seçili ay sonu tahmini portföy: <strong style="color:${selectedPortfolio>=0?'var(--income)':'var(--expense)'}">${fmtTL(selectedPortfolio)}</strong></span>
+      <span style="padding:6px 10px;border-radius:8px;background:var(--bg-secondary)">Seçili ay dahil net etki: <strong style="color:${pastNet>=0?'var(--income)':'var(--expense)'}">${fmt(pastNet)}</strong></span>
       <span style="padding:6px 10px;border-radius:8px;background:var(--bg-secondary)">Gelecek net projeksiyon: <strong style="color:${futureNet>=0?'var(--income)':'var(--expense)'}">${fmt(futureNet)}</strong></span>
       <span style="padding:6px 10px;border-radius:8px;background:var(--bg-secondary)">Projeksiyon sonu portföy: <strong style="color:${finalPortfolio>=0?'var(--income)':'var(--expense)'}">${fmtTL(finalPortfolio)}</strong></span>
       <span style="padding:6px 10px;border-radius:8px;background:var(--bg-secondary)">Tahmin kalemi: <strong>${forecastCount}</strong></span>`;
@@ -1976,7 +1977,7 @@ function renderCashFlowChart(){
             var offset=idx-currentIndex;
             if(idx===0) return 'Not: Başlangıç noktası, grafikteki ilk aydan önceki birikimli portföy bakiyesidir.';
             if(offset>0 && !forecastMarkers[idx]) return 'Not: Bu gelecek ay için tahmin yoksa yalnızca sabit/değişken tahmin kalemleri dikkate alınır.';
-            if(offset===0) return 'Not: Bu nokta üstteki TL/EUR/USD kasa kartlarıyla aynı seçili ay sonu birikimli portföy mantığını kullanır.';
+            if(offset===0) return 'Not: Bu nokta seçili ayda gerçekleşen kayıtlar + bekleyen tahminler sonrası beklenen ay sonu portföyüdür.';
             return '';
           }
         }}
@@ -2730,7 +2731,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.39'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.40'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2864,7 +2865,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.39 — Stil destekli Excel çıktısı.
+  // V: 1.0.40 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -3140,7 +3141,7 @@ function buildStandaloneHtmlReport(report){
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.39</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.40</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -3225,7 +3226,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.39 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.40 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -3304,7 +3305,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.39 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.40 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }
@@ -3500,7 +3501,7 @@ async function initApp(){
   initCurrencyControls();
   renderDashboard();
 
-  // V: 1.0.39
+  // V: 1.0.40
   // Oturum kontrolü TCMB kur çekme işleminden önce yapılır.
   // Böylece sayfa yenilendiğinde kur servisi beklenirken kullanıcı gereksiz yere giriş ekranına düşmez.
   await initSupabaseAuth();

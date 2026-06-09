@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.46</title>
+<title>Firma Finansal Yönetim — V: 1.0.47</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -376,7 +376,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.46</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.47</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -861,7 +861,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',daily:'Günlük Kayıt',fixed:'Sabit Giderler',forecast:'Tahminler',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Excel Dışa Aktar'};
 const STORAGE_KEY='firma_finansal_v3';
-const APP_VERSION='1.0.46';
+const APP_VERSION='1.0.47';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_W1AHDSfZwbWN0cCxW-hJ7g_6YMXuWPr';
 const AUTH_MIRROR_KEY='firma_finansal_supabase_session_v1';
@@ -1367,7 +1367,7 @@ async function fetchTcmbRates(force){
   const storedIsManual=/manuel|manual/i.test(storedSource) || !!(currentFxRates&&currentFxRates.manual);
   if(!force && hasStoredRates && !storedIsManual && !(currentFxRates&&currentFxRates.stale)) return currentFxRates;
 
-  // V: 1.0.46 — GitHub Actions'in Supabase cache tablosuna yazdığı son TCMB kuru doğrudan okunur.
+  // V: 1.0.47 — GitHub Actions'in Supabase cache tablosuna yazdığı son TCMB kuru doğrudan okunur.
   // Böylece tarayıcı veya Supabase RPC canlı TCMB sunucusuna bağlanamasa bile uygulama otomatik kur kaydını kullanır.
   try{
     const client=ensureSupabase();
@@ -1394,7 +1394,7 @@ async function fetchTcmbRates(force){
     console.warn('Supabase FX cache okunamadı, RPC denenecek:',e);
   }
 
-  // V: 1.0.46 — TCMB XML kur çekme işlemi yedek olarak Supabase/Postgres RPC üzerinden denenir.
+  // V: 1.0.47 — TCMB XML kur çekme işlemi yedek olarak Supabase/Postgres RPC üzerinden denenir.
   // GitHub Pages üzerindeki tarayıcı tarafı doğrudan TCMB XML okurken CORS/ağ kısıtlarına takılabilir.
   try{
     const client=ensureSupabase();
@@ -1753,6 +1753,41 @@ function getFixedRollupForRange(from,to){
   const months=getMonthListBetween(firstOfMonth(from),firstOfMonth(to));
   return months.reduce((acc,m)=>{const b=getFixedBreakdownForMonth(m);Object.keys(b).forEach(k=>acc[k]=(acc[k]||0)+b[k]);return acc;},{exactExpense:0,exactIncome:0,exactNet:0,variableBudget:0,variableActual:0,variableOpen:0,variableClosed:0,memo:0});
 }
+function getPastUnclosedVariableEstimates(periodStart){
+  const cutoff=firstOfMonth(periodStart||new Date());
+  const previousMonth=new Date(cutoff.getFullYear(),cutoff.getMonth()-1,1);
+  const scanLimit=new Date(cutoff.getFullYear(),cutoff.getMonth()-24,1);
+  const rows=[];
+  (data.fixed||[]).forEach(f=>{
+    if(f.fixedType==='income'||fixedBudgetType(f)!=='variable')return;
+    let start=f.startDate?firstOfMonth(new Date(f.startDate+'T00:00:00')):new Date(cutoff.getFullYear(),0,1);
+    if(start<scanLimit)start=scanLimit;
+    const end=f.endDate?firstOfMonth(new Date(f.endDate+'T00:00:00')):previousMonth;
+    if(start>previousMonth)return;
+    getMonthListBetween(start,previousMonth).forEach(m=>{
+      if(m>end)return;
+      if(!isFixedActiveInMonth(f,m))return;
+      const st=getVariableEstimateStatusForFixedMonth(f,m);
+      if(st.isClosed||st.open<=0)return;
+      const mf=firstOfMonth(m), mt=lastOfMonth(m);
+      const possibleActual=(data.expense||[]).filter(r=>!r.fixedLinkId).filter(r=>{
+        const d=new Date(r.date+'T00:00:00');
+        return d>=mf&&d<=mt && (!f.category||!r.category||String(r.category)===String(f.category));
+      }).reduce((s,r)=>s+amountTL(r),0);
+      rows.push({month:m,monthLabel:MONTHS[m.getMonth()]+' '+m.getFullYear(),fixedId:String(f.id),description:f.description||'Değişken tahmini fatura',category:f.category||'',budget:st.budget,possibleActual});
+    });
+  });
+  rows.sort((a,b)=>a.month-b.month||a.description.localeCompare(b.description,'tr'));
+  return rows;
+}
+function renderPastUnclosedVariableWarning(periodStart){
+  const rows=getPastUnclosedVariableEstimates(periodStart);
+  if(!rows.length)return '';
+  const total=rows.reduce((s,r)=>s+n(r.budget),0);
+  const detail=rows.slice(0,8).map(r=>`<li><strong>${htmlEsc(r.monthLabel)}</strong> · ${htmlEsc(r.description)} · ${fmt(r.budget)}${r.possibleActual>0?` <span style="color:var(--text-muted)">(aynı ayda eşleşmemiş gider: ${fmt(r.possibleActual)})</span>`:''}</li>`).join('');
+  const more=rows.length>8?`<div style="margin-top:4px;color:var(--text-muted)">+${rows.length-8} kayıt daha var.</div>`:'';
+  return `<div id="dash-variable-overdue-alert" class="fx-rate-alert warn"><strong>⚠️ Önceki aylardan kapanmamış değişken tahmin var: ${fmt(total)}</strong><div style="margin-top:6px">Gerçek fatura gider olarak girildiyse günlük kayıttaki gideri düzenleyip <strong>Tahmini fatura eşleştirme</strong> alanından ilgili tahminle ilişkilendir. Gider henüz girilmediyse fatura geldiğinde gider kaydı olarak girip eşleştir.</div><ul style="margin:8px 0 0 18px;padding:0">${detail}</ul>${more}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn btn-sm" onclick="showPage('daily',findNavButton('daily'))">Günlük Kayıt'a Git</button><button class="btn btn-sm" onclick="showPage('fixed',findNavButton('fixed'))">Sabit Giderlere Git</button></div></div>`;
+}
 function updateFixedBudgetHelp(){
   const type=(document.getElementById('fix-type')||{}).value||'expense';
   const el=document.getElementById('fix-budget-help');if(!el)return;
@@ -1828,8 +1863,9 @@ function renderDashboard(){
     <div class="metric"><div class="metric-label">Kâr Marjı</div><div class="metric-value neutral">%${marginPct}</div><div class="metric-sub">${parseFloat(marginPct)>20?'✓ Sağlıklı':parseFloat(marginPct)>0?'⚠ Düşük':'✗ Zarar'}</div></div>`;
 
   const oldWallet=document.getElementById('dash-wallet-breakdown');if(oldWallet)oldWallet.remove();
+  const oldOverdue=document.getElementById('dash-variable-overdue-alert');if(oldOverdue)oldOverdue.remove();
   const dashMetricsForWallet=document.getElementById('dash-metrics');
-  if(dashMetricsForWallet){dashMetricsForWallet.insertAdjacentHTML('beforebegin', `<div id="dash-wallet-breakdown">${renderWalletCards(periodWallet,projectedWallet)}</div>`);}
+  if(dashMetricsForWallet){dashMetricsForWallet.insertAdjacentHTML('beforebegin', `<div id="dash-wallet-breakdown">${renderWalletCards(periodWallet,projectedWallet)}</div>${renderPastUnclosedVariableWarning(from)}`);}
 
   const oldFx=document.getElementById('dash-fx-breakdown');if(oldFx)oldFx.remove();
   const dashMetrics=document.getElementById('dash-metrics');
@@ -2786,7 +2822,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.46'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.47'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2920,7 +2956,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.46 — Stil destekli Excel çıktısı.
+  // V: 1.0.47 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -3196,7 +3232,7 @@ function buildStandaloneHtmlReport(report){
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.46</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.47</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -3281,7 +3317,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.46 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.47 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -3360,7 +3396,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.46 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.47 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }
@@ -3556,7 +3592,7 @@ async function initApp(){
   initCurrencyControls();
   renderDashboard();
 
-  // V: 1.0.46
+  // V: 1.0.47
   // Oturum kontrolü TCMB kur çekme işleminden önce yapılır.
   // Böylece sayfa yenilendiğinde kur servisi beklenirken kullanıcı gereksiz yere giriş ekranına düşmez.
   await initSupabaseAuth();

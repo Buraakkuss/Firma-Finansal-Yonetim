@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.40</title>
+<title>Firma Finansal Yönetim — V: 1.0.41</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -371,7 +371,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.40</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.41</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -1351,7 +1351,7 @@ async function fetchTcmbRates(force){
   const targetKey=ymdLocal(targetInfo.target);
   if(!force && currentFxRates && currentFxRates.targetKey===targetKey && currentFxRates.rates && currentFxRates.rates.EUR && currentFxRates.rates.USD) return currentFxRates;
 
-  // V: 1.0.40 — TCMB XML kur çekme işlemi artık önce Supabase/Postgres RPC üzerinden denenir.
+  // V: 1.0.41 — TCMB XML kur çekme işlemi artık önce Supabase/Postgres RPC üzerinden denenir.
   // GitHub Pages üzerindeki tarayıcı tarafı doğrudan TCMB XML okurken CORS/ağ kısıtlarına takılabilir.
   try{
     const client=ensureSupabase();
@@ -1389,27 +1389,20 @@ async function fetchTcmbRates(force){
     currentFxRates=Object.assign({},currentFxRates,{source:(currentFxRates.source||'TCMB')+' · son kayıtlı kur',targetRule:targetInfo.label,requestedTargetDate:targetKey,stale:true});
     return currentFxRates;
   }
-  const manual=loadManualFxRates();
-  if(manual){
-    currentFxRates=manual;
-    storeFxRates(currentFxRates);
-    return currentFxRates;
-  }
+  // Otomatik sistemde manuel kur kullanilmaz. Kur bulunamazsa mevcut/son kayitli kur beklenir.
   console.warn('TCMB kur alınamadı:',lastErr);
   return currentFxRates;
 }
 function currentRate(c){c=safeCurrency(c);if(c==='TRY')return 1;return Number.isFinite(parseFloat(currentFxRates&&currentFxRates.rates&&currentFxRates.rates[c]))?parseFloat(currentFxRates.rates[c]):0;}
 function currentRateInfoHtml(){
   const eur=currentRate('EUR'), usd=currentRate('USD');
-  const src=(currentFxRates&&currentFxRates.source)||'TCMB';
+  const src=(currentFxRates&&currentFxRates.source)||'TCMB otomatik kur bekleniyor';
   const dt=(currentFxRates&&currentFxRates.date)||'kur bekleniyor';
   const rule=(currentFxRates&&currentFxRates.targetRule)||getTcmbTargetDateInfo().label;
   const target=(currentFxRates&&currentFxRates.requestedTargetDate)||ymdLocal(getTcmbTargetDateInfo().target);
-  const stale=currentFxRates&&currentFxRates.stale?'<span class="warn">Canli/otomatik kur alinamadi; yedek kur kullaniliyor.</span>':'';
-  const warn=(!eur||!usd)?'<span class="warn">TCMB kuru otomatik alinamadi. Degerleme icin manuel yedek kur girin.</span>':'';
-  const isAdmin=getUserRole&&getUserRole()==='admin';
-  const manualBox=(!eur||!usd||isAdmin)?`<div class="fx-manual-rate-box"><div class="fx-manual-rate-note"><strong>Manuel yedek kur:</strong> Supabase/TCMB otomatik baglantisi calismazsa buraya TCMB doviz satis kurlarini gir. Otomatik kur geldiginde sistem onu kullanir; gelmezse bu yedek kurla portfoy degerler.</div><div><label>Kur Tarihi</label><input type="date" id="manual-rate-date" value="${htmlEsc((currentFxRates&&currentFxRates.effectiveYmd)||ymdLocal(turkeyNow()))}"></div><div><label>EUR satis</label><input type="number" id="manual-eur-rate" step="0.0001" placeholder="Örn: 45.1234" value="${eur||''}"></div><div><label>USD satis</label><input type="number" id="manual-usd-rate" step="0.0001" placeholder="Örn: 41.1234" value="${usd||''}"></div><button onclick="saveManualFxRates()">Yedek Kuru Kaydet</button></div>`:'';
-  return `<div class="fx-rate-status"><span class="fx-chip"><strong>Guncel degerleme kuru:</strong> ${src}</span><span class="fx-chip">Kural: ${rule}</span><span class="fx-chip">Hedef gun: ${target}</span><span class="fx-chip">EUR satis: ${eur?fmtTL(eur):'—'}</span><span class="fx-chip">USD satis: ${usd?fmtTL(usd):'—'}</span><span class="fx-chip">Yayin tarihi: ${dt}</span>${stale}${warn}${manualBox}</div>`;
+  const stale=currentFxRates&&currentFxRates.stale?'<span class="warn">Canli kur alinamadi; sistemdeki son otomatik kur kullaniliyor.</span>':'';
+  const warn=(!eur||!usd)?'<span class="warn">TCMB kuru henuz otomatik alinmadi. GitHub Actions 15:40 TR saatinde kuru Supabase cache tablosuna yazacak.</span>':'';
+  return `<div class="fx-rate-status"><span class="fx-chip"><strong>Guncel degerleme kuru:</strong> ${src}</span><span class="fx-chip">Kural: ${rule}</span><span class="fx-chip">Hedef gun: ${target}</span><span class="fx-chip">EUR satis: ${eur?fmtTL(eur):'—'}</span><span class="fx-chip">USD satis: ${usd?fmtTL(usd):'—'}</span><span class="fx-chip">Yayin tarihi: ${dt}</span>${stale}${warn}</div>`;
 }
 function amountTL(item){
   if(item && typeof item==='object'){
@@ -2731,7 +2724,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.40'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.41'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2865,7 +2858,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.40 — Stil destekli Excel çıktısı.
+  // V: 1.0.41 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -3141,7 +3134,7 @@ function buildStandaloneHtmlReport(report){
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.40</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.41</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -3226,7 +3219,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.40 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.41 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -3305,7 +3298,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.40 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.41 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }
@@ -3501,7 +3494,7 @@ async function initApp(){
   initCurrencyControls();
   renderDashboard();
 
-  // V: 1.0.40
+  // V: 1.0.41
   // Oturum kontrolü TCMB kur çekme işleminden önce yapılır.
   // Böylece sayfa yenilendiğinde kur servisi beklenirken kullanıcı gereksiz yere giriş ekranına düşmez.
   await initSupabaseAuth();

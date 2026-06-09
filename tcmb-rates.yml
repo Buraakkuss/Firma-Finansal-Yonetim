@@ -1,0 +1,25 @@
+name: Fetch TCMB Currency Rates
+
+on:
+  schedule:
+    # Turkey is UTC+3 all year. 12:40 UTC = 15:40 Turkey time.
+    - cron: '40 12 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  fetch-tcmb-rates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch TCMB rates and save to Supabase
+        env:
+          SUPABASE_URL: https://ekpehcfhhldtxsuqiczj.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/fetch-tcmb-rates.mjs

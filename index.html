@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.35</title>
+<title>Firma Finansal Yönetim — V: 1.0.36</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -371,7 +371,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.35</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.36</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -1347,7 +1347,7 @@ async function fetchTcmbRates(force){
   const targetKey=ymdLocal(targetInfo.target);
   if(!force && currentFxRates && currentFxRates.targetKey===targetKey && currentFxRates.rates && currentFxRates.rates.EUR && currentFxRates.rates.USD) return currentFxRates;
 
-  // V: 1.0.35 — TCMB XML kur çekme işlemi artık önce Supabase/Postgres RPC üzerinden denenir.
+  // V: 1.0.36 — TCMB XML kur çekme işlemi artık önce Supabase/Postgres RPC üzerinden denenir.
   // GitHub Pages üzerindeki tarayıcı tarafı doğrudan TCMB XML okurken CORS/ağ kısıtlarına takılabilir.
   try{
     const client=ensureSupabase();
@@ -1458,7 +1458,7 @@ function currencyBreakdown(records){
 }
 function renderCurrencyBreakdown(label,records){
   const b=currencyBreakdown(records);
-  return `<div class="fx-breakdown"><span class="fx-chip"><strong>${label} değerleme karşılığı:</strong> ${fmtTL(b.TRY_EQ)}</span><span class="fx-chip">TL: ${fmtCurrency(b.TRY,'TRY')}</span><span class="fx-chip">EUR: ${fmtCurrency(b.EUR,'EUR')}</span><span class="fx-chip">USD: ${fmtCurrency(b.USD,'USD')}</span></div>`;
+  return `<div class="fx-breakdown"><span class="fx-chip"><strong>${label} kayıt değerlemesi:</strong> ${fmtTL(b.TRY_EQ)}</span><span class="fx-chip">TL: ${fmtCurrency(b.TRY,'TRY')}</span><span class="fx-chip">EUR: ${fmtCurrency(b.EUR,'EUR')}</span><span class="fx-chip">USD: ${fmtCurrency(b.USD,'USD')}</span></div>`;
 }
 function emptyWallet(){return {TRY:0,EUR:0,USD:0};}
 function addWallet(w,c,amt){c=safeCurrency(c);w[c]=(w[c]||0)+(Number.isFinite(parseFloat(amt))?parseFloat(amt):0);return w;}
@@ -1500,10 +1500,10 @@ function getPortfolioValueAtCurrentRates(w){
 function renderWalletCards(periodWallet,projectedWallet){
   const val=getPortfolioValueAtCurrentRates(periodWallet);
   return `${currentRateInfoHtml()}<div class="wallet-grid">
-    <div class="wallet-card try"><div class="label">Gerçek TL Kasa</div><div class="value">${fmtCurrency(periodWallet.TRY,'TRY')}</div><div class="sub">Yalnız TL işlemler ve döviz bozdurma sonrası TL girişleri.</div></div>
+    <div class="wallet-card try"><div class="label">TL Kasa</div><div class="value">${fmtCurrency(periodWallet.TRY,'TRY')}</div><div class="sub">Kasada gerçekten TL olarak bulunan net bakiye.</div></div>
     <div class="wallet-card eur"><div class="label">EUR Kasa</div><div class="value">${fmtCurrency(periodWallet.EUR,'EUR')}</div><div class="sub">Güncel TL değeri: ${fmtTL(n(periodWallet.EUR)*currentRate('EUR'))}</div></div>
     <div class="wallet-card usd"><div class="label">USD Kasa</div><div class="value">${fmtCurrency(periodWallet.USD,'USD')}</div><div class="sub">Güncel TL değeri: ${fmtTL(n(periodWallet.USD)*currentRate('USD'))}</div></div>
-    <div class="wallet-card total"><div class="label">Güncel Toplam Portföy</div><div class="value">${fmtTL(val)}</div><div class="sub">TL kasa + EUR/USD güncel TCMB satış değeri.</div></div>
+    <div class="wallet-card total"><div class="label">Güncel Toplam Portföy</div><div class="value">${fmtTL(val)}</div><div class="sub">TL kasa + EUR/USD güncel satış kuru değerlemesi.</div></div>
   </div>`;
 }
 function updateFxTransferPreview(){
@@ -1739,22 +1739,29 @@ function renderDashboard(){
   const prevTo=period==='month'?new Date(from.getFullYear(),from.getMonth(),0,23,59,59):period==='week'?new Date(from.getTime()-1):new Date(from.getFullYear()-1,11,31,23,59,59);
   const prevInc=filterByPeriod(data.income,prevFrom,prevTo).reduce((s,r)=>s+amountTL(r),0);
   const incChange=prevInc>0?((totalInc-prevInc)/prevInc*100).toFixed(1):null;
-  document.getElementById('dash-metrics').innerHTML=`
-    <div class="metric"><div class="metric-label">Gelir Değeri (TL)</div><div class="metric-value positive">${fmt(totalInc)}</div>${incChange?`<div class="metric-sub">${parseFloat(incChange)>=0?'▲':'▼'} ${Math.abs(incChange)}% önceki dönem</div>`:'<div class="metric-sub">—</div>'}</div>
-    <div class="metric"><div class="metric-label">Gider Değeri (TL)</div><div class="metric-value negative">${fmt(totalExp)}</div><div class="metric-sub">${expenses.length} işlem</div></div>
-    <div class="metric"><div class="metric-label">Kesin Sabit Net</div><div class="metric-value" style="color:var(--fixed)">${fmt(fixedPeriod)}</div><div class="metric-sub">Kira/kredi gibi kesin kalemler</div></div>
-    <div class="metric"><div class="metric-label">Gerçek Net Kasa</div><div class="metric-value ${net>=0?'positive':'negative'}">${fmt(net)}</div><div class="metric-sub">Gerçek gider: ${fmt(totalExpAll)}</div></div>
-    <div class="metric"><div class="metric-label">Bekleyen Tahmini Fatura</div><div class="metric-value" style="color:#BF6A00">${fmt(variableOpen)}</div><div class="metric-sub">Elektrik vb. gerçekleşmemiş tahmin</div></div>
-    <div class="metric"><div class="metric-label">Tahmini Ay Sonu Kasa</div><div class="metric-value ${projectedNet>=0?'positive':'negative'}">${fmt(projectedNet)}</div><div class="metric-sub">Gerçek net - bekleyen tahmin</div></div>
-    <div class="metric"><div class="metric-label">Kâr Marjı</div><div class="metric-value neutral">%${marginPct}</div><div class="metric-sub">${parseFloat(marginPct)>20?'✓ Sağlıklı':parseFloat(marginPct)>0?'⚠ Düşük':'✗ Zarar'}</div></div>`;
+
   const periodWallet=getCurrencyMovementForRange(from,to,false);
   const projectedWallet=getCurrencyMovementForRange(from,to,true);
+  const currentPortfolio=getPortfolioValueAtCurrentRates(periodWallet);
+  const projectedPortfolio=getPortfolioValueAtCurrentRates(projectedWallet);
+
+  document.getElementById('dash-metrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Gelir Kayıt Değeri</div><div class="metric-value positive">${fmt(totalInc)}</div><div class="metric-sub">TL + EUR/USD kayıt kuru karşılığı</div>${incChange?`<div class="metric-sub">${parseFloat(incChange)>=0?'▲':'▼'} ${Math.abs(incChange)}% önceki dönem</div>`:''}</div>
+    <div class="metric"><div class="metric-label">Gider Kayıt Değeri</div><div class="metric-value negative">${fmt(totalExp)}</div><div class="metric-sub">${expenses.length} gerçek gider işlemi</div></div>
+    <div class="metric"><div class="metric-label">Kesin Sabit Net</div><div class="metric-value" style="color:var(--fixed)">${fmt(fixedPeriod)}</div><div class="metric-sub">Kira/kredi gibi kesin kalemler</div></div>
+    <div class="metric"><div class="metric-label">Dönem Net Değerleme</div><div class="metric-value ${net>=0?'positive':'negative'}">${fmt(net)}</div><div class="metric-sub">Gelir kayıt değeri - gerçek/sabit gider</div></div>
+    <div class="metric"><div class="metric-label">Bekleyen Tahmini Fatura</div><div class="metric-value" style="color:#BF6A00">${fmt(variableOpen)}</div><div class="metric-sub">Eşleşmemiş değişken tahminler</div></div>
+    <div class="metric"><div class="metric-label">Tahmini Portföy Değeri</div><div class="metric-value ${projectedPortfolio>=0?'positive':'negative'}">${fmtTL(projectedPortfolio)}</div><div class="metric-sub">Güncel portföy - bekleyen tahmin</div></div>
+    <div class="metric"><div class="metric-label">Kâr Marjı</div><div class="metric-value neutral">%${marginPct}</div><div class="metric-sub">${parseFloat(marginPct)>20?'✓ Sağlıklı':parseFloat(marginPct)>0?'⚠ Düşük':'✗ Zarar'}</div></div>`;
+
   const oldWallet=document.getElementById('dash-wallet-breakdown');if(oldWallet)oldWallet.remove();
   const dashMetricsForWallet=document.getElementById('dash-metrics');
-  if(dashMetricsForWallet){dashMetricsForWallet.insertAdjacentHTML('afterend', `<div id="dash-wallet-breakdown">${renderWalletCards(periodWallet,projectedWallet)}</div>`);}
+  if(dashMetricsForWallet){dashMetricsForWallet.insertAdjacentHTML('beforebegin', `<div id="dash-wallet-breakdown">${renderWalletCards(periodWallet,projectedWallet)}</div>`);}
+
   const oldFx=document.getElementById('dash-fx-breakdown');if(oldFx)oldFx.remove();
   const dashMetrics=document.getElementById('dash-metrics');
   if(dashMetrics){dashMetrics.insertAdjacentHTML('afterend', `<div id="dash-fx-breakdown">${renderCurrencyBreakdown('Gelir', incomes)}${renderCurrencyBreakdown('Gider', expenses)}</div>`);}
+
   renderDashCharts(totalInc,totalExp,fixedPeriod,net,variableOpen);
   renderInsights(totalInc,totalExpAll,fixedPeriod,net,marginPct,prevInc,incChange,variableOpen);
 }
@@ -2675,7 +2682,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.35'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.36'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2809,7 +2816,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.35 — Stil destekli Excel çıktısı.
+  // V: 1.0.36 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -3085,7 +3092,7 @@ function buildStandaloneHtmlReport(report){
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.35</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.36</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -3170,7 +3177,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.35 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.36 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -3249,7 +3256,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.35 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.36 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }
@@ -3445,7 +3452,7 @@ async function initApp(){
   initCurrencyControls();
   renderDashboard();
 
-  // V: 1.0.35
+  // V: 1.0.36
   // Oturum kontrolü TCMB kur çekme işleminden önce yapılır.
   // Böylece sayfa yenilendiğinde kur servisi beklenirken kullanıcı gereksiz yere giriş ekranına düşmez.
   await initSupabaseAuth();

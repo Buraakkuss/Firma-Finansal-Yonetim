@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.49</title>
+<title>Firma Finansal Yönetim — V: 1.0.50</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -376,7 +376,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.49</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.50</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -884,7 +884,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',daily:'Günlük Kayıt',fixed:'Sabit Giderler',forecast:'Tahminler',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Excel Dışa Aktar'};
 const STORAGE_KEY='firma_finansal_v3';
-const APP_VERSION='1.0.49';
+const APP_VERSION='1.0.50';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_W1AHDSfZwbWN0cCxW-hJ7g_6YMXuWPr';
 const AUTH_MIRROR_KEY='firma_finansal_supabase_session_v1';
@@ -1400,7 +1400,7 @@ async function fetchTcmbRates(force){
   const storedIsManual=/manuel|manual/i.test(storedSource) || !!(currentFxRates&&currentFxRates.manual);
   if(!force && hasStoredRates && !storedIsManual && !(currentFxRates&&currentFxRates.stale)) return currentFxRates;
 
-  // V: 1.0.49 — GitHub Actions'in Supabase cache tablosuna yazdığı son TCMB kuru doğrudan okunur.
+  // V: 1.0.50 — GitHub Actions'in Supabase cache tablosuna yazdığı son TCMB kuru doğrudan okunur.
   // Böylece tarayıcı veya Supabase RPC canlı TCMB sunucusuna bağlanamasa bile uygulama otomatik kur kaydını kullanır.
   try{
     const client=ensureSupabase();
@@ -1427,7 +1427,7 @@ async function fetchTcmbRates(force){
     console.warn('Supabase FX cache okunamadı, RPC denenecek:',e);
   }
 
-  // V: 1.0.49 — TCMB XML kur çekme işlemi yedek olarak Supabase/Postgres RPC üzerinden denenir.
+  // V: 1.0.50 — TCMB XML kur çekme işlemi yedek olarak Supabase/Postgres RPC üzerinden denenir.
   // GitHub Pages üzerindeki tarayıcı tarafı doğrudan TCMB XML okurken CORS/ağ kısıtlarına takılabilir.
   try{
     const client=ensureSupabase();
@@ -1969,20 +1969,27 @@ function getMonthForecast(d){
 
 function addForecastNetToPortfolioValue(baseValue, monthStart, monthEnd){
   var extra = 0;
-  filterByPeriod(data.forecast||[], monthStart, monthEnd).forEach(function(r){
+  var from = firstOfMonth(monthStart);
+  var to = monthEnd;
+  (data.forecast||[]).forEach(function(r){
+    if(!r || !r.month) return;
+    var parts = String(r.month).split('-');
+    var forecastMonth = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, 1);
+    if(forecastMonth < firstOfMonth(from) || forecastMonth > firstOfMonth(to)) return;
     var val = amountTL(r);
     var type = r.type || r.kind || 'income';
     extra += type === 'expense' ? -val : val;
   });
   return baseValue + extra;
 }
-function getCumulativePortfolioForMonth(monthDate, includeOpenVariable, includeForecast){
+function getCumulativePortfolioForMonth(monthDate, includeOpenVariable, includeForecast, forecastFromMonth){
   var start = getLedgerStartDate(monthDate);
   var end = new Date(monthDate.getFullYear(), monthDate.getMonth()+1, 0, 23, 59, 59);
   var w = getCurrencyMovementForRange(start, end, !!includeOpenVariable);
   var val = getPortfolioValueAtCurrentRates(w);
   if(includeForecast){
-    val = addForecastNetToPortfolioValue(val, new Date(monthDate.getFullYear(), monthDate.getMonth(), 1), end);
+    var forecastStart = forecastFromMonth ? firstOfMonth(forecastFromMonth) : new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+    val = addForecastNetToPortfolioValue(val, forecastStart, end);
   }
   return val;
 }
@@ -2043,7 +2050,7 @@ function renderCashFlowChart(){
       monthNet.push(a0.net + t0.income - t0.expense - openVariable0);
       forecastMarkers.push(t0.count>0 || openVariable0>0);
       // Seçili ay noktası ay sonu beklentisini gösterir: gerçek birikimli portföy + açık tahminler.
-      portfolioData.push(Math.round(getCumulativePortfolioForMonth(d,true,true)));
+      portfolioData.push(Math.round(getCumulativePortfolioForMonth(d,true,true,d)));
     }else{
       var f = getMonthForecast(d);
       actualIncome.push(null);
@@ -2053,7 +2060,7 @@ function renderCashFlowChart(){
       monthNet.push(f.net);
       forecastMarkers.push(f.hasForecast);
       // Gelecek aylar için açık değişken tahminler ve tahmin kayıtları portföy projeksiyonuna dahil edilir.
-      portfolioData.push(Math.round(getCumulativePortfolioForMonth(d,true,true)));
+      portfolioData.push(Math.round(getCumulativePortfolioForMonth(d,true,true,selectedMonth)));
     }
   }
 
@@ -2776,7 +2783,7 @@ function buildExportReport(){
     const combinedExpense=actualExpense+forecastExpenseOnly+variableEstimateOpen;
     const combinedNet=combinedIncome-combinedExpense;
     const actualPortfolio=getCumulativePortfolioForMonth(m,false,false);
-    const projectedPortfolio=(mf>=currentMonthStart)?getCumulativePortfolioForMonth(m,true,true):actualPortfolio;
+    const projectedPortfolio=(mf>=currentMonthStart)?getCumulativePortfolioForMonth(m,true,true,currentMonthStart):actualPortfolio;
     cumulativeCash=projectedPortfolio;
     monthly.push({
       month:key,label:ymLabel(key),actualIncome,variableExpense,fixedNet,variableEstimateOpen,actualExpense,actualNet,
@@ -2922,7 +2929,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.49'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.50'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -3056,7 +3063,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.49 — Stil destekli Excel çıktısı.
+  // V: 1.0.50 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -3289,21 +3296,21 @@ function buildStandaloneHtmlReport(report){
   const barWidth=(v)=>Math.max(2,Math.min(100,Math.round(Math.abs(Number(v||0))/maxVal*100)));
   const safeRows=(arr,emptyHtml)=>arr && arr.length ? arr.join('') : emptyHtml;
   const monthlyRows=report.monthly.map(r=>{
-    const incW=barWidth(r.actualIncome);
-    const expW=barWidth(r.actualExpense);
-    const netW=barWidth(r.actualNet);
-    const portW=barWidth(r.projectedPortfolio);
-    const netClass=r.actualNet>=0?'pos':'neg';
+    const incW=barWidth(r.combinedIncome);
+    const expW=barWidth(r.combinedExpense);
+    const netW=barWidth(r.combinedNet);
+    const cashW=barWidth(r.cumulativeCash);
+    const netClass=r.combinedNet>=0?'pos':'neg';
     return `<tr>
       <td class="strong">${htmlEsc(r.label)}</td>
-      <td class="num pos">${moneyHtml(r.actualIncome)}</td>
+      <td class="num pos">${moneyHtml(r.combinedIncome)}</td>
       <td><div class="mini-bar"><span class="inc" style="width:${incW}%"></span></div></td>
-      <td class="num neg">${moneyHtml(r.actualExpense)}</td>
+      <td class="num neg">${moneyHtml(r.combinedExpense)}</td>
       <td><div class="mini-bar"><span class="exp" style="width:${expW}%"></span></div></td>
-      <td class="num ${netClass}">${moneyHtml(r.actualNet)}</td>
+      <td class="num ${netClass}">${moneyHtml(r.combinedNet)}</td>
       <td><div class="mini-bar"><span class="${netClass==='pos'?'inc':'exp'}" style="width:${netW}%"></span></div></td>
-      <td class="num ${r.projectedPortfolio>=0?'pos':'neg'}">${moneyHtml(r.projectedPortfolio)}</td>
-      <td class="muted-cell">${r.variableEstimateOpen>0?'Bekleyen '+moneyHtml(r.variableEstimateOpen):(r.forecastCount||0)+' tahmin'}</td>
+      <td class="num ${r.cumulativeCash>=0?'pos':'neg'}">${moneyHtml(r.cumulativeCash)}</td>
+      <td class="muted-cell">${r.forecastCount||0} tahmin</td>
     </tr>`;
   }).join('');
   const incomeCats=Object.entries(report.incomeCats).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k,v])=>`<tr><td>${htmlEsc(k)}</td><td class="num pos">${moneyHtml(v)}</td></tr>`);
@@ -3332,7 +3339,7 @@ function buildStandaloneHtmlReport(report){
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.49</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.50</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -3417,7 +3424,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.49 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.50 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -3496,7 +3503,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.49 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.50 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }
@@ -3692,7 +3699,7 @@ async function initApp(){
   initCurrencyControls();
   renderDashboard();
 
-  // V: 1.0.49
+  // V: 1.0.50
   // Oturum kontrolü TCMB kur çekme işleminden önce yapılır.
   // Böylece sayfa yenilendiğinde kur servisi beklenirken kullanıcı gereksiz yere giriş ekranına düşmez.
   await initSupabaseAuth();

@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Firma Finansal Yönetim — V: 1.0.50</title>
+<title>Firma Finansal Yönetim — V: 1.0.51</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -376,7 +376,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <h1>📊 Finans Takip</h1>
-      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.50</p>
+      <p>Firma Yönetim Paneli &nbsp;·&nbsp; V: 1.0.51</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -514,11 +514,11 @@
             </div>
             <div class="form-grid form-grid-2" style="margin-top:8px">
               <div class="form-group">
-                <label>Tahmini fatura eşleştirme <span style="color:var(--text-hint)">(opsiyonel)</span></label>
+                <label>Tahmini ödeme/fatura eşleştirme <span style="color:var(--text-hint)">(opsiyonel)</span></label>
                 <select id="exp-fixed-link"></select>
               </div>
               <div class="form-group" style="justify-content:flex-end">
-                <div style="font-size:11px;color:var(--text-muted);padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-secondary)">Elektrik gibi değişken faturalarda gerçek gideri ilgili tahminle eşleştirir.</div>
+                <div style="font-size:11px;color:var(--text-muted);padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-secondary)">Elektrik, çek, SGK, vergi gibi planlı giderlerde gerçek ödemeyi ilgili tahminle eşleştirir.</div>
               </div>
             </div>
             <div class="btn-row"><button class="btn btn-expense" onclick="addExpense()">+ Gider Ekle</button></div>
@@ -582,6 +582,7 @@
               <select id="fix-budget-type" onchange="updateFixedBudgetHelp()">
                 <option value="exact">Kesin sabit</option>
                 <option value="variable">Değişken tahmini</option>
+                <option value="oneoff">Tek seferlik gelecek gider</option>
                 <option value="memo">Bilgilendirme</option>
               </select>
             </div>
@@ -824,11 +825,11 @@
     </div>
     <div id="modal-fixed-link-wrap" class="form-grid form-grid-2" style="margin-top:10px;display:none">
       <div class="form-group">
-        <label>Tahmini fatura eşleştirme</label>
+        <label>Tahmini ödeme/fatura eşleştirme</label>
         <select id="modal-fixed-link"></select>
       </div>
       <div class="form-group" style="justify-content:flex-end">
-        <div style="font-size:11px;color:var(--text-muted);padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-secondary)">Gider kaydını ilgili değişken tahmini fatura ile ilişkilendirir.</div>
+        <div style="font-size:11px;color:var(--text-muted);padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-secondary)">Gider kaydını ilgili tahmini fatura/gelecek ödeme ile ilişkilendirir.</div>
       </div>
     </div>
     <div class="modal-footer"><button class="btn" onclick="closeModal('modal-record')">İptal</button><button class="btn btn-primary" onclick="saveRecord()">Kaydet</button></div>
@@ -838,13 +839,13 @@
 <!-- MODAL: Gider Tahmini Fatura İlişkilendir -->
 <div class="modal-overlay" id="modal-expense-link">
   <div class="modal">
-    <div class="modal-header"><h3>🔗 Gideri Tahminle İlişkilendir</h3><button class="modal-close" onclick="closeModal('modal-expense-link')">✕</button></div>
+    <div class="modal-header"><h3>🔗 Gideri Tahmin/Ödeme ile İlişkilendir</h3><button class="modal-close" onclick="closeModal('modal-expense-link')">✕</button></div>
     <div id="expense-link-summary" class="fx-rate-alert" style="margin-top:0"></div>
     <div class="form-group">
-      <label>Tahmini fatura eşleştirme</label>
+      <label>Tahmini ödeme/fatura eşleştirme</label>
       <select id="expense-link-select"></select>
     </div>
-    <div style="font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.45">Gerçek fatura gider olarak girildiyse bu alandan ilgili değişken tahmini fatura ile eşleştir. Eşleştirince o ayın bekleyen tahmini faturası hesaplardan otomatik düşer.</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.45">Gerçek ödeme gider olarak girildiyse bu alandan ilgili tahmini fatura veya tek seferlik gelecek ödeme ile eşleştir. Eşleştirince o ayın bekleyen tahmini gideri hesaplardan otomatik düşer.</div>
     <div class="modal-footer"><button class="btn" onclick="closeModal('modal-expense-link')">İptal</button><button class="btn btn-primary" onclick="saveExpenseLinkOnly()">İlişkilendir</button></div>
   </div>
 </div>
@@ -860,7 +861,7 @@
     <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
       <div class="form-group"><label>Tutar</label><input type="number" id="mfix-amount" placeholder="0" min="0" step="1"></div>
       <div class="form-group"><label>Tür</label><select id="mfix-type"><option value="expense">Gider</option><option value="income">Gelir</option></select></div>
-      <div class="form-group"><label>Hesaplama</label><select id="mfix-budget-type"><option value="exact">Kesin sabit</option><option value="variable">Değişken tahmini</option><option value="memo">Bilgilendirme</option></select></div>
+      <div class="form-group"><label>Hesaplama</label><select id="mfix-budget-type"><option value="exact">Kesin sabit</option><option value="variable">Değişken tahmini</option><option value="oneoff">Tek seferlik gelecek gider</option><option value="memo">Bilgilendirme</option></select></div>
       <div class="form-group"><label>Periyot</label><select id="mfix-period"><option value="monthly">Aylık</option><option value="weekly">Haftalık</option><option value="bimonthly">2 Ayda Bir</option><option value="quarterly">3 Ayda Bir</option><option value="biannual">6 Ayda Bir</option><option value="annual">Yıllık</option></select></div>
     </div>
     <div class="form-grid form-grid-2" style="margin-top:10px">
@@ -884,7 +885,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',daily:'Günlük Kayıt',fixed:'Sabit Giderler',forecast:'Tahminler',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Excel Dışa Aktar'};
 const STORAGE_KEY='firma_finansal_v3';
-const APP_VERSION='1.0.50';
+const APP_VERSION='1.0.51';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_W1AHDSfZwbWN0cCxW-hJ7g_6YMXuWPr';
 const AUTH_MIRROR_KEY='firma_finansal_supabase_session_v1';
@@ -1400,7 +1401,7 @@ async function fetchTcmbRates(force){
   const storedIsManual=/manuel|manual/i.test(storedSource) || !!(currentFxRates&&currentFxRates.manual);
   if(!force && hasStoredRates && !storedIsManual && !(currentFxRates&&currentFxRates.stale)) return currentFxRates;
 
-  // V: 1.0.50 — GitHub Actions'in Supabase cache tablosuna yazdığı son TCMB kuru doğrudan okunur.
+  // V: 1.0.51 — GitHub Actions'in Supabase cache tablosuna yazdığı son TCMB kuru doğrudan okunur.
   // Böylece tarayıcı veya Supabase RPC canlı TCMB sunucusuna bağlanamasa bile uygulama otomatik kur kaydını kullanır.
   try{
     const client=ensureSupabase();
@@ -1427,7 +1428,7 @@ async function fetchTcmbRates(force){
     console.warn('Supabase FX cache okunamadı, RPC denenecek:',e);
   }
 
-  // V: 1.0.50 — TCMB XML kur çekme işlemi yedek olarak Supabase/Postgres RPC üzerinden denenir.
+  // V: 1.0.51 — TCMB XML kur çekme işlemi yedek olarak Supabase/Postgres RPC üzerinden denenir.
   // GitHub Pages üzerindeki tarayıcı tarafı doğrudan TCMB XML okurken CORS/ağ kısıtlarına takılabilir.
   try{
     const client=ensureSupabase();
@@ -1565,7 +1566,7 @@ function getLedgerStartDate(fallbackDate){
   return firstOfMonth(min);
 }
 function addWallet(w,c,amt){c=safeCurrency(c);w[c]=(w[c]||0)+(Number.isFinite(parseFloat(amt))?parseFloat(amt):0);return w;}
-function fixedOriginalMonthlyEquivalent(f){const pm=PERIOD_MONTHS[f.period||'monthly']||1;return amountOriginal(f)/pm;}
+function fixedOriginalMonthlyEquivalent(f){if(isOneOffFutureExpense(f))return amountOriginal(f);const pm=PERIOD_MONTHS[f.period||'monthly']||1;return amountOriginal(f)/pm;}
 function linkedActualOriginalForFixedMonth(f,monthDate){
   const id=String(f.id);const c=itemCurrency(f);
   const mf=new Date(monthDate.getFullYear(),monthDate.getMonth(),1);const mt=new Date(monthDate.getFullYear(),monthDate.getMonth()+1,0,23,59,59);
@@ -1583,7 +1584,7 @@ function getCurrencyMovementForRange(from,to,includeOpenVariable){
       const bt=fixedBudgetType(f); if(bt==='memo')return;
       const c=itemCurrency(f);
       if(f.fixedType==='income'){addWallet(w,c,fixedOriginalMonthlyEquivalent(f));return;}
-      if(bt==='variable'){
+      if(bt==='variable'||bt==='oneoff'){
         if(includeOpenVariable)addWallet(w,c,-variableOpenOriginalForFixedMonth(f,m));
         return;
       }
@@ -1725,18 +1726,26 @@ function getPeriodBounds(){
 function filterByPeriod(arr,from,to){return arr.filter(r=>{const d=new Date(r.date+'T00:00:00');return d>=from&&d<=to;});}
 
 /* Periyot → kaç ayda bir tetiklenir */
-const PERIOD_MONTHS={monthly:1,weekly:0.25,bimonthly:2,quarterly:3,biannual:6,annual:12};
-const PERIOD_LABELS={monthly:'Aylık',weekly:'Haftalık',bimonthly:'2 Ayda Bir',quarterly:'3 Ayda Bir',biannual:'6 Ayda Bir',annual:'Yıllık'};
-const FIXED_BUDGET_LABELS={exact:'Kesin sabit',variable:'Değişken tahmini',memo:'Bilgilendirme'};
+const PERIOD_MONTHS={monthly:1,weekly:0.25,bimonthly:2,quarterly:3,biannual:6,annual:12,oneoff:1};
+const PERIOD_LABELS={monthly:'Aylık',weekly:'Haftalık',bimonthly:'2 Ayda Bir',quarterly:'3 Ayda Bir',biannual:'6 Ayda Bir',annual:'Yıllık',oneoff:'Tek seferlik'};
+const FIXED_BUDGET_LABELS={exact:'Kesin sabit',variable:'Değişken tahmini',oneoff:'Tek seferlik gelecek gider',memo:'Bilgilendirme'};
 const FIXED_BUDGET_HINTS={
   exact:'Kira, kredi, leasing gibi tutarı sözleşme bitişine kadar kesin olan kalemler. Gerçek kasa hesabına düzenli dahil edilir.',
   variable:'Elektrik, su, doğalgaz gibi her ay değişebilen faturalar. Gerçek kasa yerine tahmini kasada gösterilir; günlük giderle eşleştirildiğinde o ay tahmin kapanır.',
+  oneoff:'Çek, senet, vergi, SGK veya tek seferlik ödeme taahhüdü. Başlangıç tarihinin olduğu ayda tahmini gider olarak görünür; günlük giderle eşleştirildiğinde kapanır.',
   memo:'Sadece bilgi amaçlı görünür. Kasa, rapor ve projeksiyon hesaplarına otomatik etki etmez.'
 };
 function fixedBudgetType(f){return f&&f.budgetType?f.budgetType:'exact';}
+function isOneOffFutureExpense(f){return !!(f&&f.fixedType!=='income'&&fixedBudgetType(f)==='oneoff');}
+function isEstimateClosableExpense(f){const bt=fixedBudgetType(f);return !!(f&&f.fixedType!=='income'&&(bt==='variable'||bt==='oneoff'));}
 function isFixedActiveInMonth(f,monthDate){
   const ms=new Date(monthDate.getFullYear(),monthDate.getMonth(),1);
   const me=new Date(monthDate.getFullYear(),monthDate.getMonth()+1,0,23,59,59);
+  if(isOneOffFutureExpense(f)){
+    if(!f.startDate)return false;
+    const sd=new Date(f.startDate+'T00:00:00');
+    return sd.getFullYear()===monthDate.getFullYear() && sd.getMonth()===monthDate.getMonth();
+  }
   const start=f.startDate?new Date(f.startDate+'T00:00:00'):new Date('2000-01-01');
   const end=f.endDate?new Date(f.endDate+'T23:59:59'):new Date('2099-12-31');
   return !(me<start||ms>end);
@@ -1756,7 +1765,7 @@ function getVariableEstimateStatusForFixedMonth(f,monthDate){
 function getVariableEstimateOpenForMonth(monthDate){
   let total=0;
   (data.fixed||[]).forEach(f=>{
-    if(f.fixedType==='income'||fixedBudgetType(f)!=='variable')return;
+    if(!isEstimateClosableExpense(f))return;
     if(!isFixedActiveInMonth(f,monthDate))return;
     total+=getVariableEstimateStatusForFixedMonth(f,monthDate).open;
   });
@@ -1770,7 +1779,7 @@ function getFixedBreakdownForMonth(monthDate){
     const bt=fixedBudgetType(f);
     if(bt==='memo'){memo+=eq;return;}
     if(f.fixedType==='income'){exactIncome+=eq;return;}
-    if(bt==='variable'){
+    if(bt==='variable'||bt==='oneoff'){
       const st=getVariableEstimateStatusForFixedMonth(f,monthDate);
       variableBudget+=st.budget;
       variableActual+=st.actual;
@@ -1792,7 +1801,7 @@ function getPastUnclosedVariableEstimates(periodStart){
   const scanLimit=new Date(cutoff.getFullYear(),cutoff.getMonth()-24,1);
   const rows=[];
   (data.fixed||[]).forEach(f=>{
-    if(f.fixedType==='income'||fixedBudgetType(f)!=='variable')return;
+    if(!isEstimateClosableExpense(f))return;
     let start=f.startDate?firstOfMonth(new Date(f.startDate+'T00:00:00')):new Date(cutoff.getFullYear(),0,1);
     if(start<scanLimit)start=scanLimit;
     const end=f.endDate?firstOfMonth(new Date(f.endDate+'T00:00:00')):previousMonth;
@@ -1807,7 +1816,7 @@ function getPastUnclosedVariableEstimates(periodStart){
         const d=new Date(r.date+'T00:00:00');
         return d>=mf&&d<=mt && (!f.category||!r.category||String(r.category)===String(f.category));
       }).reduce((s,r)=>s+amountTL(r),0);
-      rows.push({month:m,monthLabel:MONTHS[m.getMonth()]+' '+m.getFullYear(),fixedId:String(f.id),description:f.description||'Değişken tahmini fatura',category:f.category||'',budget:st.budget,possibleActual});
+      rows.push({month:m,monthLabel:MONTHS[m.getMonth()]+' '+m.getFullYear(),fixedId:String(f.id),description:f.description||'Tahmini gider/ödeme',category:f.category||'',budget:st.budget,possibleActual});
     });
   });
   rows.sort((a,b)=>a.month-b.month||a.description.localeCompare(b.description,'tr'));
@@ -1819,25 +1828,26 @@ function renderPastUnclosedVariableWarning(periodStart){
   const total=rows.reduce((s,r)=>s+n(r.budget),0);
   const detail=rows.slice(0,8).map(r=>`<li><strong>${htmlEsc(r.monthLabel)}</strong> · ${htmlEsc(r.description)} · ${fmt(r.budget)}${r.possibleActual>0?` <span style="color:var(--text-muted)">(aynı ayda eşleşmemiş gider: ${fmt(r.possibleActual)})</span>`:''}</li>`).join('');
   const more=rows.length>8?`<div style="margin-top:4px;color:var(--text-muted)">+${rows.length-8} kayıt daha var.</div>`:'';
-  return `<div id="dash-variable-overdue-alert" class="fx-rate-alert warn"><strong>⚠️ Önceki aylardan kapanmamış değişken tahmin var: ${fmt(total)}</strong><div style="margin-top:6px">Gerçek fatura gider olarak girildiyse günlük kayıttaki gideri düzenleyip <strong>Tahmini fatura eşleştirme</strong> alanından ilgili tahminle ilişkilendir. Gider henüz girilmediyse fatura geldiğinde gider kaydı olarak girip eşleştir.</div><ul style="margin:8px 0 0 18px;padding:0">${detail}</ul>${more}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn btn-sm" onclick="showPage('daily',findNavButton('daily'))">Günlük Kayıt'a Git</button><button class="btn btn-sm" onclick="showPage('fixed',findNavButton('fixed'))">Sabit Giderlere Git</button></div></div>`;
+  return `<div id="dash-variable-overdue-alert" class="fx-rate-alert warn"><strong>⚠️ Önceki aylardan kapanmamış tahmini gider/ödeme var: ${fmt(total)}</strong><div style="margin-top:6px">Gerçek ödeme gider olarak girildiyse günlük kayıttaki gideri düzenleyip <strong>Tahmini ödeme/fatura eşleştirme</strong> alanından ilgili tahminle ilişkilendir. Gider henüz girilmediyse ödeme günü geldiğinde gider kaydı olarak girip eşleştir.</div><ul style="margin:8px 0 0 18px;padding:0">${detail}</ul>${more}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn btn-sm" onclick="showPage('daily',findNavButton('daily'))">Günlük Kayıt'a Git</button><button class="btn btn-sm" onclick="showPage('fixed',findNavButton('fixed'))">Sabit Giderlere Git</button></div></div>`;
 }
 function updateFixedBudgetHelp(){
   const type=(document.getElementById('fix-type')||{}).value||'expense';
   const el=document.getElementById('fix-budget-help');if(!el)return;
   let bt=(document.getElementById('fix-budget-type')||{}).value||'exact';
-  if(type==='income'&&bt==='variable')bt='exact';
+  if(type==='income'&&(bt==='variable'||bt==='oneoff'))bt='exact';
   el.innerHTML='<strong>'+FIXED_BUDGET_LABELS[bt]+':</strong> '+FIXED_BUDGET_HINTS[bt];
 }
 function buildFixedLinkOptionsForDate(dateValue,currentId){
   const d=dateValue?new Date(dateValue+'T00:00:00'):new Date();
-  const opts=['<option value="">Tahmini fatura ile eşleştirme yok</option>'];
+  const opts=['<option value="">Tahmini ödeme/fatura ile eşleştirme yok</option>'];
   (data.fixed||[]).forEach(f=>{
-    if(f.fixedType==='income'||fixedBudgetType(f)!=='variable')return;
+    if(!isEstimateClosableExpense(f))return;
     const isCurrent=String(f.id)===String(currentId||'');
     if(!isCurrent && !isFixedActiveInMonth(f,d))return;
     const st=getVariableEstimateStatusForFixedMonth(f,d);
     const status=st.isClosed?'kapandı':'bekliyor';
-    const label=`${f.description||'Tahmini fatura'} · ${fmt(st.budget)}/ay · gerçekleşen ${fmt(st.actual)} · ${status}`;
+    const kind=fixedBudgetType(f)==='oneoff'?'tek seferlik':'aylık';
+    const label=`${f.description||'Tahmini gider'} · ${fmt(st.budget)} · ${kind} · gerçekleşen ${fmt(st.actual)} · ${status}`;
     opts.push(`<option value="${String(f.id)}"${isCurrent?' selected':''}>${label}</option>`);
   });
   return opts.join('');
@@ -1912,7 +1922,7 @@ function renderDashboard(){
     <div class="metric"><div class="metric-label">Gider Kayıt Değeri</div><div class="metric-value negative">${fmt(totalExp)}</div><div class="metric-sub">${expenses.length} gerçek gider işlemi</div></div>
     <div class="metric"><div class="metric-label">Kesin Sabit Net</div><div class="metric-value" style="color:var(--fixed)">${fmt(fixedPeriod)}</div><div class="metric-sub">Kira/kredi gibi kesin kalemler</div></div>
     <div class="metric"><div class="metric-label">Dönem Net Değerleme</div><div class="metric-value ${net>=0?'positive':'negative'}">${fmt(net)}</div><div class="metric-sub">Gelir kayıt değeri - gerçek/sabit gider</div></div>
-    <div class="metric"><div class="metric-label">Bekleyen Tahmini Fatura</div><div class="metric-value" style="color:#BF6A00">${fmt(variableOpen)}</div><div class="metric-sub">Eşleşmemiş değişken tahminler</div></div>
+    <div class="metric"><div class="metric-label">Bekleyen Tahmini Gider</div><div class="metric-value" style="color:#BF6A00">${fmt(variableOpen)}</div><div class="metric-sub">Eşleşmemiş değişken tahminler</div></div>
     <div class="metric"><div class="metric-label">Tahmini Portföy Değeri</div><div class="metric-value ${projectedPortfolio>=0?'positive':'negative'}">${fmtTL(projectedPortfolio)}</div><div class="metric-sub">Seçili dönem sonu portföy - bekleyen tahmin</div></div>
     <div class="metric"><div class="metric-label">Kâr Marjı</div><div class="metric-value neutral">%${marginPct}</div><div class="metric-sub">${parseFloat(marginPct)>20?'✓ Sağlıklı':parseFloat(marginPct)>0?'⚠ Düşük':'✗ Zarar'}</div></div>`;
 
@@ -1933,7 +1943,7 @@ function renderDashCharts(inc,exp,fixed,net,variableOpen){
   destroyChart('c-income-expense');
   charts['c-income-expense']=new Chart(document.getElementById('c-income-expense'),{type:'bar',data:{labels:['Gelir','Değ. Gider','Kesin Sabit','Gerçek Net','Bekleyen Tahmin'],datasets:[{data:[Math.round(inc),Math.round(exp),Math.round(fixed),Math.round(net),Math.round(variableOpen||0)],backgroundColor:['#2E7D52','#C0392B','#8B4513',net>=0?'#1565A0':'#C0392B','#BF6A00'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>'₺'+Math.round(v).toLocaleString('tr-TR'),color:tc,font:{size:11}},grid:{color:gc}},x:{ticks:{color:tc,font:{size:12}},grid:{display:false}}}}});
   destroyChart('c-expense-breakdown');
-  const cats={};data.expense.forEach(r=>{cats[r.category]=(cats[r.category]||0)+amountTL(r);});if(fixed>0)cats['Kesin Sabit Giderler']=(cats['Kesin Sabit Giderler']||0)+fixed;if((variableOpen||0)>0)cats['Bekleyen Tahmini Faturalar']=(cats['Bekleyen Tahmini Faturalar']||0)+(variableOpen||0);
+  const cats={};data.expense.forEach(r=>{cats[r.category]=(cats[r.category]||0)+amountTL(r);});if(fixed>0)cats['Kesin Sabit Giderler']=(cats['Kesin Sabit Giderler']||0)+fixed;if((variableOpen||0)>0)cats['Bekleyen Tahmini Giderlar']=(cats['Bekleyen Tahmini Giderlar']||0)+(variableOpen||0);
   const catKeys=Object.keys(cats);const catVals=catKeys.map(k=>Math.round(cats[k]));
   const bgC=['#C0392B','#8B4513','#1565A0','#2E7D52','#6A1B9A','#BF6A00','#37474F','#1B5E20','#880E4F','#004D40'];
   charts['c-expense-breakdown']=new Chart(document.getElementById('c-expense-breakdown'),{type:'doughnut',data:{labels:catKeys,datasets:[{data:catVals,backgroundColor:bgC.slice(0,catKeys.length),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11},color:tc,boxWidth:10,padding:8}}}}});
@@ -2151,7 +2161,7 @@ function renderInsights(inc,expAll,fixed,net,marginPct,prevInc,incChange,variabl
   if(incChange!==null)insights.push({icon:parseFloat(incChange)>=0?'📈':'📉',text:`Önceki döneme göre gelir değişimi: <strong>${parseFloat(incChange)>=0?'+':''}${incChange}%</strong>`});
   if(parseFloat(fixedRatio)>60)insights.push({icon:'⚠️',text:`Sabit giderler gelirinizin <strong>%${fixedRatio}</strong>'ini oluşturuyor. Bu oran yüksek.`});
   else if(inc>0)insights.push({icon:'ℹ️',text:`Sabit giderler gelirinizin <strong>%${fixedRatio}</strong>'ini oluşturuyor.`});
-  if((variableOpen||0)>0)insights.push({icon:'🧾',text:`Bu dönemde henüz kapanmamış <strong>${fmt(variableOpen)}</strong> tutarında değişken tahmini fatura var. Gerçek gider eşleştirildiğinde o ayın tahmini faturası hesaplardan otomatik kaldırılır.`});
+  if((variableOpen||0)>0)insights.push({icon:'🧾',text:`Bu dönemde henüz kapanmamış <strong>${fmt(variableOpen)}</strong> tutarında bekleyen tahmini gider/ödeme var. Gerçek gider eşleştirildiğinde o ayın tahmini gideri hesaplardan otomatik kaldırılır.`});
   if(data.fixed.length===0)insights.push({icon:'💡',text:`Henüz sabit gider girilmemiş. <strong>Sabit Giderler</strong> sekmesinden ekleyebilirsiniz.`});
   if(inc>0&&data.forecast.length>0){const now=new Date();const mkey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;const fc=getForecastTotals(mkey);if(fc.count>0){const diff=inc-fc.income;insights.push({icon:diff>=0?'🎯':'📊',text:`Bu ay tahmini gelire kıyasla: <strong>${diff>=0?'+':''}${fmt(diff)}</strong>`});}}
   el.innerHTML=insights.map(i=>`<div class="insight"><span class="insight-icon">${i.icon}</span><span>${i.text}</span></div>`).join('');
@@ -2205,9 +2215,9 @@ function renderHistory(){
     if(canFullEdit()){
       actions=`<button class="btn btn-sm btn-edit" onclick="editRecord('${r._type==='income'?'income':'expense'}','${r.id}')" title="Düzenle">✏️</button> <button class="btn btn-sm btn-del" onclick="deleteRecord('${r._type==='income'?'income':'expense'}','${r.id}')" title="Sil">🗑</button>`;
     }else if(isAccounting()&&r._type==='expense'){
-      actions=`<button class="btn btn-sm btn-edit" onclick="linkExpenseRecord('${r.id}')" title="Tahmini fatura ile ilişkilendir">🔗 İlişkilendir</button>`;
+      actions=`<button class="btn btn-sm btn-edit" onclick="linkExpenseRecord('${r.id}')" title="Tahmini ödeme/fatura ile ilişkilendir">🔗 İlişkilendir</button>`;
     }
-    const linked=r.fixedLinkName?`<div style="font-size:11px;color:#BF6A00;margin-top:3px">↳ Tahmini fatura: ${r.fixedLinkName}</div>`:'';
+    const linked=r.fixedLinkName?`<div style="font-size:11px;color:#BF6A00;margin-top:3px">↳ Tahmini ödeme/fatura: ${r.fixedLinkName}</div>`:'';
     return `<tr><td>${r.date}</td><td><span class="badge badge-${r._type}">${r._type==='income'?'Gelir':'Gider'}</span></td><td>${r.category}</td><td>${r.description}${linked}</td><td style="font-weight:600;color:${r._type==='income'?'var(--income)':'var(--expense)'}">${fmtItem(r)}</td><td style="white-space:nowrap">${actions}</td></tr>`;
   }).join('');
 }
@@ -2220,14 +2230,16 @@ function addFixed(){
   const amt=parseFloat(document.getElementById('fix-amount').value);
   const cat=document.getElementById('fix-cat').value;
   const type=document.getElementById('fix-type').value;
-  const period=document.getElementById('fix-period').value;
-  const budgetType=document.getElementById('fix-budget-type').value;
+  let period=document.getElementById('fix-period').value;
+  let budgetType=document.getElementById('fix-budget-type').value;
   const start=document.getElementById('fix-start').value;
   const end=document.getElementById('fix-end').value;
   if(!desc||!amt||amt<=0){alert('Lütfen açıklama ve tutar girin.');return;}
   if(!validateMoneyInput('fix'))return;
   if(!start){alert('Lütfen başlangıç tarihi girin.');return;}
-  data.fixed.push(withMoneyMeta({id:Date.now(),description:desc,amount:amt,category:cat,fixedType:type,period,budgetType:type==='income'&&budgetType==='variable'?'exact':budgetType,startDate:start,endDate:end||null},'fix'));
+  if(type==='income'&&(budgetType==='variable'||budgetType==='oneoff'))budgetType='exact';
+  if(budgetType==='oneoff'){period='oneoff';}
+  data.fixed.push(withMoneyMeta({id:Date.now(),description:desc,amount:amt,category:cat,fixedType:type,period,budgetType,startDate:start,endDate:budgetType==='oneoff'?null:(end||null)},'fix'));
   saveData(data);populateFixedLinkSelect();renderFixed();
   document.getElementById('fix-desc').value='';
   document.getElementById('fix-amount').value='';
@@ -2250,13 +2262,15 @@ function renderFixed(){
     const pm=PERIOD_MONTHS[period]||1;
     const monthlyEq=Math.round(amountTL(f)/pm);
     const bType=fixedBudgetType(f);
-    const varStatus=(!isIncome&&bType==='variable')?getVariableEstimateStatusForFixedMonth(f,new Date(now.getFullYear(),now.getMonth(),1)):null;
+    const varStatus=(!isIncome&&(bType==='variable'||bType==='oneoff'))?getVariableEstimateStatusForFixedMonth(f,new Date(now.getFullYear(),now.getMonth(),1)):null;
     const linkedActual=varStatus?varStatus.actual:0;
     const openEstimate=varStatus?varStatus.open:0;
     const budgetBadge=bType==='exact'
       ?`<span class="badge" style="background:rgba(30,138,76,0.10);color:var(--income)">Kesin</span>`
       :bType==='variable'
       ?`<span class="badge" style="background:rgba(191,106,0,0.12);color:#BF6A00">Değişken</span><br><span style="font-size:11px;color:var(--text-hint)">Açık: ${fmt(openEstimate)}</span>`
+      :bType==='oneoff'
+      ?`<span class="badge" style="background:rgba(191,106,0,0.12);color:#BF6A00">Tek seferlik</span><br><span style="font-size:11px;color:var(--text-hint)">Açık: ${fmt(openEstimate)}</span>`
       :`<span class="badge" style="background:rgba(21,101,160,0.10);color:var(--forecast)">Bilgi</span>`;
     const isExpired=f.endDate&&f.endDate<today;
     const isFuture=f.startDate&&f.startDate>today;
@@ -2271,7 +2285,7 @@ function renderFixed(){
       <td>${budgetBadge}</td>
       <td>${f.category}</td>
       <td style="font-weight:600;color:${isIncome?'var(--income)':'var(--expense)'}">${fmtItem(f)}</td>
-      <td style="font-size:12px">${PERIOD_LABELS[period]||period}<br><span style="color:var(--text-hint);font-size:11px">≈₺${monthlyEq.toLocaleString('tr-TR')}/ay</span></td>
+      <td style="font-size:12px">${PERIOD_LABELS[period]||period}${bType==='oneoff'?'':`<br><span style="color:var(--text-hint);font-size:11px">≈₺${monthlyEq.toLocaleString('tr-TR')}/ay</span>`}</td>
       <td style="font-size:12px">${f.startDate||'—'}</td>
       <td style="font-size:12px">${f.endDate||'Süresiz'}</td>
       <td>${statusBadge}</td>
@@ -2284,7 +2298,7 @@ function renderFixed(){
   const nowMonth=new Date(now.getFullYear(),now.getMonth(),1);
   const b=getFixedBreakdownForMonth(nowMonth);
   document.getElementById('fixed-total').innerHTML=
-    `Bu ay aktif → <span style="color:var(--expense)">Kesin Gider: ${fmt(b.exactExpense)}/ay</span> &nbsp;|&nbsp; <span style="color:var(--income)">Sabit Gelir: ${fmt(b.exactIncome)}/ay</span> &nbsp;|&nbsp; <span style="color:#BF6A00">Bekleyen Tahmini Fatura: ${fmt(b.variableOpen)}</span> &nbsp;|&nbsp; Gerçek Net Sabit: <span style="font-weight:700;color:${b.exactIncome-b.exactExpense>=0?'var(--income)':'var(--expense)'}">${fmt(b.exactIncome-b.exactExpense)}/ay</span>`;
+    `Bu ay aktif → <span style="color:var(--expense)">Kesin Gider: ${fmt(b.exactExpense)}/ay</span> &nbsp;|&nbsp; <span style="color:var(--income)">Sabit Gelir: ${fmt(b.exactIncome)}/ay</span> &nbsp;|&nbsp; <span style="color:#BF6A00">Bekleyen Tahmini Gider: ${fmt(b.variableOpen)}</span> &nbsp;|&nbsp; Gerçek Net Sabit: <span style="font-weight:700;color:${b.exactIncome-b.exactExpense>=0?'var(--income)':'var(--expense)'}">${fmt(b.exactIncome-b.exactExpense)}/ay</span>`;
 }
 
 /* ──────── FORECAST ──────── */
@@ -2687,15 +2701,20 @@ function saveFixed(){
   const amt=parseFloat(document.getElementById('mfix-amount').value);
   const cat=document.getElementById('mfix-cat').value;
   const type=document.getElementById('mfix-type').value;
-  const period=document.getElementById('mfix-period').value;
-  const budgetType=document.getElementById('mfix-budget-type').value;
+  let period=document.getElementById('mfix-period').value;
+  let budgetType=document.getElementById('mfix-budget-type').value;
   const start=document.getElementById('mfix-start').value;
   const end=document.getElementById('mfix-end').value;
   if(!desc||!amt||amt<=0){alert('Lütfen açıklama ve tutar girin.');return;}
   if(!validateMoneyInput('fix'))return;
   if(!start){alert('Lütfen başlangıç tarihi girin.');return;}
   const idx=data.fixed.findIndex(r=>String(r.id)===String(fixedId));
-  if(idx>=0)data.fixed[idx]={id:fixedId,description:desc,amount:amt,category:cat,fixedType:type,period,budgetType:type==='income'&&budgetType==='variable'?'exact':budgetType,startDate:start,endDate:end||null};
+  if(type==='income'&&(budgetType==='variable'||budgetType==='oneoff'))budgetType='exact';
+  if(budgetType==='oneoff'){period='oneoff';}
+  if(idx>=0){
+    const existing=data.fixed[idx]||{};
+    data.fixed[idx]=Object.assign({},existing,{id:fixedId,description:desc,amount:amt,category:cat,fixedType:type,period,budgetType,startDate:start,endDate:budgetType==='oneoff'?null:(end||null)});
+  }
   saveData(data);closeModal('modal-fixed');renderFixed();
 }
 
@@ -2728,6 +2747,7 @@ function isFixedActiveInRange(f,from,to){
   return start<=to && end>=from;
 }
 function fixedMonthlyEquivalent(f){
+  if(isOneOffFutureExpense(f))return amountTL(f);
   const pm=PERIOD_MONTHS[f.period||'monthly']||1;
   return amountTL(f)/pm;
 }
@@ -2819,7 +2839,7 @@ function buildExportReport(){
   fixedItems.forEach(f=>{
     const bt=fixedBudgetType(f);
     if(bt==='memo')return;
-    const label=bt==='variable'?'Bekleyen Tahmini Fatura: ':'Sabit: ';
+    const label=bt==='variable'?'Bekleyen Tahmini Gider: ':'Sabit: ';
     const cat=label+(f.category||'Diğer');
     let amount=0;
     months.forEach(m=>{
@@ -2929,7 +2949,7 @@ function exportCSV(){
   const rows=[];
   let sıra=1;
 
-  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.50'de
+  // CSV bir tasarım dosyası değil, veri dosyasıdır. Bu nedenle V: 1.0.51'de
   // tek başlıklı, filtrelenebilir ve taşmayan temiz veri tablosu üretiyoruz.
   rows.push(['Sıra','Bölüm','Dönem/Tarih','Tür','Kategori','Açıklama','Tutar (TL)','Gelir (TL)','Gider (TL)','Net (TL)','Kümülatif Kasa (TL)','Oran / Seviye','Adet','Not']);
 
@@ -2941,7 +2961,7 @@ function exportCSV(){
   addRow('Yönetim Özeti','','Toplam Portföy','','Gerçek TL kasa + EUR/USD güncel satış kuru','',report.totals.actualPortfolio,'','','',report.totals.actualPortfolio,'','',report.totals.actualPortfolio>=0?'Pozitif':'Negatif');
   addRow('Yönetim Özeti','','Tahmini Portföy','','Bekleyen değişken tahminler sonrası','',report.totals.projectedPortfolio,'','','',report.totals.projectedPortfolio,'','',report.totals.projectedPortfolio>=0?'Pozitif':'Negatif');
   addRow('Yönetim Özeti','','Dönem Net','','Gelir kayıt değeri - gerçek/kesin gider','','','',report.totals.reportPeriodNet,'',csvPercent(report.totals.margin),'','');
-  addRow('Yönetim Özeti','','Bekleyen Tahmini Fatura','','Kapanmamış değişken fatura tahminleri','',report.totals.variableEstimateOpen,'',report.totals.variableEstimateOpen,'','','','');
+  addRow('Yönetim Özeti','','Bekleyen Tahmini Gider','','Kapanmamış değişken fatura tahminleri','',report.totals.variableEstimateOpen,'',report.totals.variableEstimateOpen,'','','','');
   addRow('Kayıt Özeti','','Gelir Kaydı','','Günlük gelir kayıtları','','','','','','',`${report.totals.incomeCount} adet`,'');
   addRow('Kayıt Özeti','','Gider Kaydı','','Günlük gider kayıtları','','','','','','',`${report.totals.expenseCount} adet`,'');
   addRow('Kayıt Özeti','','Sabit Kalem','','Sabit gelir/gider kalemleri','','','','','','',`${report.totals.fixedCount} adet`,'');
@@ -3063,7 +3083,7 @@ function exportExcel(){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.50 — Stil destekli Excel çıktısı.
+  // V: 1.0.51 — Stil destekli Excel çıktısı.
   // xlsx-js-style ile profesyonel başlık, renk, kenarlık, hizalama ve para formatı uygulanır.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
@@ -3339,7 +3359,7 @@ function buildStandaloneHtmlReport(report){
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
     <div class="section detail-grid"><div><div class="section-head"><h2>Gelir Kayıtları</h2><div class="section-note">${report.totals.incomeCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeRows,'<tr><td colspan="4" class="empty">Gelir kaydı yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kayıtları</h2><div class="section-note">${report.totals.expenseCount} adet</div></div><div class="table-card wide-table"><table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseRows,'<tr><td colspan="4" class="empty">Gider kaydı yok</td></tr>')}</tbody></table></div></div></div>
     ${optionalDetailSections}
-    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.50</span></div>
+    <div class="footer"><span>Bu rapor Görsel HTML/PDF sunum çıktısı olarak hazırlanmıştır. Resmi muhasebe işlemleri için XLSX çıktısını kullanın.</span><span>Firma Finansal Yönetim · V: 1.0.51</span></div>
   </div></body></html>`;
 }
 /* ── Geliştirilmiş XLSX builder: geçerli Office Open XML + stiller + filtre/sütun genişlikleri ── */
@@ -3424,7 +3444,7 @@ function downloadBlob(data,name,mime){
 
 
 
-/* ──────── EXCEL RAPOR TASARIMI V: 1.0.50 ────────
+/* ──────── EXCEL RAPOR TASARIMI V: 1.0.51 ────────
    Daha ferah yönetim özeti, KPI kartları, okunabilir tablo alanları. */
 function buildWorkbookSheets(report,flags){
   const sheets=[];
@@ -3503,7 +3523,7 @@ function buildWorkbookSheets(report,flags){
 }
 
 function exportExcelWithSheetJS(sheets,filename){
-  // V: 1.0.50 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
+  // V: 1.0.51 — Ferah KPI kartlı ve tablo formatlı Excel çıktısı.
   if(!window.XLSX){
     throw new Error('Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.');
   }
@@ -3699,7 +3719,7 @@ async function initApp(){
   initCurrencyControls();
   renderDashboard();
 
-  // V: 1.0.50
+  // V: 1.0.51
   // Oturum kontrolü TCMB kur çekme işleminden önce yapılır.
   // Böylece sayfa yenilendiğinde kur servisi beklenirken kullanıcı gereksiz yere giriş ekranına düşmez.
   await initSupabaseAuth();

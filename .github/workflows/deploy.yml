@@ -35,7 +35,9 @@ jobs:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASS: ${{ secrets.FTP_PASS }}
-          FTP_DIR: ${{ vars.FTP_DIR || '/domains/marmarateknikmakine.com.tr/public_html/finans-yonetim' }}
+          # FTP hesabı DirectAdmin'de doğrudan finans-yonetim klasörüne kilitlendiği
+          # için giriş yapılan klasör zaten hedef klasördür.
+          FTP_DIR: ${{ vars.FTP_DIR || '.' }}
           TLS_VERIFY: ${{ vars.FTP_TLS_VERIFY || 'no' }}
         run: |
           set -euo pipefail

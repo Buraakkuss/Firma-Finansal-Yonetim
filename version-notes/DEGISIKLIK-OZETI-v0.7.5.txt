@@ -1,0 +1,13 @@
+NakitPilot v0.7.5 — Transfer Düzenleme
+
+Yapılanlar
+- Transfer Geçmişi tablosuna Düzenle butonu eklendi.
+- Düzenlenen transfer form alanlarına geri yüklenir.
+- Transfer tarihi, kaynak ve hedef hesap, tutarlar, kur, masraf, vergi/komisyon, açıklama, referans ve kâr/zarar değiştirilebilir.
+- Güncelleme sırasında eski transfer ve eski banka masrafı etkisi kaldırılıp yeni değerler uygulanır.
+- Böylece bakiyeler iki kez etkilenmez.
+- Önceki transfer bilgisi ters kayıt/audit geçmişine eklenir.
+- İptal edilmiş transferler düzenlenemez.
+
+Supabase
+- Yeni SQL gerekmez.

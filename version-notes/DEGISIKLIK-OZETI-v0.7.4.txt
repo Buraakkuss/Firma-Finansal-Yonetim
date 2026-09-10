@@ -1,0 +1,14 @@
+NakitPilot v0.7.4 — Banka detay penceresi ve menü düzeltmesi
+
+Yapılanlar
+- Banka kartına tıklanınca sayfa aşağı kaymak yerine banka detay penceresi açılır.
+- Detay penceresinde banka hesapları, kredi kartları ve KMH kayıtları ayrı bölümlerde gösterilir.
+- Hesap bakiyesi, kullanılabilir tutar, bloke, IBAN, vade ve durum bilgileri gösterilir.
+- Kredi kartı limit, borç, kullanılabilir, provizyon ve kesim bilgileri gösterilir.
+- KMH limit, borç, kullanılabilir, faiz ve tarih bilgileri gösterilir.
+- Yetkili kullanıcılar detay penceresinden ilgili kaydın düzenleme ekranına geçebilir.
+- Üstteki ham/gri görünen bölüm butonları tasarıma uygun ana menü haline getirildi.
+- Aynı işi tekrarlayan ikinci hızlı işlem satırı kaldırıldı.
+
+Supabase
+- Yeni SQL gerekmez.

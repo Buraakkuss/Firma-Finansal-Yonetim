@@ -1,0 +1,5 @@
+NakitPilot v0.8.1 Supabase Notu
+
+Bu sürüm yalnızca grafik arayüzü, görsel katmanlar ve mevcut verilerin sunum biçimini değiştirir.
+Veri tabanı tablosu, RPC, trigger, RLS veya migration değişikliği yoktur.
+Supabase SQL Editor üzerinde herhangi bir kod çalıştırmanız gerekmez.

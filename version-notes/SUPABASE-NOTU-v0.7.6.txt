@@ -1,0 +1,1 @@
+Bu sürüm yalnızca arayüz iyileştirmesi içerir. Supabase tarafında işlem gerekmez.

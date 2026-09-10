@@ -1,0 +1,592 @@
+Mevcut finansal yönetim uygulamasını, banka hesapları ve kredi kartları merkeze alınacak şekilde kapsamlı biçimde yeniden düzenlemeni istiyorum.
+
+Bu çalışma yalnızca birkaç yeni alan veya buton eklemekten ibaret olmamalıdır. Uygulamanın mevcut gelir, gider, tahsilat, ödeme, kasa, raporlama ve gelecek dönem planlama sistemleri; banka hesapları ve kredi kartlarıyla tam entegre çalışacak şekilde baştan sona dikkatlice revize edilmelidir.
+
+## 1. Banka yönetimi
+
+Sisteme birden fazla banka ekleyebilmeliyim.
+
+Her banka için aşağıdaki bilgileri yönetebilmeliyim:
+
+* Banka adı
+* Şube bilgisi
+* Hesap sahibi
+* Hesap açıklaması
+* IBAN veya hesap numarası
+* Aktif/pasif durumu
+* Banka logosu veya banka simgesi
+* İsteğe bağlı açıklama ve notlar
+
+Her bankanın altında birden fazla hesap bulunabilmelidir.
+
+Örnek hesap türleri:
+
+* TL vadesiz hesap
+* EUR vadesiz hesap
+* USD vadesiz hesap
+* Gram altın hesabı
+* Vadeli mevduat hesabı
+* Fon hesabı
+* Yatırım hesabı
+* KMH hesabı
+* Diğer hesap türleri
+
+Her hesap birbirinden bağımsız takip edilmelidir.
+
+Her hesap için aşağıdaki bilgiler bulunmalıdır:
+
+* Hesap adı
+* Hesap türü
+* Para birimi veya varlık türü
+* Güncel bakiye
+* Kullanılabilir bakiye
+* Bloke tutar
+* Hesap açılış tarihi
+* Vade tarihi
+* Faiz veya getiri oranı
+* Açıklama
+* Aktif/pasif durumu
+
+TL, EUR, USD ve gram altın bakiyeleri kesinlikle birbirinden ayrı tutulmalıdır. Kullanıcı hangi bankanın hangi hesabında ne kadar para veya varlık bulunduğunu açıkça görebilmelidir.
+
+## 2. KMH yönetimi
+
+Her banka için bir veya birden fazla Kredili Mevduat Hesabı tanımlanabilmelidir.
+
+KMH için aşağıdaki alanlar bulunmalıdır:
+
+* Toplam KMH limiti
+* Kullanılan KMH tutarı
+* Güncel KMH borcu
+* Kullanılabilir KMH limiti
+* Faiz oranı
+* Son ödeme tarihi
+* Hesap kesim veya faiz tahakkuk tarihi
+* Bağlı olduğu banka hesabı
+* Açıklama
+
+Kullanılabilir limit sistem tarafından otomatik hesaplanmalıdır.
+
+KMH kullanımı normal banka bakiyesiyle karıştırılmamalıdır. Hesap bakiyesi eksiye düştüğünde bunun KMH kullanımından kaynaklandığı açıkça gösterilmelidir.
+
+KMH borcu ödendiğinde ilgili banka hesabı, borç bakiyesi ve kullanılabilir limit otomatik güncellenmelidir.
+
+## 3. Kredi kartı yönetimi
+
+Kredi kartları, ait oldukları bankaların altında yönetilmelidir.
+
+Her banka için birden fazla kredi kartı ekleyebilmeliyim.
+
+Kredi kartı alanları:
+
+* Kart adı
+* Banka adı
+* Kartın son dört hanesi
+* Toplam limit
+* Güncel dönem borcu
+* Bekleyen provizyon
+* Taksitli işlem toplamı
+* Kullanılabilir limit
+* Hesap kesim günü
+* Son ödeme günü
+* Asgari ödeme tutarı
+* Önceki dönem borcu
+* Kartın bağlı olduğu ödeme hesabı
+* Aktif/pasif durumu
+* Açıklama
+
+Kullanılabilir kart limiti otomatik hesaplanmalıdır.
+
+Kredi kartıyla yapılan giderler sisteme işlendiğinde:
+
+* İlgili kredi kartının borcu artmalı
+* Kullanılabilir kart limiti azalmalı
+* İşlem kredi kartı hareketlerinde görünmeli
+* Gider kaydıyla kredi kartı hareketi arasında bağlantı kurulmalı
+* Taksitli işlemse taksit planı oluşturulmalı
+* Taksitler ilgili aylara otomatik dağıtılmalı
+
+Kredi kartı borcu ödendiğinde:
+
+* Ödemenin hangi banka hesabından yapıldığı seçilmeli
+* Seçilen banka hesabının bakiyesi azalmalı
+* Kredi kartı borcu azalmalı
+* Kullanılabilir limit artmalı
+* Çift taraflı bağlantılı hareket kaydı oluşmalı
+
+Kredi kartına para yatırma, fazla ödeme, borç iadesi, işlem iptali ve harcama iadesi gibi durumlar da desteklenmelidir.
+
+## 4. Hesaplar arası transfer ve havale
+
+Kendi banka hesaplarım arasında para transferi yapabilmeliyim.
+
+Transfer ekranında aşağıdaki alanlar bulunmalıdır:
+
+* Paranın çıktığı hesap
+* Paranın girdiği hesap
+* İşlem tarihi
+* Gönderilen tutar
+* Gönderilen para birimi
+* Alınan tutar
+* Alınan para birimi
+* Kullanılan kur
+* Banka masrafı
+* Vergi veya komisyon
+* Açıklama
+* Referans numarası
+
+Aynı para birimindeki hesaplar arasında doğrudan transfer yapılabilmelidir.
+
+Farklı para birimleri arasında transfer yapılıyorsa döviz dönüşümü desteklenmelidir.
+
+Örnek:
+
+* TL hesabından EUR hesabına transfer
+* USD hesabından TL hesabına transfer
+* Gram altın hesabından TL hesabına satış
+* TL hesabından gram altın hesabına alım
+
+Bu işlemlerde kullanılan kur, alış/satış fiyatı, komisyon ve oluşan kâr veya zarar kayıt altına alınmalıdır.
+
+Transfer işlemleri gelir veya gider olarak yanlış şekilde raporlanmamalıdır. Bunlar hesaplar arası varlık transferi olarak değerlendirilmelidir.
+
+Ancak transfer sırasında oluşan banka masrafı veya komisyon gerçek gider olarak kaydedilmelidir.
+
+## 5. Gelir ve gider kayıtlarıyla banka entegrasyonu
+
+Tamamlanmış gelir ve gider kayıtlarında ödeme/tahsilat yöntemi seçilmelidir.
+
+Ödeme veya tahsilat yöntemleri:
+
+* Banka hesabı
+* Kredi kartı
+* Nakit kasa
+* KMH
+* Birden fazla hesapla ödeme
+* Diğer
+
+Bir gelir kaydı oluşturulurken paranın hangi banka hesabına veya kasaya geldiği seçilmelidir.
+
+Gelir kaydı tamamlandığında seçilen hesabın bakiyesi otomatik artmalıdır.
+
+Bir gider kaydı oluşturulurken ödemenin hangi banka hesabından, kredi kartından, kasadan veya KMH hesabından yapıldığı seçilmelidir.
+
+Gider kaydı tamamlandığında:
+
+* Banka hesabından ödendiyse ilgili hesap bakiyesi azalmalı
+* Kredi kartıyla ödendiyse kart borcu artmalı
+* KMH ile ödendiyse KMH kullanılan tutarı ve borcu artmalı
+* Nakit ödendiyse ilgili kasa bakiyesi azalmalı
+
+Ödeme yöntemi seçilmeden tamamlanmış gelir veya gider kaydı oluşturulmamalıdır.
+
+Dövizli işlemlerde:
+
+* İşlem para birimi
+* Hesap para birimi
+* İşlem kuru
+* Hesaba yansıyan tutar
+* Kur farkı
+
+ayrı ayrı kaydedilmelidir.
+
+Mevcut TCMB kur sistemiyle uyumlu çalışmalıdır. Ancak banka tarafından uygulanan gerçek kur farklıysa işlem özelinde gerçek kur girilebilmelidir.
+
+## 6. Parçalı ödeme ve tahsilat
+
+Bir gelir veya gider kaydı birden fazla banka hesabı ya da ödeme yöntemiyle kapatılabilmelidir.
+
+Örnek:
+
+100.000 TL tutarındaki bir gider:
+
+* 40.000 TL banka hesabından
+* 35.000 TL kredi kartından
+* 25.000 TL KMH üzerinden
+
+ödenebilmelidir.
+
+Her ödeme parçası ayrı hareket olarak kaydedilmeli ancak aynı ana gelir veya gider kaydına bağlı olmalıdır.
+
+Kısmi ödeme ve kısmi tahsilat sistemi mevcut yapıyla tam uyumlu çalışmalıdır.
+
+Kalan bakiye otomatik hesaplanmalı ve açık kalem olarak takip edilmelidir.
+
+## 7. Fon, vadeli hesap ve yatırım işlemleri
+
+Bankaların altında fon, vadeli mevduat, yatırım ve benzeri varlık hesapları oluşturabilmeliyim.
+
+Desteklenmesi gereken işlemler:
+
+* Fon alımı
+* Fon satımı
+* Vadeli hesaba para aktarma
+* Vade bozma
+* Faiz geliri
+* Fon getirisi
+* Fon zararı
+* Kur farkı
+* Altın alımı
+* Altın satımı
+* Komisyon
+* Stopaj
+* Vergi
+* Değer artışı
+* Değer kaybı
+* Manuel değerleme düzeltmesi
+
+Her yatırım işlemi için aşağıdaki bilgiler tutulmalıdır:
+
+* İşlem türü
+* İşlem tarihi
+* Alım veya satım miktarı
+* Birim fiyat
+* Toplam tutar
+* Komisyon
+* Vergi
+* Net tutar
+* Bağlı banka hesabı
+* Güncel değer
+* Gerçekleşen kâr veya zarar
+* Gerçekleşmemiş kâr veya zarar
+* Açıklama
+
+Fon veya yatırım hesabına para aktarımı gider olarak sayılmamalıdır. Bu işlem varlıklar arası transfer olarak değerlendirilmelidir.
+
+Fon satışı sonucunda oluşan ana para gelir olarak şişirilmemeli, yalnızca gerçekleşen net getiri veya zarar doğru şekilde raporlanmalıdır.
+
+Vadeli hesaplarda:
+
+* Ana para
+* Başlangıç tarihi
+* Vade tarihi
+* Brüt faiz
+* Stopaj
+* Net faiz getirisi
+* Vade sonunda alınacak toplam tutar
+
+otomatik hesaplanmalıdır.
+
+## 8. Banka hareketleri
+
+Her banka hesabı, kredi kartı, KMH hesabı ve yatırım hesabı için ayrı bir hareket geçmişi olmalıdır.
+
+Hareketlerde aşağıdaki bilgiler görünmelidir:
+
+* Tarih
+* İşlem türü
+* Açıklama
+* Karşı hesap
+* Gelir/gider bağlantısı
+* Gelen tutar
+* Giden tutar
+* Para birimi
+* İşlem sonrası bakiye
+* İşlemi yapan kullanıcı
+* Oluşturulma tarihi
+* Düzenlenme tarihi
+* Referans numarası
+
+Hareketler filtrelenebilmelidir:
+
+* Bankaya göre
+* Hesaba göre
+* Para birimine göre
+* İşlem türüne göre
+* Tarih aralığına göre
+* Gelir/gider kategorisine göre
+* Kullanıcıya göre
+* Tutar aralığına göre
+
+Hareket kaydı sonradan düzenlendiğinde tüm bağlı bakiyeler ve raporlar yeniden doğru hesaplanmalıdır.
+
+Silme işlemleri doğrudan veri kaybı oluşturmamalıdır. Gerekirse iptal veya ters kayıt mantığı kullanılmalıdır.
+
+## 9. Dashboard tasarımı
+
+Ana sayfa sade, anlaşılır ve kullanıcı dostu şekilde yeniden tasarlanmalıdır.
+
+Dashboard üzerinde aşağıdaki özetler bulunmalıdır:
+
+* Toplam TL banka bakiyesi
+* Toplam EUR banka bakiyesi
+* Toplam USD banka bakiyesi
+* Toplam gram altın
+* Güncel kurla toplam portföy değeri
+* Toplam kredi kartı limiti
+* Toplam kredi kartı borcu
+* Kullanılabilir toplam kart limiti
+* Toplam KMH limiti
+* Toplam KMH borcu
+* Kullanılabilir toplam KMH limiti
+* Vadeli hesap toplamı
+* Fon ve yatırım hesaplarının güncel değeri
+* Gerçekleşmiş yatırım getirisi
+* Gerçekleşmemiş yatırım kârı veya zararı
+* Yaklaşan kredi kartı son ödeme tarihleri
+* Yaklaşan vadeler
+* Yaklaşan borçlar ve tahsilatlar
+
+Banka bazında kartlar oluşturulmalıdır.
+
+Her banka kartında:
+
+* Banka adı
+* Toplam TL bakiyesi
+* Toplam EUR bakiyesi
+* Toplam USD bakiyesi
+* Gram altın miktarı
+* Kredi kartı borcu
+* KMH borcu
+* Yatırım toplamı
+* Bankanın net varlık değeri
+
+görünmelidir.
+
+Banka kartına tıklandığında bankanın hesapları, kredi kartları, KMH bilgileri ve son hareketleri açılmalıdır.
+
+## 10. Net varlık hesabı
+
+Sistem şirketin veya firmanın gerçek net finansal varlığını doğru hesaplamalıdır.
+
+Net varlık hesabında:
+
+* Banka hesapları artı değer
+* Nakit kasalar artı değer
+* Altın hesapları artı değer
+* Fon ve yatırım hesapları güncel değer üzerinden artı değer
+* Vadeli hesaplar artı değer
+* Kredi kartı borçları eksi değer
+* KMH borçları eksi değer
+* Diğer banka borçları eksi değer
+
+olarak hesaplanmalıdır.
+
+Aynı para veya varlık farklı hesaplar arasında transfer edildiğinde toplam portföy değeri yapay olarak artmamalıdır.
+
+## 11. Raporlama
+
+Raporlar bölümü yeni banka sistemiyle tamamen entegre edilmelidir.
+
+Aşağıdaki raporlar oluşturulmalıdır:
+
+* Banka bazında bakiye raporu
+* Hesap bazında hareket raporu
+* Para birimi bazında varlık raporu
+* Kredi kartı borç raporu
+* Kredi kartı harcama raporu
+* KMH kullanım raporu
+* Banka masraf ve komisyon raporu
+* Fon ve yatırım performans raporu
+* Vadeli mevduat raporu
+* Kur farkı kâr/zarar raporu
+* Gelir ve giderlerin ödeme yöntemi dağılımı
+* Aylık banka giriş-çıkış raporu
+* Hesaplar arası transfer raporu
+* Net varlık gelişim raporu
+* Yaklaşan ödeme ve vade raporu
+
+Raporların CSV, XLSX ve HTML dışa aktarma sistemleriyle uyumlu çalışması sağlanmalıdır.
+
+Raporlarda hesaplar arası transferler gelir veya gider toplamlarını şişirmemelidir.
+
+## 12. Veri modeli ve teknik altyapı
+
+Bu geliştirme yalnızca arayüz seviyesinde yapılmamalıdır.
+
+Supabase veri tabanı yapısı dikkatlice yeniden tasarlanmalıdır.
+
+Gerekli tablolar oluşturulmalıdır. Örneğin:
+
+* banks
+* bank_accounts
+* bank_account_transactions
+* credit_cards
+* credit_card_transactions
+* credit_card_installments
+* overdraft_accounts
+* investment_accounts
+* investment_transactions
+* term_deposits
+* account_transfers
+* payment_allocations
+* financial_institutions
+
+Tablo isimleri ve yapılarını mevcut projeye en uygun şekilde sen belirleyebilirsin.
+
+Ancak aşağıdaki kurallara uyulmalıdır:
+
+* Firma bazlı veri ayrımı korunmalı
+* Kullanıcı yetkileri korunmalı
+* Tüm kayıtlarda firma kimliği bulunmalı
+* Tüm finansal hareketlerde oluşturan ve güncelleyen kullanıcı bilgisi tutulmalı
+* Veriler arasında yabancı anahtar bağlantıları kurulmalı
+* Aynı işlemin iki defa kaydedilmesi engellenmeli
+* Bakiyeler tutarlı olmalı
+* Transaction veya güvenli işlem mantığı kullanılmalı
+* Bir işlem yarıda kalırsa yalnızca bir hesabın bakiyesi değişmemeli
+* Mevcut kayıtlar kaybolmamalı
+* Gerekli veri tabanı migration dosyaları oluşturulmalı
+* Mevcut veriler yeni yapıya güvenli şekilde taşınmalı
+
+Bakiyelerin sadece arayüzde artırılıp azaltılması yerine, mümkün olduğunca hareket kayıtlarından doğrulanabilir ve yeniden hesaplanabilir bir finansal sistem kurulmalıdır.
+
+## 13. Kullanıcı yetkileri
+
+Mevcut kullanıcı ve firma yetki sistemi korunmalıdır.
+
+Banka ve kredi kartı bilgileri hassas veri olarak değerlendirilmelidir.
+
+Yetkilere göre aşağıdaki işlemler ayrı ayrı kontrol edilebilmelidir:
+
+* Bankaları görüntüleme
+* Banka ekleme
+* Banka düzenleme
+* Banka silme veya pasife alma
+* Hesap hareketlerini görüntüleme
+* Transfer yapma
+* Gelir/gider işlemi yapma
+* Kredi kartı işlemi yapma
+* KMH bilgilerini düzenleme
+* Yatırım işlemi yapma
+* Rapor indirme
+
+Muhasebe kullanıcısı yalnızca kendisine izin verilen firma ve işlemleri görebilmelidir.
+
+Yönetici kullanıcıları tüm finansal verileri görüntüleyebilmeli ancak mevcut yetki kurallarına göre düzenleme kısıtlamaları korunmalıdır.
+
+## 14. Kullanıcı deneyimi ve tasarım
+
+Tasarım sade, modern, profesyonel ve kolay kullanılabilir olmalıdır.
+
+Banka, hesap, kredi kartı, KMH ve yatırım işlemleri karmaşık tablolar içerisine sıkıştırılmamalıdır.
+
+Aşağıdaki kullanıcı deneyimi kurallarına uyulmalıdır:
+
+* İşlemler mümkün olduğunca az adımda tamamlanmalı
+* Kullanıcı hangi hesabın seçili olduğunu açıkça görmeli
+* Para birimleri renk ve simgelerle ayrılmalı
+* Gelen para yeşil
+* Giden para kırmızı
+* Transfer işlemleri mavi veya nötr renk
+* Kredi kartı borcu uyarı rengi
+* KMH borcu belirgin uyarı rengi
+* Vadesi yaklaşan işlemler görsel olarak belirtilmeli
+* Mobil, tablet ve masaüstünde sorunsuz çalışmalı
+* Butonlar ve metinler üst üste gelmemeli
+* Uzun hesap adları tasarımı bozmamalı
+* Formlarda açıklayıcı alan isimleri kullanılmalı
+* Kritik işlemlerden önce özet ve onay ekranı gösterilmeli
+* Hatalı işlem yapılmasını önleyen doğrulamalar eklenmeli
+* Boş durum ekranları anlaşılır olmalı
+* Yükleniyor, başarılı ve hata durumları açıkça gösterilmeli
+
+Banka ekleme, hesap ekleme, kredi kartı ekleme, transfer yapma ve yatırım işlemi oluşturma ekranları ayrı ve anlaşılır olmalıdır.
+
+## 15. Düzenleme, silme ve geri alma işlemleri
+
+Finansal kayıtların düzenlenmesi sırasında bağlı tüm kayıtlar dikkate alınmalıdır.
+
+Örneğin bir gider kaydında:
+
+* Tutar değişirse hesap bakiyesi düzeltilmeli
+* Ödeme hesabı değişirse eski hesap bakiyesi geri alınmalı ve yeni hesap güncellenmeli
+* Banka hesabından kredi kartına geçilirse hareket türü doğru şekilde dönüştürülmeli
+* Kayıt iptal edilirse bağlı hesap hareketi de ters kayıtla iptal edilmeli
+
+Silme ve düzenleme işlemlerinde finansal tutarsızlık oluşmamalıdır.
+
+## 16. Test senaryoları
+
+Geliştirme tamamlandıktan sonra sistemi baştan sona test et.
+
+En az aşağıdaki senaryoları kontrol et:
+
+1. Bir bankaya TL, EUR, USD ve gram altın hesabı ekleme
+2. Farklı bankalardaki TL hesapları arasında transfer
+3. TL hesabından EUR hesabına döviz dönüşümlü transfer
+4. Gelirin banka hesabına tahsil edilmesi
+5. Giderin banka hesabından ödenmesi
+6. Giderin kredi kartıyla ödenmesi
+7. Kredi kartı borcunun banka hesabından ödenmesi
+8. KMH kullanımı
+9. KMH borcu ödeme işlemi
+10. Kısmi ödeme ve kısmi tahsilat
+11. Bir giderin birden fazla ödeme yöntemiyle kapatılması
+12. Fon alımı
+13. Fon satışı ve kâr/zarar hesabı
+14. Vadeli hesap açılması ve vade kapanışı
+15. Gram altın alım ve satımı
+16. Banka masrafı ve komisyon kaydı
+17. Kredi kartı taksitli işlem
+18. Kredi kartı harcama iadesi
+19. İşlem düzenleme
+20. İşlem iptali
+21. Firma değiştirme
+22. Yetkisiz kullanıcının işlemlere erişememesi
+23. Mobil görünüm
+24. Raporların doğru toplam vermesi
+25. Hesaplar arası transferlerin gelir/gider raporlarını bozmaması
+26. Net varlık hesabının doğru çalışması
+
+Her senaryoda hesap bakiyelerini, borçları, limitleri, hareket kayıtlarını ve raporları kontrol et.
+
+## 17. Mevcut sistemi koruma
+
+Mevcut uygulamadaki aşağıdaki sistemler bozulmamalıdır:
+
+* Tamamlanmış Gelir/Gider Kayıtları
+* Gelecekteki Kesin Gelir/Giderler
+* Tahmini Gelir/Giderler
+* Kısmi ödeme ve tahsilat
+* Dövizli işlemler
+* TCMB kur sistemi
+* Raporlama
+* Kullanıcı rolleri
+* Firma yönetimi
+* Dashboard
+* CSV, XLSX ve HTML dışa aktarma
+* Mobil ve masaüstü kullanım
+* Mevcut Supabase bağlantısı
+
+Yeni banka ve kredi kartı sistemi bu modüllerin üzerine sonradan eklenmiş bağımsız bir alan gibi durmamalıdır. Uygulamanın tüm finansal işleyişinin doğal ve merkezî bir parçası olmalıdır.
+
+## 18. Çalışma yöntemi
+
+Bana sürekli soru sorma. Mevcut projeyi baştan sona incele, gerekli kararları kullanıcı dostu ve finansal açıdan doğru olacak şekilde kendin ver.
+
+Çalışmayı yarım bırakma.
+
+Sadece taslak ekran veya görsel oluşturma. Gerçekten çalışan sistemi geliştir.
+
+Gerekli işlemler:
+
+* Mevcut kodları incele
+* Veri tabanını incele
+* Yeni veri modelini oluştur
+* Migration dosyalarını hazırla
+* Mevcut verileri koru
+* Arayüzü yeniden düzenle
+* Tüm bağlantıları kur
+* Hesaplama sistemlerini geliştir
+* Yetkileri düzenle
+* Mobil uyumluluğu kontrol et
+* Tüm testleri yap
+* Hataları düzelt
+* Kullanılmayan eski kodları temizle
+* Konsol hatalarını gider
+* Son kullanıcı açısından sistemi kontrol et
+
+İşlem tamamlandığında bana yalnızca yapılan değişikliklerin kısa özetini, gerekli Supabase SQL/migration işlemlerini ve güncellenmiş proje dosyalarını ver.
+
+HTML dosyasının sohbet içerisinde görsel önizlemesini oluşturma. Yalnızca indirilebilir güncel dosyayı paylaş.
+
+Uygulama versiyonunu bir sonraki uygun versiyona yükselt.
+
+GitHub commit mesajı yalnızca yeni versiyon numarası şeklinde olmalıdır.
+
+Örnek:
+
+v1.0.40
+
+Commit mesajına versiyon numarası dışında hiçbir açıklama ekleme.

@@ -1,0 +1,4 @@
+NakitPilot v0.7.5 Supabase Notu
+
+Bu sürüm transfer düzenleme ve bakiye yeniden hesaplama mantığı içerir.
+Yeni tablo, fonksiyon veya migration gerekmez.

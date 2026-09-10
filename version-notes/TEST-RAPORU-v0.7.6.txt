@@ -1,0 +1,5 @@
+Kontroller
+- Bankalar ve Hesaplar görünümü
+- Kart yerleşimi
+- Düzenle / Pasife Al / Sil butonları
+- Responsive görünüm

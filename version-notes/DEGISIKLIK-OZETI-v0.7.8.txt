@@ -1,0 +1,16 @@
+NakitPilot v0.7.8 — Nakit Akışı, Likidite Riski ve Portföy Projeksiyonu
+
+Ana geliştirmeler
+- Eski portföy trend grafiği yönetim tipi nakit akışı ve likidite paneline dönüştürüldü.
+- Projeksiyon artık sıfırdan değil, güncel net finansal varlıktan başlar.
+- Güncel net likidite; banka ve nakit varlıkları eksi kredi kartı ve KMH borçları olarak hesaplanır.
+- Geçmiş aylar gerçekleşen gelir/gider, bugün ve gelecek aylar kesin/tahmini hareketlerle gösterilir.
+- Baz, Temkinli ve Stres senaryoları eklendi.
+- 0,5 / 1 / 2 / 3 aylık gider karşılığı güvenli nakit tamponu seçimi eklendi.
+- En düşük likidite, asgari finansman ihtiyacı, güvenli tampon açığı, riskli ay sayısı ve ilk rahat ay KPI kartları eklendi.
+- Aylık Likidite ve Aksiyon Planı tablosu eklendi.
+- Aylar Kritik, Sıkışık, Dikkat ve Rahat olarak sınıflandırılır.
+- Her ay için önerilen yönetim aksiyonu otomatik oluşturulur.
+
+Supabase
+- Yeni SQL veya migration gerekmez.

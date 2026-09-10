@@ -1,15 +1,21 @@
 {
-  "name": "Firma Finansal Yönetim",
-  "short_name": "Finans Takip",
-  "description": "Marmara Teknik firma finansal yönetim paneli",
-  "start_url": "./",
+  "name": "NakitPilot — Marmara Teknik",
+  "short_name": "NakitPilot",
+  "description": "Marmara Teknik çok firmalı iç finans ve proje takip paneli",
+  "start_url": "./?v=0.8.2",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#F7F0E5",
-  "theme_color": "#7C5C3F",
+  "background_color": "#F4F7F6",
+  "theme_color": "#0F766E",
   "orientation": "any",
   "lang": "tr",
   "icons": [
+    {
+      "src": "icons/nakitpilot-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",

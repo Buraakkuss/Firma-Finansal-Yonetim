@@ -1,0 +1,11 @@
+NakitPilot v0.7.4 Test Notu
+
+Kontrol edilenler
+- Banka kartı tıklamasının modal pencere açması
+- Banka detay modalının HTML yapısı
+- Hesap / kredi kartı / KMH detay blokları
+- Ana banka bölüm menüsü butonları
+- Tekrarlanan hızlı işlem satırının kaldırılması
+- JavaScript sözdizimi
+- Yinelenen HTML id kontrolü
+- Sürüm v0.7.4

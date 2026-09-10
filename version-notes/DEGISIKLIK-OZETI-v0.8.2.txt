@@ -1,0 +1,17 @@
+NakitPilot v0.8.2 — Alternatif kredi kartı ve KMH projeksiyon görünümü
+
+Yeni özellikler
+- Nakit Akışı / Portföy grafiğinin yanındaki veri listesine “Kredi kartı borçlarını hariç tut” seçeneği eklendi.
+- Aynı listeye “KMH borçlarını hariç tut” seçeneği eklendi.
+- Seçenekler ayrı ayrı veya birlikte kullanılabilir.
+- Aktif edildiğinde açık kart/KMH borcu yalnızca projeksiyonun başlangıç net likiditesinden geri eklenir.
+- Grafik, özet kartları, risk durumu, finansman ihtiyacı, aylık tablo ve ay detayı seçilen alternatif görünüme göre yeniden hesaplanır.
+- Alternatif görünüm açıkken gerçek net likidite ve hariç tutulan borç tutarı ekranda açıklanır.
+- Kayıtlı banka, kredi kartı ve KMH bakiyeleri değiştirilmez veya silinmez.
+
+Önemli not
+- Bu seçenekler “ne olurdu?” analizi içindir.
+- Borcun gerçek ödeme yükümlülüğü, asgari ödeme, faiz ve gecikme maliyeti devam eder.
+
+Supabase
+- Yeni SQL veya migration gerekmez.

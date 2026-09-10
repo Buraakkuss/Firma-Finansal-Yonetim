@@ -1,0 +1,4 @@
+NakitPilot v0.7.9 Supabase Notu
+
+Bu sürüm hesaplama sunumu, grafik ve yönetim görünümü iyileştirmesi içerir.
+Ek Supabase SQL veya migration gerekmez.

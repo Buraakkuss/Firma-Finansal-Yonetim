@@ -1,0 +1,11 @@
+NakitPilot v0.7.5 Test Notu
+
+Kontrol edilenler
+- Transfer Geçmişi tablosunda Düzenle butonu
+- Transfer kaydının form alanlarına yüklenmesi
+- Kaynak/hedef hesap ve tutar güncelleme
+- Eski masraf kaydının kaldırılıp yenisinin oluşturulması
+- Düzenleme iptal butonu
+- İptal edilmiş transferin düzenlenememesi
+- JavaScript sözdizimi kontrolü
+- Sürüm v0.7.5

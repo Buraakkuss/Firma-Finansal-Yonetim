@@ -1,0 +1,11 @@
+NakitPilot v0.8.1 Kurulum Notu
+
+1. Sunucudaki mevcut index.html dosyasının yedeğini alın.
+2. Güncelleme paketindeki index.html dosyasını domain üzerindeki finans-yonetim klasöründeki mevcut index.html dosyasının üzerine yükleyin.
+3. Supabase tarafında SQL çalıştırmayın; bu sürüm için gerekmez.
+4. Uygulamayı aşağıdaki adresle açın:
+   https://www.marmarateknikmakine.com.tr/finans-yonetim/?v=0.8.1
+5. Eski görünüm devam ederse Ctrl + F5 ile zorunlu yenileme yapın.
+
+GitHub commit mesajı:
+v0.8.1

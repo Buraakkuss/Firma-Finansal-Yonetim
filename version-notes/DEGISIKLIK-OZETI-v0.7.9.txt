@@ -1,0 +1,18 @@
+NakitPilot v0.7.9 — Profesyonel Likidite Komuta Merkezi
+
+Bu sürümde Özet Paneli içindeki nakit akışı ve projeksiyon alanı yeniden tasarlandı.
+
+Yapılan geliştirmeler
+- Yönetici uyarı özeti eklendi: mevcut açık, en kötü ay, finansman ihtiyacı, KMH karşılama oranı ve veri güveni tek cümlede gösterilir.
+- Net Likidite Eğrisi ayrı ana yönetim grafiğine dönüştürüldü.
+- Baz, Temkinli ve Stres senaryoları aynı grafikte karşılaştırılır.
+- Grafik arka planına güvenli, sıkışık ve kritik likidite bölgeleri eklendi.
+- Aylık giriş, çıkış ve net etki ayrı bir Nakit Giriş–Çıkış Köprüsü grafiğinde gösterilir.
+- Senaryo karşılaştırma kartları eklendi; kartlara tıklayarak senaryo değiştirilebilir.
+- Kullanılabilir KMH, kart limiti, finansman açığı karşılama oranı ve veri güveni ayrı panelde gösterilir.
+- En yakın üç riskli ay için Öncelikli Yönetim Aksiyonları oluşturulur.
+- Aylık Likidite ve Aksiyon Planı tablosu sadeleştirildi ve yönetim odaklı hale getirildi.
+- Kullanılabilir kart limitinin nakit likiditeye dahil edilmediği açıkça belirtildi.
+
+Supabase
+- Yeni SQL veya migration gerekmez.

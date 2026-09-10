@@ -1,0 +1,8 @@
+NakitPilot v0.7.7
+
+- Banka Merkezi ekranında bakiye ve borç tutarları renk kodlu hale getirildi.
+- Pozitif bakiyeler yeşil, negatif/borç tutarları kırmızı gösteriliyor.
+- KMH, bloke, vade ve faiz gibi dikkat gerektiren alanlar daha belirgin hale getirildi.
+- Banka detay penceresi ve Bankalar & Hesaplar listesinde görsel ayırt edicilik artırıldı.
+
+Supabase: Yeni SQL gerekmez.

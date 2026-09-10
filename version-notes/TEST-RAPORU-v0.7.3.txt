@@ -1,0 +1,7 @@
+NakitPilot v0.7.3 Test Notu
+
+Kontrol edilenler
+- Ödeme hesabı seçiminde kredi kartı adları
+- Son 4 hane görüntüsü
+- Tahsilat / ödeme alanlarında etiketler
+- Sürüm güncellemesi

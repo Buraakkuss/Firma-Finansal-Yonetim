@@ -1,0 +1,18 @@
+NakitPilot v0.8.1 — Katmanlı Gelir/Gider ve Portföy Projeksiyonu
+
+Ana değişiklikler
+- Eski anlaşılır grafik yapısı profesyonel biçimde geri getirildi.
+- Tamamlanmış Gelir, Tamamlanmış Gider, Gelecekteki Kesin Gelir/Gider ve Tahmini Gelir/Gider aynı ana grafikte gösterilir.
+- Gider sütunları sıfırın altında, gelir sütunları sıfırın üstünde gösterilir.
+- Ay sonu portföy çizgisi mavi renkte; geçmişte düz, gelecek projeksiyonunda kesikli gösterilir.
+- Grafiğin yanında açılıp kapatılabilir veri katmanları eklendi.
+- Her veri katmanının üzerine gelindiğinde neyi gösterdiği ve nasıl yorumlanacağı açıklanır.
+- İsteğe bağlı katmanlar: aylık net nakit, gider bütçe sapması, güvenli tampon, sıfır çizgisi, risk bölgeleri, temkinli ve stres karşılaştırmaları, büyük hareketli aylar.
+- Büyük hareketli aylar için 500 bin / 1 milyon / 2 milyon / 5 milyon TL eşik seçimi eklendi.
+- Grafikte bir aya tıklanınca gerçekleşen, kesin ve tahmini giriş/çıkışlarla ay sonu portföyü ayrı detay kartında gösterilir.
+- Aylık detay ve aksiyon tablosu varsayılan olarak kapalı tutuldu; ihtiyaç halinde açılabilir.
+- Varsayılan ve Analiz görünümü hızlı seçim butonları eklendi.
+
+Supabase
+- Bu sürüm arayüz ve hesaplama sunumu güncellemesidir.
+- Yeni SQL veya migration gerekmez.

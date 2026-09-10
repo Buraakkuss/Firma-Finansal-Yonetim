@@ -1,0 +1,7 @@
+NakitPilot v0.7.5 Kurulum Notu
+
+1. Mevcut uygulama dosyalarını yedekleyin.
+2. Güncelleme paketindeki index.html dosyasını mevcut dosyanın üzerine yükleyin.
+3. Supabase tarafında yeni SQL çalıştırmayın; gerekmez.
+4. Uygulamayı ?v=0.7.5 ile açın.
+5. Eski görünüm devam ederse Ctrl+F5 yapın.

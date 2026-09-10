@@ -1,0 +1,5 @@
+NakitPilot v0.7.7 Kurulum Notu
+
+1. Güncelleme paketini yükleyin.
+2. Uygulamayı ?v=0.7.7 ile açın.
+3. Gerekirse Ctrl+F5 yapın.

@@ -1,0 +1,11 @@
+NakitPilot v0.7.8 Test Notu
+
+Kontrol edilen alanlar
+- JavaScript sözdizimi
+- Baz / Temkinli / Stres senaryo seçimi
+- Güvenli nakit tamponu seçimi
+- Güncel net finansal varlık başlangıç noktası
+- Geçmiş gerçekleşen nakit akışları
+- Gelecek kesin ve tahmini nakit akışları
+- Aylık risk tablosu ve aksiyon önerileri
+- Responsive görünüm kuralları

@@ -1,0 +1,7 @@
+NakitPilot v0.7.3 Kurulum Notu
+
+1. Dosyaları yedekleyin.
+2. Paketi yükleyin.
+3. Supabase tarafında işlem yapmayın.
+4. Uygulamayı ?v=0.7.3 ile açın.
+5. Gerekirse Ctrl+F5 yapın.

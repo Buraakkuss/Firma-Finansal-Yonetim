@@ -1,0 +1,5 @@
+Kontroller
+- Banka özeti kartlarında renkli tutar gösterimi
+- Banka detay modalında pozitif/negatif ayrımı
+- Bankalar ve Hesaplar listesindeki renkli bakiye alanları
+- Kredi kartı / KMH borç görünümü

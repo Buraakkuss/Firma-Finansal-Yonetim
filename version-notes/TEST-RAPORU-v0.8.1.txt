@@ -1,0 +1,15 @@
+NakitPilot v0.8.1 Test Raporu
+
+Kontrol edilen alanlar
+- JavaScript sözdizimi: başarılı
+- Ana grafik veri katmanları: başarılı
+- Varsayılan görünüm: 6 gelir/gider veri serisi + ay sonu portföy + sıfır çizgisi
+- Analiz görünümü: aylık net, gider sapması, güvenli tampon, risk bölgeleri ve büyük ay işaretleri
+- Temkinli / stres karşılaştırma katmanları
+- Ay tıklama detay kartı
+- Aylık aksiyon tablosu
+- Mobil / tablet responsive CSS kuralları
+- Supabase bağımlılığı: yeni SQL gerekmiyor
+
+Not
+Gerçek firma verileri kullanıcı oturumu ve Supabase bağlantısı açıldığında mevcut uygulama fonksiyonlarından okunur.

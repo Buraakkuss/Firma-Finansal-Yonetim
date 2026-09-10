@@ -1,0 +1,78 @@
+name: Deploy to DirectAdmin
+
+# main dalına uygulama dosyaları push edildiğinde siteyi otomatik günceller.
+# Gerekli GitHub Secrets: FTP_HOST, FTP_USER, FTP_PASS
+# İsteğe bağlı GitHub Variables: FTP_DIR, FTP_TLS_VERIFY, SITE_URL
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'manifest.webmanifest'
+      - 'sw.js'
+      - 'icons/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-directadmin
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Depoyu al
+        uses: actions/checkout@v4
+
+      - name: lftp kur
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: Dosyaları sunucuya yükle
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+          FTP_DIR: ${{ vars.FTP_DIR || '/domains/marmarateknikmakine.com.tr/public_html/finans-yonetim' }}
+          TLS_VERIFY: ${{ vars.FTP_TLS_VERIFY || 'no' }}
+        run: |
+          set -euo pipefail
+          for v in FTP_HOST FTP_USER FTP_PASS; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::$v secret'ı tanımlı değil. Settings > Secrets and variables > Actions bölümünden ekleyin."
+              exit 1
+            fi
+          done
+          # Yalnız uygulama dosyaları yüklenir. Sunucudaki .htaccess, supabase/ ve
+          # diğer dosyalara dokunulmaz; hiçbir uzak dosya silinmez.
+          lftp -u "$FTP_USER,$FTP_PASS" "ftp://$FTP_HOST" -e "
+            set cmd:fail-exit true;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate $TLS_VERIFY;
+            set net:max-retries 3;
+            set net:timeout 20;
+            cd \"$FTP_DIR\";
+            put -O . index.html;
+            put -O . manifest.webmanifest;
+            put -O . sw.js;
+            mirror -R --no-perms --verbose icons icons;
+            bye;
+          "
+
+      - name: Yayını doğrula
+        env:
+          SITE_URL: ${{ vars.SITE_URL || 'https://marmarateknikmakine.com.tr/finans-yonetim/index.html' }}
+        run: |
+          set -uo pipefail
+          repo_v=$(grep -oE "APP_VERSION='[^']+'" index.html | head -1 | cut -d"'" -f2)
+          live_v=$(curl -fsSL --max-time 30 "$SITE_URL" | grep -oE "APP_VERSION='[^']+'" | head -1 | cut -d"'" -f2 || true)
+          echo "Repo sürümü : $repo_v"
+          echo "Canlı sürüm : ${live_v:-okunamadı}"
+          if [ "$repo_v" = "${live_v:-}" ]; then
+            echo "✅ Yayın doğrulandı."
+          else
+            echo "::warning::Canlı sürüm repo sürümüyle eşleşmedi. Tarayıcı/sunucu önbelleği olabilir; siteyi Ctrl+F5 ile kontrol edin."
+          fi

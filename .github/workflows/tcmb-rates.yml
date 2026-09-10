@@ -2,13 +2,18 @@ name: Fetch TCMB Currency Rates
 
 on:
   schedule:
-    # Turkey is UTC+3 all year. 12:40 UTC = 15:40 Turkey time.
-    - cron: '40 12 * * 1-5'
+    # Turkey is UTC+3 all year. TCMB publishes around 15:30 Turkey time.
+    # Three passes give the job room to recover if TCMB is slow or briefly down;
+    # the Supabase write upserts on rate_date, so repeat runs are harmless.
+    - cron: '40 12 * * 1-5'  # 15:40 Turkey time
+    - cron: '15 13 * * 1-5'  # 16:15 Turkey time
+    - cron: '00 14 * * 1-5'  # 17:00 Turkey time
   workflow_dispatch:
 
 jobs:
   fetch-tcmb-rates:
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,4 +27,6 @@ jobs:
         env:
           SUPABASE_URL: https://ekpehcfhhldtxsuqiczj.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TCMB_TIMEOUT_MS: '18000'
+          TCMB_MAX_ARCHIVE_DAYS: '12'
         run: node scripts/fetch-tcmb-rates.mjs

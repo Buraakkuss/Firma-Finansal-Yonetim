@@ -1,0 +1,9 @@
+NakitPilot v0.7.6
+
+- Banka Merkezi > Bankalar ve Hesaplar listesi görsel olarak yenilendi.
+- Banka başlık kartları daha düzenli hale getirildi.
+- Hesap kartlarında bakiye, kullanılabilir, bloke, başlangıç ve durum alanları daha okunur gösterildi.
+- IBAN ve açılış tarihi alt detay satırlarına taşındı.
+- Buton yerleşimleri ve genel kart tasarımı iyileştirildi.
+
+Supabase: Yeni SQL gerekmez.

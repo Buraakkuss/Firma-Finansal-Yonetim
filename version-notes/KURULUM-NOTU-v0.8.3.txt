@@ -1,0 +1,28 @@
+NakitPilot v0.8.3 Kurulum Notu
+
+Uygulama güncellemesi
+1. Mevcut index.html dosyanızın yedeğini alın.
+2. Bu sürümdeki index.html dosyasını domain üzerindeki dosyanın üzerine yükleyin.
+3. Uygulamayı ?v=0.8.3 parametresiyle açın.
+4. Eski görünüm devam ederse Ctrl + F5 yapın.
+
+Veri sıfırlama (isteğe bağlı, sıfırdan veri girişi yapacaksanız)
+1. Önce uygulama güncellemesini yapın.
+2. Supabase > SQL Editor'ı açın.
+3. sql/nakitpilot-veri-sifirlama-v0.8.3.sql dosyasının tamamını yapıştırın.
+4. Bir kez Run deyin. Sonuçta tüm firmalar için gelir/gider/sabit/tahmin
+   sayılarının 0, banka ve kart tanımı sayılarının korunmuş olduğunu görün.
+5. Uygulamayı Ctrl + F5 ile yenileyin.
+
+Sıfırlama sonrası ilk veri girişi sırası
+1. Banka Merkezi > Bankalar & Hesaplar: her hesabın güncel bakiyesini
+   "açılış bakiyesi" olarak girin.
+2. Banka Merkezi > KMH: her KMH'nin güncel borcunu açılış borcu olarak girin.
+3. Banka Merkezi > Kredi Kartları: her kartın güncel dönem borcunu girin.
+4. Gelecekteki Kesin Gelir/Gider: çek, maaş, SGK, kira gibi bilinen kalemleri girin.
+5. Tamamlanmış Gelir/Gider: yalnız bu tarihten sonraki gerçek hareketleri girin.
+
+Önemli
+- KMH kullanımı ve kredi kartı borcu ödemesi gelir veya gider DEĞİLDİR.
+  Bunlar varlıklar arası harekettir ve Banka Merkezi üzerinden işlenmelidir.
+- KMH faizi ve banka komisyonu gerçek giderdir; gider olarak girilir.

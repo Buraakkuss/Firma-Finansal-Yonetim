@@ -1,0 +1,4 @@
+NakitPilot v0.8.0 Supabase Notu
+
+Bu sürüm yalnızca arayüz, projeksiyon sunumu ve hesaplama açıklaması iyileştirmeleri içerir.
+Ek SQL veya migration gerekmez.

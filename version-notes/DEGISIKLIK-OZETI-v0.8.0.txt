@@ -1,0 +1,22 @@
+NakitPilot v0.8.0 — Sade Likidite Yönetim Görünümü
+
+Bu sürümde Nakit Akışı ve Likidite paneli sadeleştirildi.
+
+Yapılan düzenlemeler
+- Baz, Temkinli ve Stres senaryolarının ayrı karşılaştırma kartları kaldırıldı.
+- Yalnızca üstte seçilen senaryo tüm grafik, özet ve tabloya uygulanır.
+- Ana grafik sadece seçili senaryonun net likidite çizgisini gösterir.
+- Üst yönetim göstergeleri 4 temel karta indirildi:
+  * Bugünkü net likidite
+  * En düşük seviye
+  * Gerekli kaynak
+  * İlk rahat ay
+- Aylık giriş/çıkış grafiği isteğe bağlı açılır bölüme taşındı.
+- Finansman kapasitesi, veri güveni ve 90 günlük özet tek kompakt satırda toplandı.
+- Ayrı senaryo kartları ve öncelikli aksiyon kartları kaldırıldı.
+- Önümüzdeki aylar tablosu sadeleştirildi.
+- Bugünkü negatif likidite ile ay sonu projeksiyonu arasındaki fark daha doğru açıklanır.
+- Gerekli kaynak hesabı bugünkü likiditeyi de dikkate alır.
+
+Supabase
+- Yeni SQL veya migration gerekmez.

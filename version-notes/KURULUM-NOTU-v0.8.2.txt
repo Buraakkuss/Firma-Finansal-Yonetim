@@ -1,0 +1,12 @@
+NakitPilot v0.8.2 Kurulum Notu
+
+1. Mevcut index.html dosyanızın yedeğini alın.
+2. Güncelleme paketindeki index.html dosyasını domain üzerindeki mevcut dosyanın üzerine yükleyin.
+3. Supabase tarafında SQL çalıştırmayın; bu sürüm için gerekmez.
+4. Uygulamayı ?v=0.8.2 parametresiyle açın.
+5. Eski görünüm devam ederse Ctrl + F5 yapın.
+
+Kullanım
+- Özet Paneli > Nakit Akışı / Portföy grafiğine gidin.
+- Sağdaki “Alternatif borç görünümü” bölümünden kredi kartı ve/veya KMH borçlarını hariç tutun.
+- Seçenekler yalnızca grafiği ve projeksiyon hesaplarını değiştirir.

@@ -1,0 +1,12 @@
+NakitPilot v0.7.9 Test Notu
+
+Kontrol edilen alanlar
+- JavaScript sözdizimi
+- Baz / Temkinli / Stres senaryo geçişleri
+- Net Likidite Eğrisi
+- Aylık Giriş–Çıkış Köprüsü
+- Yönetici uyarı özeti ve KPI alanları
+- KMH finansman kapasitesi ve veri güveni
+- Öncelikli yönetim aksiyonları
+- Aylık likidite ve aksiyon planı tablosu
+- Responsive CSS kuralları

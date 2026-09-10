@@ -1,0 +1,12 @@
+NakitPilot v0.8.0 Test Notu
+
+Kontrol edilen alanlar
+- Senaryo seçiminin yalnızca üst seçim kutusundan yapılması
+- Seçili senaryonun ana grafik, özet ve tabloya uygulanması
+- Ana grafikte diğer senaryo çizgilerinin gösterilmemesi
+- Bugünkü net likiditenin gerekli kaynak hesabına dahil edilmesi
+- 4 temel yönetim kartı
+- İsteğe bağlı aylık giriş/çıkış grafiği
+- Sadeleştirilmiş aylık likidite tablosu
+- JavaScript sözdizimi kontrolü
+- Sürüm numarası v0.8.0

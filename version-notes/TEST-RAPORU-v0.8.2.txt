@@ -1,0 +1,13 @@
+NakitPilot v0.8.2 Test Notu
+
+Kontrol edilenler
+- JavaScript sözdizimi doğrulaması
+- Kredi kartı borcunu hariç tut seçeneğinin varsayılan olarak kapalı olması
+- KMH borcunu hariç tut seçeneğinin varsayılan olarak kapalı olması
+- İki seçeneğin ayrı ayrı ve birlikte hesaplamaya eklenmesi
+- Alternatif başlangıç net likidite hesabı
+- Grafik portföy çizgisi, KPI, risk ve finansman ihtiyacının yeniden hesaplanması
+- Ay detayında alternatif görünüm uyarısı
+- Kayıtların ve gerçek banka/kart/KMH bakiyelerinin değiştirilmemesi
+
+Supabase SQL gereksinimi: Yok.

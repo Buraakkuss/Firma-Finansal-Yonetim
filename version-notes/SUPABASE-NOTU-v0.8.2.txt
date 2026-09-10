@@ -1,0 +1,4 @@
+NakitPilot v0.8.2 Supabase Notu
+
+Bu sürüm yalnızca uygulama tarafında alternatif projeksiyon hesaplaması ve arayüz seçeneği içerir.
+Ek Supabase SQL, tablo, fonksiyon veya migration gerekmez.

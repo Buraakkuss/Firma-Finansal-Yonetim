@@ -1,0 +1,4 @@
+NakitPilot v0.7.3 Supabase Notu
+
+Bu sürüm yalnızca arayüz etiket iyileştirmesi içerir.
+Ek SQL veya migration gerekmez.

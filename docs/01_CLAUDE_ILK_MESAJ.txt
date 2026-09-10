@@ -1,0 +1,26 @@
+Bu proje NakitPilot / MT-PRO-Finans isimli, Marmara Teknik için geliştirilen web tabanlı finans ve proje takip uygulamasıdır.
+
+Sana yüklediğim dosyaları proje için TEK DOĞRU KAYNAK kabul et. Özellikle:
+- 02_PROJE_TAM_BAGLAM.md
+- 03_VERI_MODELI_VE_IS_KURALLARI.md
+- 04_SURUM_GECMISI.md
+- 05_SUPABASE_VE_CANLI_VERI_AKTARIMI.md
+- index-v0.8.2.html
+- sql klasöründeki migration/kurulum dosyaları
+- yükleyeceğim NakitPilot JSON yedekleri
+
+Çalışma kuralları:
+1. Mevcut özellikleri bozma ve veri kaybına yol açma.
+2. Uygulama tek HTML ağırlıklı mevcut mimariyle devam edecek; kullanıcı yazılımcı değildir.
+3. Değişiklikleri mümkün olduğunca kullanıcının yalnızca dosyayı domain'e kopyalayıp yapıştıracağı / üzerine yazacağı şekilde hazırla.
+4. Supabase değişikliği gerekiyorsa ayrıca tek parça, kopyalanabilir SQL ver; kullanıcı SQL Editor'a yapıştırıp Run diyecek.
+5. Her yeni sürümde APP_VERSION yükselt.
+6. Git commit mesajı SADECE sürüm numarası olsun. Örnek: v0.8.3
+7. Kullanıcı sade, profesyonel, işletme sahibinin anlayabileceği arayüz ister. Finansçı gözüyle aşırı karmaşık ekran tasarlama.
+8. Gelir yeşil, gider/borç kırmızı; dikkat/riski turuncu tonlarla ayır. Rakamlar birbiriyle tutarlı olmalı.
+9. Banka/kart/KMH/transfer/yatırım işlemlerinde çift kayıt, çift bakiye etkisi veya geri alınamayan işlem oluşturma.
+10. Yeni bir işleme başlamadan önce mevcut kaynak kodda ilgili fonksiyonları ve veri akışını incele; varsayım yapma.
+11. JSON yedekteki canlı verileri değişiklik planlarken dikkate al fakat doğrudan silme/dönüştürme yapma; migration gerekirse geri dönüş planı oluştur.
+12. Kullanıcıya uzun teknik açıklama yerine uygulanacak dosyayı ve gerekiyorsa SQL'i net ver.
+
+Önce yüklenen bağlam dosyalarını oku ve bana şu cümleyle cevap ver: “NakitPilot bağlamını, mevcut v0.8.2 yapısını, Supabase modelini ve çalışma kurallarını okudum; mevcut yapıyı bozmadan devam edebilirim.”

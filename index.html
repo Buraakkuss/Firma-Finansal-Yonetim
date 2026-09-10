@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.8.2">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.8.2" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.8.2">
-  <title>NakitPilot Marmara Teknik — v0.8.2</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.8.3">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.8.3" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.8.3">
+  <title>NakitPilot Marmara Teknik — v0.8.3</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2510,7 +2510,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.8.2</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.8.3</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -4008,8 +4008,12 @@
       <div class="form-group"><label>Açıklama</label><input type="text" id="mfix-desc" placeholder="Kira, maaş..."></div>
       <div class="form-group"><label>Kategori</label><select id="mfix-cat"></select></div>
     </div>
-    <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;gap:10px">
-      <div class="form-group"><label>Tutar</label><input type="number" id="mfix-amount" placeholder="0.00" min="0" step="0.01"></div>
+    <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="form-group"><label>Tutar</label><input type="number" id="mfix-amount" placeholder="0.00" min="0" step="0.01" oninput="updateCurrencyPreview('mfix')"><div id="mfix-fx-preview" class="currency-preview"></div></div>
+      <div class="form-group"><label>Para Birimi</label><select id="mfix-currency" onchange="onCurrencyChange('mfix')"><option value="TRY">TL</option><option value="EUR">EUR</option><option value="USD">USD</option><option value="GOLD">Gram Altın</option></select></div>
+      <div class="form-group"><label>Kur</label><input type="number" id="mfix-rate" value="1" min="0" step="0.0001" oninput="updateCurrencyPreview('mfix')"></div>
+    </div>
+    <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
       <div class="form-group"><label>Gelir / Gider</label><select id="mfix-type" onchange="updateModalFixedBudgetHelp()"><option value="expense">Gider</option><option value="income">Gelir</option></select></div>
       <div class="form-group"><label>Kayıt Şekli</label><select id="mfix-budget-type" onchange="updateModalFixedBudgetHelp()"><option value="exact">Düzenli kesin gelir/gider</option><option value="oneoff">Tek seferlik beklenen gelir/gider</option><option value="variable">Değişken tahmini gider</option><option value="memo">Bilgilendirme</option></select></div>
       <div class="form-group" id="mfix-period-wrap"><label>Periyot</label><select id="mfix-period" onchange="syncFixedPeriodBudget('mfix')"><option value="monthly">Aylık</option><option value="weekly">Haftalık</option><option value="bimonthly">2 Ayda Bir</option><option value="quarterly">3 Ayda Bir</option><option value="biannual">6 Ayda Bir</option><option value="annual">Yıllık</option><option value="oneoff">Tek seferlik (tek tarih)</option></select></div>
@@ -4061,7 +4065,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.8.2';
+const APP_VERSION='0.8.3';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -4398,6 +4402,19 @@ function normalizeAppData(d){
   out.fixed=Array.isArray(d.fixed)?d.fixed:[];
   out.forecast=migrateForecastData(Array.isArray(d.forecast)?d.forecast:[]);
   out.fxTransfers=Array.isArray(d.fxTransfers)?d.fxTransfers:[];
+  // v0.8.3 — TL kayıtlarında amountTry daima amount'a eşit olmalıdır. v0.8.2'ye kadar sabit kalem
+  // düzenlemesi bu alanı güncellemediği için bayat değerler kalabiliyordu; yüklemede onarılır.
+  const healTryAmount=(r)=>{
+    if(!r||typeof r!=='object')return r;
+    if(safeCurrency(r.currency||'TRY')!=='TRY')return r;
+    const amt=n(r.amount);
+    if(n(r.amountTry)===amt&&n(r.rate)===1)return r;
+    return Object.assign({},r,{rate:1,amountTry:amt});
+  };
+  out.income=out.income.map(healTryAmount);
+  out.expense=out.expense.map(healTryAmount);
+  out.fixed=out.fixed.map(healTryAmount);
+  out.forecast=out.forecast.map(healTryAmount);
   out.creditCards=(Array.isArray(d.creditCards)?d.creditCards:[]).map(c=>({
     ...c,
     limit:Math.round(n(c&&c.limit)*100)/100,
@@ -6795,7 +6812,7 @@ function updateCurrencyPreview(prefix){
   const cr=currentRate(c);
   el.textContent=r>1?`${fmtCurrency(amount,c)} · kayıt kuru ${r.toLocaleString('tr-TR')} · kayıt değeri ${fmtTL(amount*r)} · güncel değerleme ${cr?fmtTL(amount*cr):'kur bekleniyor'}`:`${CURRENCY_LABELS[c]} için kayıt kuru zorunlu. Kasa değerlemesinde güncel değerleme kuru kullanılacak.`;
 }
-function initCurrencyControls(){['inc','exp','fix','fc'].forEach(onCurrencyChange);}
+function initCurrencyControls(){['inc','exp','fix','fc','mfix'].forEach(onCurrencyChange);}
 
 function isDark(){return (document.body&&document.body.dataset.theme==='dark');}
 function chartTextColor(){return isDark()?'#D8C6B0':'#6F6253';}
@@ -11374,6 +11391,10 @@ function editFixed(id){
   document.getElementById('mfix-cat').innerHTML=cats.map(c=>`<option${c===rec.category?' selected':''}>${c}</option>`).join('');
   document.getElementById('mfix-desc').value=rec.description;
   document.getElementById('mfix-amount').value=rec.amount;
+  // v0.8.3 — Kaydın kendi para birimi ve kuru modale taşınır; kaydetmede bunlar kullanılır.
+  document.getElementById('mfix-currency').value=safeCurrency(rec.currency||'TRY');
+  document.getElementById('mfix-rate').value=itemRate(rec)||'';
+  onCurrencyChange('mfix');
   document.getElementById('mfix-type').value=rec.fixedType||'expense';
   document.getElementById('mfix-budget-type').value=rec.budgetType||'exact';
   document.getElementById('mfix-period').value=rec.period||'monthly';
@@ -11394,14 +11415,16 @@ function saveFixed(){
   const start=document.getElementById('mfix-start').value;
   const end=document.getElementById('mfix-end').value;
   if(!desc||!amt||amt<=0){alert('Lütfen açıklama ve tutar girin.');return;}
-  if(!validateMoneyInput('fix'))return;
+  // v0.8.3 — Önceden ekleme formunun ('fix') para birimi/kur alanları doğrulanıyordu; modalin kendi alanları kullanılır.
+  if(!validateMoneyInput('mfix'))return;
   if(!start){alert(budgetType==='oneoff'?'Lütfen gelir/gider tarihini girin.':'Lütfen başlangıç tarihini girin.');return;}
   const idx=data.fixed.findIndex(r=>String(r.id)===String(fixedId));
   if(type==='income'&&budgetType==='variable')budgetType='exact';
   if(budgetType==='oneoff'){period='oneoff';}
   if(idx>=0){
     const existing=data.fixed[idx]||{};
-    data.fixed[idx]=Object.assign({},existing,{id:fixedId,description:desc,amount:amt,category:cat,fixedType:type,period,budgetType,startDate:start,endDate:budgetType==='oneoff'?null:(end||null)});
+    // v0.8.3 — withMoneyMeta olmadan yalnız amount güncelleniyor, currency/rate/amountTry eski değerinde kalıyordu.
+    data.fixed[idx]=withMoneyMeta(Object.assign({},existing,{id:fixedId,description:desc,amount:amt,category:cat,fixedType:type,period,budgetType,startDate:start,endDate:budgetType==='oneoff'?null:(end||null)}),'mfix');
   }
   saveData(data);closeModal('modal-fixed');renderFixed();
 }

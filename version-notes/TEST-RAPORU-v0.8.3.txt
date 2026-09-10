@@ -1,0 +1,36 @@
+NakitPilot v0.8.3 Test Notu
+
+Uygulama tarafı
+- index.html içindeki tüm satır içi JavaScript sözdizimi doğrulandı: hata yok.
+- saveFixed() düzenleme akışı, fonksiyonlar kaynağın kendisinden okunarak
+  Node üzerinde çalıştırıldı. 7 senaryo, 7 başarılı:
+  * TL kalemde amountTry yeniden hesaplanıyor (VERGİ BORCU: 1 -> 291.541,95)
+  * TL kalemde tutar değişince TL karşılığı takip ediyor (600.000 -> 360.000)
+  * EUR kalemde yeni tutarın TL karşılığı doğru (3.000 EUR x 53,863 = 161.589)
+  * EUR kalemde kur düzeltilebiliyor (2.500 EUR x 55,20 = 138.000)
+  * TL kalem düzenlemesi ekleme formundaki döviz seçiminden etkilenmiyor
+  * v0.8.2 davranışı doğrulandı: ekleme formu okunsaydı kayıt engellenirdi
+  * Düzenleme penceresinde döviz seçilip kur girilmezse kayıt engelleniyor
+- Açılıştaki otomatik onarım üç firmanın gerçek yedeği üzerinde çalıştırıldı:
+  13 bozuk TL kaydı onarıldı, 73 kayda dokunulmadı, tek döviz kalemi korundu.
+
+Veri sıfırlama SQL'i
+- Yerel PostgreSQL 16 üzerinde gerçek şema (temel kurulum + Banka Merkezi
+  migration) ve üç firmanın gerçek yedek verisi yüklenerek çalıştırıldı.
+- Sıfırlama öncesi tetikleyici doğrulandı: 11 hesap, 6 kart, 3 KMH,
+  93 ters kayıt normalize tablolara aynalanmış durumdaydı.
+- Sıfırlama sonrası:
+  * gelir, gider, sabit/kesin, tahmin, ters kayıt sayıları: 0
+  * banka 6, hesap 11, KMH 3, kart 6 tanımı korundu
+  * hesap açılış bakiyeleri ve bloke tutarları 0, IBAN ve para birimi korundu
+  * KMH borçları 0, limit ve faiz oranı korundu
+  * kart borçları 0, limit, son 4 hane ve kesim günü korundu
+  * normalize hareket tabloları (hareket, transfer, taksit, ters kayıt): 0
+  * Proje Takip kayıtları korundu
+- Kategori temizliği doğrulandı: KMH GELİRİ, KMH ÖDEMESİ, KMH BORCU ve
+  KREDİ KARTI ÖDEMESİ kategorileri kaldırıldı; KMH FAİZ ÖDEMESİ ve
+  KOMİSYON GİDERLERİ kategorileri korundu; müşteri kategorileri korundu.
+- Geri alma prosedürü çalıştırıldı: firma verisi ve normalize tablolar
+  sıfırlama öncesi hâline tam olarak döndü.
+
+Supabase SQL gereksinimi: Şema değişikliği yok. Veri sıfırlama script'i isteğe bağlı.

@@ -63,4 +63,16 @@
 - Projeksiyon için “kredi kartı borçlarını hariç tut” ve “KMH borçlarını hariç tut” alternatif görünüm seçenekleri.
 - Bu seçenekler yalnız analiz içindir, gerçek borçları silmez/değiştirmez.
 
-Güncel baz sürüm: **v0.8.2**
+## v0.8.3
+- Sabit/gelecek kalem düzenlemesinde para birimi, kur ve TL karşılığının (`amountTry`)
+  güncellenmemesi hatası giderildi. Düzenleme artık `withMoneyMeta()` üzerinden geçiyor.
+- Düzenleme penceresindeki kur doğrulaması ekleme formunun alanlarını okuyordu; kendi
+  alanlarını okuyacak şekilde düzeltildi.
+- Sabit/gelecek kalem düzenleme penceresine Para Birimi ve Kur alanları eklendi; döviz
+  kalemlerin kayıt kuru artık düzenlenebiliyor.
+- Veri yüklenirken TL kayıtlarda `amountTry` alanı `amount` ile eşitlenerek eski
+  sürümlerden kalan sapmalar otomatik onarılıyor.
+- Tüm firmalar için işlem verisi sıfırlama script'i eklendi
+  (`sql/nakitpilot-veri-sifirlama-v0.8.3.sql`); tanımlar ve Proje Takip korunur.
+
+Güncel baz sürüm: **v0.8.3**

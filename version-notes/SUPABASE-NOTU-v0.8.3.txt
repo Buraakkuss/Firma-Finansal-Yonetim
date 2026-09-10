@@ -1,0 +1,21 @@
+NakitPilot v0.8.3 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Bu sürümde yalnız isteğe bağlı bir veri bakım script'i vardır:
+sql/nakitpilot-veri-sifirlama-v0.8.3.sql
+
+- Yalnız public.company_data.data alanını günceller.
+- Normalize finans tabloları (bank_accounts, credit_cards, overdraft_accounts,
+  bank_account_transactions, finance_reversals ve diğerleri) mevcut
+  trg_company_data_banking_sync tetikleyicisi ile otomatik aynılanır;
+  bu tablolar için ayrıca komut çalıştırmayın.
+- Script tek transaction içinde çalışır; hata olursa hiçbir şey değişmez.
+- Çalıştırmadan önce her firmanın verisini company_backups tablosuna yazar.
+  Geri alma adımları script'in sonundadır.
+
+Uyarı
+- sql/ klasöründeki eski kurulum ve migration dosyalarını yeniden çalıştırmayın.
+  Banka Merkezi migration'ı np_sync_company_banking_snapshot fonksiyonunun
+  search_path değerini 'public' olarak yazar ve v0.7.4'teki pgcrypto/digest
+  düzeltmesini geri alır.

@@ -3,7 +3,7 @@
 Marmara Teknik için geliştirilen, çok firmalı web tabanlı finans ve proje takip uygulaması.
 Tek HTML dosyası (vanilla JS + CSS) üzerinde çalışır, verisini Supabase'te tutar.
 
-**Güncel sürüm: v0.8.2**
+**Güncel sürüm: v0.8.3**
 
 ## Dosya yapısı
 
@@ -47,6 +47,21 @@ Tek HTML dosyası (vanilla JS + CSS) üzerinde çalışır, verisini Supabase'te
 3. `version-notes/` altına `DEGISIKLIK-OZETI`, `KURULUM-NOTU`, `SUPABASE-NOTU` ve `TEST-RAPORU` dosyalarını yeni sürüm numarasıyla ekle.
 4. Supabase değişikliği varsa SQL dosyasını `sql/` altına ekle.
 5. Commit mesajı olarak yalnız sürüm numarasını kullan.
+
+## Veri sıfırlama
+
+Sıfırdan veri girişine geçmek için `sql/nakitpilot-veri-sifirlama-v0.8.3.sql`
+dosyasının tamamını Supabase > SQL Editor'a yapıştırıp bir kez çalıştırın.
+
+- Siler: gelir, gider, sabit/kesin kalemler, tahminler, döviz dönüşümleri,
+  kart ödemeleri ve tüm banka hareketleri; hesap/KMH/kart bakiyeleri sıfırlanır.
+- Korur: firma, kullanıcı, rol ve izinler; banka, hesap, kart ve KMH tanımları;
+  Proje Takip kayıtları; kategori listeleri.
+- Çalışmadan önce her firmanın verisini `company_backups` tablosuna yedekler;
+  geri alma adımları script'in sonundadır.
+
+Normalize finans tabloları `trg_company_data_banking_sync` tetikleyicisi ile
+otomatik aynılanır, onlar için ayrı komut gerekmez.
 
 ## TCMB kur otomasyonu
 

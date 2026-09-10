@@ -1,0 +1,34 @@
+NakitPilot v0.8.3 — Sabit kalem düzenleme düzeltmesi ve veri sıfırlama
+
+Düzeltilen hata: sabit/kesin kalem düzenlemesi
+- v0.8.2'ye kadar bir sabit/gelecek kalem düzenlendiğinde yalnız tutar (amount)
+  güncelleniyor, para birimi, kur ve TL karşılığı (amountTry) eski değerinde kalıyordu.
+- Sebep: saveFixed() kaydı withMoneyMeta() fonksiyonundan geçirmiyordu. Kalem
+  eklerken (addFixed) ve günlük kayıt düzenlerken bu adım zaten uygulanıyordu.
+- Etkisi: TL kalemlerde raporlar doğru kalıyordu, çünkü TL için amountTL() amount
+  alanını okur. Ancak döviz (EUR/USD/Gram Altın) bir kalem düzenlendiğinde TL
+  karşılığı düzenleme öncesindeki değerde donuyor ve yanlış raporlanıyordu.
+- Üç firmanın canlı verisinde 13 kayıtta bu sapma tespit edildi ve giderildi.
+
+Düzeltilen hata: düzenleme ekranı yanlış formu doğruluyordu
+- saveFixed() içindeki kur doğrulaması, düzenleme penceresinin değil ekleme
+  formunun para birimi/kur alanlarını okuyordu.
+- Ekleme formunda döviz seçili ve kur boş bırakıldığında, ilgisiz bir TL kaleminin
+  düzenlemesi "kayıt kuru zorunludur" uyarısıyla engellenebiliyordu.
+
+Yeni: düzenleme penceresine para birimi ve kur alanı
+- Sabit/gelecek kalem düzenleme penceresine Para Birimi ve Kur alanları eklendi.
+- Kalem açıldığında kendi para birimi ve kuru ile gelir; kur önizlemesi gösterilir.
+- Böylece döviz bir kalemin kuru düzenleme ekranından düzeltilebilir hale geldi.
+
+Yeni: açılışta otomatik onarım
+- Veri yüklenirken TL kayıtlarda amountTry alanı amount ile eşitlenir.
+- Eski sürümlerden kalmış sapmalar kullanıcı bir şey yapmadan düzelir.
+- Döviz kayıtlarına dokunulmaz; onların kayıt kuru geçmiş değerinde korunur.
+
+Yeni: tüm firmalar için veri sıfırlama SQL'i
+- sql/nakitpilot-veri-sifirlama-v0.8.3.sql dosyası eklendi.
+- Gelir, gider, sabit/kesin kalemler, tahminler ve tüm banka hareketleri silinir.
+- Banka, hesap, kredi kartı ve KMH tanımları ile Proje Takip kayıtları korunur.
+- Banka içi hareketi gelir/gider gibi gösteren yanıltıcı kategoriler kaldırılır.
+- Çalıştırmadan önce her firmanın verisi company_backups tablosuna yedeklenir.

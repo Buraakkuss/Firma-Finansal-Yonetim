@@ -6,8 +6,8 @@ NakitPilot v0.8.2 içinde ham JSON dışa aktarma zaten vardır.
 Her firma için:
 1. NakitPilot'a yönetici/rapor indirme yetkili kullanıcıyla giriş yapın.
 2. Üst bardan aktaracağınız firmayı seçin.
-3. Sol menüden **Yasal & Hesap** ekranına girin.
-4. **JSON Yedek Al** butonuna basın.
+3. Sol menüden **Ayarlar** ekranına girin.
+4. **Veri ve Yasal İşlemler** panelindeki **JSON Yedek Al** butonuna basın.
 5. Tarayıcı şu yapıda bir dosya indirir: `nakitpilot-yedek-FIRMA-ADI.json`.
 6. Birden fazla firma varsa firma seçiciden diğer firmaya geçip aynı işlemi tekrar yapın.
 7. İndirdiğiniz tüm JSON dosyalarını Claude Project Files'a yükleyin.

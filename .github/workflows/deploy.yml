@@ -56,7 +56,7 @@ jobs:
             set ssl:verify-certificate $TLS_VERIFY;
             set net:max-retries 3;
             set net:timeout 20;
-            cd \"$FTP_DIR\";
+            cd $FTP_DIR;
             put -O . index.html;
             put -O . manifest.webmanifest;
             put -O . sw.js;

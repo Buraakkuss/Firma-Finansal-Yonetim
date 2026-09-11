@@ -3,7 +3,7 @@ Tarih: 11 Eylül 2026
 
 ÖZET
   SQL testleri    :  30 test çalıştı, 30 geçti, 0 kaldı.
-  Tarayıcı testleri: 786 test çalıştı, 786 geçti, 0 kaldı.
+  Tarayıcı testleri: 757 test çalıştı, 757 geçti, 0 kaldı.
   Yeni: e2e-14-ekip (47 test) ve SQL akış testi np-test3 (30 test).
   Kaldırılan akışın testleri (e2e-12-uyelik, e2e-13-davet-kayit) silindi.
 
@@ -61,7 +61,7 @@ B) TARAYICI — e2e-14-ekip (47 test)
   7) Yetki (3): yönetici olmayan kullanıcı oluşturamıyor, uyarı alıyor.
   Sayfada JavaScript hatası yok.
 
-C) GERİLEME (739 test — hepsi geçti)
+C) GERİLEME (710 test — hepsi geçti)
   ui-test 33 · e2e-1-finans 14 · e2e-2-proje 43 · e2e-3-kenar 39
   e2e-4-satinalma 50 · e2e-5-butun 28 · e2e-6-yetki 31 · e2e-7-kisi 58
   e2e-8-kilavuz 28 · e2e-9-muhendislik 36 · e2e-10-kutuphane 80

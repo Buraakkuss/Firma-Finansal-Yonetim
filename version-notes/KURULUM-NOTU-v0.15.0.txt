@@ -1,0 +1,38 @@
+NakitPilot v0.15.0 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu; dosya yüklemeye gerek yoktur.
+- ?v=0.15.0 ile açın, görünüm eski kalırsa Ctrl + F5.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+İLK YAPILACAK İŞ: kişi kartlarını girin
+1) Ayarlar > Kişi Kartları.
+2) Önce KENDİ kartınızı girin:
+   - Ad Soyad: Burak Kuş
+   - Unvan: Genel Müdür
+   - E-posta: uygulamaya GİRİŞ YAPTIĞINIZ e-posta ile aynı olmalı
+   - Telefon / Cep
+3) Kaydedin. Listede kartınızın yanında "bu kart sizin" yazmalı.
+   Yazmıyorsa e-posta giriş adresinizle aynı değildir; düzeltin.
+4) Aynı şekilde diğer arkadaşların kartlarını girin.
+
+Teklif verirken
+- Teklif penceresini açtığınızda "Sorumlu Kişi" alanında kendi kartınız
+  seçili gelir, Hazırlayan bilgileri kendiliğinden dolar.
+- Arkadaşınız yerinde değil ve onun adına teklif veriyorsanız, listeden onun
+  kartını seçin; telefon ve e-posta da onunkiyle değişir.
+- İsterseniz bu üç alanı elle de değiştirebilirsiniz.
+
+Sipariş verirken
+- Satın Alma > Satın Alma Siparişleri ekranında "Sorumlu Kişi" alanı aynı
+  şekilde çalışır. Form üstünde ve imza kutusunda o kişinin bilgileri çıkar.
+
+Önemli
+- Kart seçilmezse belgeye firma telefonu ve e-postası basılır (eski davranış).
+- Bir kişi herhangi bir teklif veya siparişte geçiyorsa kartı silinemez.
+  Kişi işten ayrıldıysa kartı silmeyin; not alanına düşün, geçmiş belgeler
+  bozulmasın.
+- Kendi kartınızı yönetici olmasanız da düzenleyebilirsiniz; başkasınınkini
+  düzenlemek için yönetici yetkisi gerekir.

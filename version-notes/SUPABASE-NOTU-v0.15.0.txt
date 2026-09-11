@@ -1,0 +1,21 @@
+NakitPilot v0.15.0 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Yeni veri alanları mevcut JSON yapısının içine eklenir:
+- data.people[]                          kişi kartları
+  {id, name, title, email, phone, mobile, note, active, createdAt, updatedAt}
+- data.mtpro.quotes[].preparedById        teklifte seçilen kişi
+- data.mtpro.quotes[].preparedByTitle     kişinin unvanı (belgeye basılır)
+- data.mtpro.quotes[].preparedByPhone     kişinin telefonu
+- data.mtpro.quotes[].preparedByMail      kişinin e-postası
+- data.purchasing.orders[].personId       siparişte seçilen kişi
+
+preparedByPhone ve preparedByMail alanları önceki sürümlerde de okunuyordu
+fakat hiçbir ekran bunları yazmıyordu; artık kişi kartından doldurulur.
+
+Eski kayıtlarda bu alanlar bulunmaz; belge üretilirken firma varsayılanlarına
+(MT_COMPANY.phone / MT_COMPANY.mail) düşülür, davranış eskisi gibi kalır.
+
+Bu alanların hiçbiri Banka Merkezi'nin normalize tablo senkronizasyonuna dahil
+değildir; trg_company_data_banking_sync tetikleyicisi etkilenmez.

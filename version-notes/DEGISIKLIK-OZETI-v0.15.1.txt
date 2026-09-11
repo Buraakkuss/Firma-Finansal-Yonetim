@@ -1,0 +1,36 @@
+NakitPilot v0.15.1 — Sabit telefon / cep telefonu ayrımı
+
+1) KİŞİ KARTINDA İKİ NUMARA
+- "Sabit Telefon (firma)" : firmanın santral numarası. Yeni kart açtığınızda
+  0262 666 00 00 olarak hazır gelir; gerekirse değiştirebilirsiniz.
+- "Cep Telefonu"          : kişinin kendi numarası.
+- Kişi listesindeki sütun artık "Cep / Sabit": üstte cep, altında küçük
+  puntoyla "sabit ..." yazar.
+
+2) BELGELERDE CEP TELEFONU
+- Teklif PDF'inde sağ bilgi tablosundaki satırın adı "İletişim" yerine
+  "CEP TELEFONU" oldu ve seçilen kişinin cep numarası yazıyor.
+- Satın alma sipariş formunda ve teklif talep formunda "Sorumlu Kişi" /
+  "Talep Eden" satırında ve imza kutusunda "Cep: +90 5.. ..." biçiminde
+  kişinin cep numarası yazıyor.
+- Cep numarası girilmemişse kartın sabit numarasına düşer; hiç kart
+  seçilmemişse teklifte cep satırı hiç basılmaz.
+
+3) BELGENİN EN ALTINDA FİRMA KÜNYESİ VE SABİT TELEFON
+Tüm belgelerin altındaki künye şu sıraya getirildi:
+
+  Marmara Teknik Hid. Pnö. Mak. Met. San. ve Tic. Ltd. Şti. · Gebze / Kocaeli
+  · marmarateknikmakine.com.tr · 0262 666 00 00
+
+- Teklif PDF'inde künye artık hem kapak sayfasında hem de imza sayfasının
+  en altında görünüyor.
+- Sipariş formu ve teklif talep formunda en altta zaten vardı; sabit telefon
+  ve sıralama güncellendi.
+
+4) FİRMA SABİT NUMARASI
+- Firma telefonu +90 549 693 58 58 yerine 0262 666 00 00 olarak güncellendi.
+  Bu numara belge künyelerinde ve yeni kişi kartının sabit telefon alanında
+  kullanılır. Kişilere ulaşmak için cep numaraları kişi kartlarından gelir.
+
+Supabase
+- Şema değişikliği gerekmez.

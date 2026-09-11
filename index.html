@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.15.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.15.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.15.0">
-  <title>NakitPilot Marmara Teknik — v0.15.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.15.1">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.15.1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.15.1">
+  <title>NakitPilot Marmara Teknik — v0.15.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2557,7 +2557,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.15.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.15.1</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -3456,10 +3456,10 @@
             <div class="form-group span-4"><label>Ad Soyad</label><input id="person-name" placeholder="Örn. Burak Kuş"></div>
             <div class="form-group span-4"><label>Unvan</label><input id="person-title" placeholder="Örn. Satın Alma Sorumlusu"></div>
             <div class="form-group span-4"><label>E-posta</label><input id="person-mail" placeholder="ornek@marmarateknikmakine.com.tr"></div>
-            <div class="form-group span-3"><label>Telefon</label><input id="person-phone" placeholder="+90 ..."></div>
-            <div class="form-group span-3"><label>Cep Telefonu</label><input id="person-mobile" placeholder="+90 ..."></div>
+            <div class="form-group span-3"><label>Sabit Telefon (firma)</label><input id="person-phone" placeholder="0262 666 00 00"></div>
+            <div class="form-group span-3"><label>Cep Telefonu</label><input id="person-mobile" placeholder="+90 5.. ... .. .."></div>
             <div class="form-group span-6"><label>Not</label><input id="person-note" placeholder="Örn. Proje ve teklif süreçleri"></div>
-            <div class="span-12" style="margin-top:-6px"><div class="section-sub" style="margin:0">E-posta adresi, uygulamaya giriş yapan kullanıcıyla eşleştirmek için kullanılır. Kendi kartınızın e-postası giriş e-postanızla aynı olmalıdır ki belgelerde varsayılan olarak sizin bilgileriniz gelsin.</div></div>
+            <div class="span-12" style="margin-top:-6px"><div class="section-sub" style="margin:0">E-posta adresi, uygulamaya giriş yapan kullanıcıyla eşleştirmek için kullanılır. Kendi kartınızın e-postası giriş e-postanızla aynı olmalıdır ki belgelerde varsayılan olarak sizin bilgileriniz gelsin.<br><strong>Sabit telefon</strong> firmanın santral numarasıdır ve yeni kartta otomatik gelir; belgelerin en altındaki firma künyesinde görünür. <strong>Cep telefonu</strong> kişinin kendi numarasıdır ve teklif/sipariş belgesinde sorumlu kişi bilgisi olarak yazılır.</div></div>
             <div class="form-action span-3"><button class="btn btn-primary" onclick="savePerson()">💾 Kişiyi Kaydet</button></div>
             <div class="form-action span-2"><button class="btn" onclick="clearPersonForm()">Temizle</button></div>
           </div>
@@ -4146,7 +4146,7 @@
       <div class="form-group span-4"><label>Talep No <span style="color:var(--text-hint)">(opsiyonel)</span></label><input id="quote-request-no" placeholder="Müşteri talep numarası"></div>
       <div class="form-group span-4"><label>Sorumlu Kişi</label><select id="quote-person" onchange="onQuotePersonChange()"></select></div>
       <div class="form-group span-4"><label>Hazırlayan</label><input id="quote-prepared-by" placeholder="Ad Soyad"></div>
-      <div class="form-group span-4"><label>Hazırlayan Telefon</label><input id="quote-prepared-phone" placeholder="Kart seçilince dolar"></div>
+      <div class="form-group span-4"><label>Hazırlayan Cep Telefonu</label><input id="quote-prepared-phone" placeholder="Kart seçilince dolar"></div>
       <div class="form-group span-4"><label>Hazırlayan E-posta</label><input id="quote-prepared-mail" placeholder="Kart seçilince dolar"></div>
       <div class="form-group span-4"><label>Teslim Yeri</label><input id="quote-delivery-place" placeholder="Örn. Müşteri fabrikası, nakliye dahil"></div>
       <div class="form-group span-4"><label>Garanti (ay)</label><input type="number" id="quote-warranty-months" min="0" step="1" value="12"></div>
@@ -4371,7 +4371,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.15.0';
+const APP_VERSION='0.15.1';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -9872,7 +9872,8 @@ function onQuotePersonChange(ilk){
   const mail=document.getElementById('quote-prepared-mail');
   if(x){
     if(ad)ad.value=personDisplayName(x);
-    if(tel)tel.value=x.phone||x.mobile||'';
+    /* Belgeye kişinin CEP telefonu yazılır; sabit hat künyede görünür. */
+    if(tel)tel.value=x.mobile||x.phone||'';
     if(mail)mail.value=x.email||'';
   }else if(!ilk){
     if(tel)tel.value='';
@@ -10258,7 +10259,9 @@ const MT_COMPANY={
   legal:'Marmara Teknik Hid. Pnö. Mak. Met. San. ve Tic. Ltd. Şti.',
   tagline:'Endüstriyel Mühendislik Çözümleri',
   city:'Gebze / Kocaeli',
-  phone:'+90 549 693 58 58',
+  /* v0.15.1 — Belge altlıklarında ve kişi kartı varsayılanında kullanılan
+     FİRMA SABİT HATTI. Kişilerin cep telefonları kişi kartında tutulur. */
+  phone:'0262 666 00 00',
   mail:'tburak.kus@marmarateknikmakine.com.tr',
   web:'marmarateknikmakine.com.tr'
 };
@@ -10365,7 +10368,7 @@ function quoteHtml(q){
   ].filter(r=>String(r[1]||'').trim());
   const rightPairs=[
     ['Hazırlayan',(q.preparedBy||p.owner||'')+(q.preparedByTitle?(' · '+q.preparedByTitle):'')],
-    ['İletişim',q.preparedByPhone||MT_COMPANY.phone],
+    ['Cep Telefonu',q.preparedByPhone||''],
     ['E-posta',q.preparedByMail||MT_COMPANY.mail],
     ['Talep No',q.requestNo||'']
   ].filter(r=>String(r[1]||'').trim());
@@ -10394,7 +10397,7 @@ function quoteHtml(q){
         +'</tr>').join('')
       +(subject?('<tr><th>Konu</th><td colspan="3"><strong>'+htmlEsc(subject)+'</strong></td></tr>'):'')
       +'</tbody></table>'
-    +'<div class="mt-cover-foot">'+htmlEsc(MT_COMPANY.legal)+' · '+htmlEsc(MT_COMPANY.city)+' · '+htmlEsc(MT_COMPANY.phone)+' · '+htmlEsc(MT_COMPANY.web)+'</div>'
+    +'<div class="mt-cover-foot">'+htmlEsc(MT_COMPANY.legal)+' · '+htmlEsc(MT_COMPANY.city)+' · '+htmlEsc(MT_COMPANY.web)+' · '+htmlEsc(MT_COMPANY.phone)+'</div>'
     +'</section>';
 
   /* ── Firma tanıtımı (yalnız proje teklifi) ── */
@@ -10475,7 +10478,9 @@ function quoteHtml(q){
   }
 
   /* ── İmza ── */
-  body+='<section class="mt-page mt-sign-page"><div class="mt-sign"><div class="mt-sign-box"><div class="mt-sign-title">DÜZENLEYEN</div><div class="mt-sign-sub">KAŞE / İMZA</div><div class="mt-sign-name">'+htmlEsc(q.preparedBy||p.owner||'')+'</div></div><div class="mt-sign-box"><div class="mt-sign-title">ONAYLAYAN</div><div class="mt-sign-sub">KAŞE / İMZA</div><div class="mt-sign-name">'+htmlEsc(q.customerName||p.customer||'')+'</div></div></div></section>';
+  body+='<section class="mt-page mt-sign-page"><div class="mt-sign"><div class="mt-sign-box"><div class="mt-sign-title">DÜZENLEYEN</div><div class="mt-sign-sub">KAŞE / İMZA</div><div class="mt-sign-name">'+htmlEsc(q.preparedBy||p.owner||'')+'</div></div><div class="mt-sign-box"><div class="mt-sign-title">ONAYLAYAN</div><div class="mt-sign-sub">KAŞE / İMZA</div><div class="mt-sign-name">'+htmlEsc(q.customerName||p.customer||'')+'</div></div></div>'
+    +'<div class="mt-cover-foot" style="margin-top:26px">'+htmlEsc(MT_COMPANY.legal)+' · '+htmlEsc(MT_COMPANY.city)+' · '+htmlEsc(MT_COMPANY.web)+' · '+htmlEsc(MT_COMPANY.phone)+'</div>'
+    +'</section>';
 
   return '<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>'+htmlEsc(q.code||'Teklif')+'</title><style>'
     +'@page{size:A4;margin:18mm 16mm 20mm}'
@@ -11167,17 +11172,18 @@ function personContactLine(x){
 }
 /* Belgeye basılacak bilgiler: kart yoksa firma varsayılanlarına düşer. */
 function personDocInfo(id){
-  const x=personById(id);
-  if(x)return {
+  /* v0.15.1 — Belgede kişinin CEP telefonu yazar; firma sabit hattı belgenin
+     en altındaki künyede görünür. Cep girilmemişse sabit numaraya düşer. */
+  const kart=(x)=>({
     id:String(x.id), name:personDisplayName(x), title:String(x.title||''),
-    phone:String(x.phone||x.mobile||''), mail:String(x.email||''), found:true
-  };
+    phone:String(x.mobile||x.phone||''), landline:String(x.phone||''),
+    mail:String(x.email||''), found:true
+  });
+  const x=personById(id);
+  if(x)return kart(x);
   const me=currentPerson();
-  if(me)return {
-    id:String(me.id), name:personDisplayName(me), title:String(me.title||''),
-    phone:String(me.phone||me.mobile||''), mail:String(me.email||''), found:true
-  };
-  return {id:'',name:'',title:'',phone:'',mail:'',found:false};
+  if(me)return kart(me);
+  return {id:'',name:'',title:'',phone:'',landline:'',mail:'',found:false};
 }
 function peopleSorted(){
   return peopleStore().filter(x=>x.active!==false)
@@ -11200,6 +11206,8 @@ function clearPersonForm(){
   ['person-name','person-title','person-mail','person-phone','person-mobile','person-note']
     .forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   const e=document.getElementById('person-edit-id');if(e)e.value='';
+  /* Sabit telefon firmanın santralidir; yeni kartta hazır gelir. */
+  const tel=document.getElementById('person-phone');if(tel)tel.value=MT_COMPANY.phone;
 }
 function savePerson(){
   const editId=(document.getElementById('person-edit-id')||{}).value||'';
@@ -11265,14 +11273,14 @@ function renderPeople(){
     el.innerHTML='<div class="empty">Henüz kişi kartı yok. Kendi kartınızı oluşturun: ad soyad, unvan ve giriş e-postanız yeterlidir.</div>';
     return;
   }
-  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Ad Soyad</th><th>Unvan</th><th>E-posta</th><th>Telefon</th><th>Not</th><th></th></tr></thead><tbody>'
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Ad Soyad</th><th>Unvan</th><th>E-posta</th><th>Cep / Sabit</th><th>Not</th><th></th></tr></thead><tbody>'
     +rows.map(x=>{
       const ben=benim&&normalizeEmail(x.email||'')===benim;
       return '<tr><td><strong>'+htmlEsc(personDisplayName(x))+'</strong>'
         +(ben?' <span class="project-badge green">bu kart sizin</span>':'')+'</td>'
         +'<td>'+htmlEsc(x.title||'')+'</td>'
         +'<td>'+htmlEsc(x.email||'')+'</td>'
-        +'<td>'+htmlEsc(x.phone||'')+(x.mobile?('<div style="font-size:11px;color:var(--text-muted)">'+htmlEsc(x.mobile)+'</div>'):'')+'</td>'
+        +'<td>'+htmlEsc(x.mobile||'')+(x.phone?('<div style="font-size:11px;color:var(--text-muted)">sabit '+htmlEsc(x.phone)+'</div>'):'')+'</td>'
         +'<td style="color:var(--text-muted)">'+htmlEsc(x.note||'')+'</td>'
         +'<td><div class="project-action-row">'
           +(peopleCanEditCard(x)?'<button class="btn btn-sm" onclick="editPerson(&quot;'+htmlEsc(x.id)+'&quot;)">Düzenle</button>':'')
@@ -11881,7 +11889,8 @@ function purchaseOrderDocHtml(o,forceMode){
      yapanın kartı, o da yoksa firma varsayılanları. */
   const kisi=personDocInfo(o.personId||'');
   const kisiAd=kisi.name||o.updatedBy||(currentUser&&currentUser.email)||'';
-  const kisiSatir=[kisi.title,kisi.phone||MT_COMPANY.phone,kisi.mail||MT_COMPANY.mail]
+  const kisiCep=kisi.phone||'';
+  const kisiSatir=[kisi.title,kisiCep?('Cep: '+kisiCep):'',kisi.mail||MT_COMPANY.mail]
     .filter(v=>String(v||'').trim()).map(v=>htmlEsc(v)).join('<br>');
   const imzaIc='<strong>'+htmlEsc(kisiAd)+'</strong>'+(kisiSatir?('<div style="margin-top:4px;font-size:10px;line-height:1.45">'+kisiSatir+'</div>'):'');
   const signs = rfq
@@ -11944,7 +11953,7 @@ function purchaseOrderDocHtml(o,forceMode){
     +'<tr><th>'+(rfq?'Talep Eden':'Sorumlu Kişi')+'</th><td colspan="3">'+htmlEsc(kisiAd)
       +(kisi.title?(' · '+htmlEsc(kisi.title)):'')
       +'<div style="font-size:10.5px;color:#5b6b7a;margin-top:2px">'
-      +htmlEsc(kisi.phone||MT_COMPANY.phone)+' · '+htmlEsc(kisi.mail||MT_COMPANY.mail)+'</div></td></tr>'
+      +(kisiCep?('Cep '+htmlEsc(kisiCep)+' · '):'')+htmlEsc(kisi.mail||MT_COMPANY.mail)+'</div></td></tr>'
     +'</table>'
     +'<table>'
     +'<tr><th style="width:120px">Tedarikçi</th><td colspan="3"><strong>'+htmlEsc(sup.name||'')+'</strong></td></tr>'
@@ -11958,7 +11967,7 @@ function purchaseOrderDocHtml(o,forceMode){
     +(rfq?'':intro)
     +signs
     +termsHtml
-    +'<div class="po-foot">'+htmlEsc(MT_COMPANY.legal)+' · '+htmlEsc(MT_COMPANY.city)+' · '+htmlEsc(MT_COMPANY.phone)+' · '+htmlEsc(MT_COMPANY.mail)+' · '+htmlEsc(MT_COMPANY.web)+'</div>'
+    +'<div class="po-foot">'+htmlEsc(MT_COMPANY.legal)+' · '+htmlEsc(MT_COMPANY.city)+' · '+htmlEsc(MT_COMPANY.web)+' · '+htmlEsc(MT_COMPANY.phone)+'</div>'
     +'</div></body></html>';
 }
 function printPurchaseOrder(id,mode){

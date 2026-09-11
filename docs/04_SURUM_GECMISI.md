@@ -254,4 +254,14 @@
 - Kart seçilmezse firma varsayılanları basılır (eski davranış korunur).
 - Düzeltme: imza kutusundaki sabit yükseklik kişi bilgileriyle taşıyordu.
 
-Güncel baz sürüm: **v0.15.0**
+## v0.15.1
+- Kişi kartında telefon ikiye ayrıldı: **Sabit Telefon (firma)** ve
+  **Cep Telefonu**. Yeni kartta sabit telefon 0262 666 00 00 hazır gelir.
+- Belgelerde sorumlu kişinin **cep** numarası yazar (teklifte "CEP TELEFONU"
+  satırı, sipariş/talep formunda "Cep: ..."); cep boşsa sabit numaraya düşer.
+- Belge künyesi yeni sıraya getirildi ve **firma sabit telefonu** eklendi:
+  unvan · şehir · web · 0262 666 00 00.
+- Teklif PDF'inde künye artık imza sayfasının en altında da basılıyor.
+- MT_COMPANY.phone firma santral numarası olarak güncellendi.
+
+Güncel baz sürüm: **v0.15.1**

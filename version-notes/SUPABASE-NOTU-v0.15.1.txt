@@ -1,0 +1,14 @@
+NakitPilot v0.15.1 Supabase Notu
+
+Şema değişikliği yoktur. Migration veya backfill çalıştırılmaz.
+
+Mevcut alanların anlamı netleşti:
+- data.people[].phone   → firma SABİT telefonu (künyede kullanılan numara)
+- data.people[].mobile  → kişinin CEP telefonu (belgelerde yazan numara)
+
+Belge üretiminde personDocInfo() artık phone yerine mobile'ı öncelikli okur;
+mobile boşsa phone'a düşer. Eski kayıtlarda mobile boşsa davranış eskisi gibi
+kalır, belgede sabit numara görünür.
+
+MT_COMPANY.phone değeri '0262 666 00 00' olarak güncellendi; bu sabit yalnız
+index.html içindedir, veritabanında tutulmaz.

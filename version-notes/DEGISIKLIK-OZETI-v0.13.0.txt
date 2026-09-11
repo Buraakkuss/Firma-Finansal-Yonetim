@@ -1,0 +1,55 @@
+NakitPilot v0.13.0 — Gruplanmış menü, SAP No ve mobil kullanım
+
+1) SOL MENÜ TEK BAŞLIK ALTINDA TOPLANDI
+- Eskiden 30'a yakın buton alt alta duruyordu. Artık her modül tek başlık:
+  Özet Paneli · Finans · Proje Takip · Satın Alma · Cari Hesaplar ·
+  Raporlar · Ayarlar · Yönetim
+- Başlığa basınca o modülün ekranları açılır; başka bir başlık açılınca
+  önceki kendiliğinden kapanır (akordiyon).
+- Bir ekrana gidildiğinde o ekranın bulunduğu başlık otomatik açılır.
+- Modülü görme yetkisi olmayan kullanıcıda başlık hiç görünmez.
+
+2) SAP NO — KALICI SİPARİŞ NUMARASI
+- Her satın alma siparişine kalıcı bir SAP No verilir ve BİR DAHA DEĞİŞMEZ.
+  Tedarikçi faturayı bu numaraya keser.
+- Projeye bağlı sipariş proje kodundan numara alır : MTP26-1-SAP1, MTP26-1-SAP2
+- Projesiz (genel) sipariş genel koddan numara alır : GEN26-SAP1, GEN26-SAP2
+- Proje alanında artık "Genel Satın Alma (projesiz)" seçeneği var; acil veya
+  proje numarası henüz belli olmayan alımlar buradan açılır.
+- Sipariş formunda SAP No, kayıttan önce önizleme olarak gösterilir.
+
+   SONRADAN PROJEYE BAĞLAMA
+- Satın alma önce projesiz sipariş açıp sonradan düzenleyerek projeye
+  bağlayabilir. Bu durumda:
+  * SAP No aynı kalır (tedarikçi faturası bozulmaz),
+  * siparişe kesilmiş faturalar yeni projenin GERÇEK MALİYETİNE taşınır,
+  * gelecekteki gider ve ödeme kayıtları yeni projeyle yenilenir,
+  * hem eski hem yeni projenin hareket geçmişine not düşülür.
+- Faturada proje boş bırakılmışsa, bağlı olduğu siparişin projesi kullanılır.
+  Böylece "sipariş projeye bağlandı ama fatura projesiz kalmış" durumu
+  maliyeti kaçırmaz.
+- Faturaya elle BAŞKA bir proje yazılmışsa ona dokunulmaz.
+
+3) SATIN ALMA SİPARİŞ FORMU (A4 / PDF)
+- Sipariş listesindeki "🖨 Form" butonu kurumsal sipariş formunu açar.
+- Formda: logo, SAP No, proje kodu, sipariş ve teslim tarihi, durum,
+  tedarikçi bilgileri, kalem tablosu, toplam (TL olmayan siparişte TL
+  karşılığı), not/teslim şartı, imza alanları ve firma künyesi.
+- Formda ayrıca "Lütfen faturayı <SAP No> ile düzenleyiniz" notu vardır.
+
+4) FATURA EKRANI KOLAYLIĞI
+- Fatura girerken sipariş (SAP No) seçilince tedarikçi, proje, para birimi ve
+  kur otomatik dolar.
+- Sipariş listesinde artık proje kodu da görünür.
+
+5) TELEFONDA TAM KULLANIM
+- Sol menü telefonda yatay şerit olmaktan çıktı, üstteki ☰ butonuyla açılan
+  çekmece menü oldu. Ekrana dokununca veya bir sayfa seçilince kapanır.
+- Başlık ve ☰ aynı satırda; üst bar iki sütuna düştü.
+- Bütün form ızgaraları tek sütuna iner, butonlar tam genişlik ve en az 38 px
+  yükseklik alır.
+- Tablolar kendi içinde yatay kaydırılır; sayfa asla yana taşmaz.
+- Giriş alanları 16 px yazı kullanır; iOS'ta otomatik yakınlaştırma olmaz.
+
+Supabase
+- Şema değişikliği gerekmez.

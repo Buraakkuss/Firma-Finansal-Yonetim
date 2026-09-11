@@ -1,0 +1,21 @@
+NakitPilot v0.9.5 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu olduğu için dosya yüklemeye gerek yoktur.
+- Uygulamayı ?v=0.9.5 ile açın; görünüm eski kalırsa Ctrl + F5 (Mac: Cmd + Shift + R).
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Kullanım
+- Teklif penceresinde "+ Kalem Ekle" dediğinizde ilk satırın açıklaması proje
+  koduyla dolu gelir. İsterseniz üzerine yazabilirsiniz.
+- Kalem eklemezseniz teklif tek satır olarak yazdırılır ve açıklama sütununda
+  proje kodu görünür.
+- Proje Finans Durumu ekranında proje seçtiğinizde fatura ve tahsilat açıklama
+  alanları proje koduyla dolu gelir. Üzerine ek açıklama yazarsanız proje kodu
+  başta kalır (örn. "MTP26-1 — Avans faturası").
+
+Eski kayıtlar
+- Daha önce girilmiş fatura ve tahsilat kayıtları değişmez. İsterseniz
+  düzenleyip kaydettiğinizde proje kodu açıklamaya eklenir.

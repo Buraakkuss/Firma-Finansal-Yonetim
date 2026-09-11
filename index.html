@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.9.4">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.9.4" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.9.4">
-  <title>NakitPilot Marmara Teknik — v0.9.4</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.9.5">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.9.5" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.9.5">
+  <title>NakitPilot Marmara Teknik — v0.9.5</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2527,7 +2527,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.9.4</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.9.5</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -4176,7 +4176,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.9.4';
+const APP_VERSION='0.9.5';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -9556,8 +9556,15 @@ function openQuoteModal(projectId,quoteId,costId){
    bunlar müşteriye gösterilen POZ satırlarıdır. */
 let _quoteLines=[];
 function quoteLinesDraftTotal(){return _quoteLines.reduce((s,l)=>s+n(l.qty)*n(l.unitPrice),0);}
+function currentQuoteProjectCode(){
+  const pid=(document.getElementById('quote-project-id')||{}).value||'';
+  const p=mtpro().projects.find(x=>String(x.id)===String(pid));
+  return p?(p.code||''):'';
+}
 function addQuoteLineRow(){
-  _quoteLines.push({id:makeId('ql'),desc:'',unit:'ADET',qty:1,unitPrice:0});
+  // İlk kalem proje koduyla açılır; firma takibi proje kodu üzerinden yapıyor.
+  const code=currentQuoteProjectCode();
+  _quoteLines.push({id:makeId('ql'),desc:(_quoteLines.length?'':code),unit:'ADET',qty:1,unitPrice:0});
   renderQuoteLines();markQuoteDirty();
 }
 function removeQuoteLine(id){
@@ -10015,11 +10022,14 @@ function quoteHtml(q){
   }
 
   /* ── Fiyat tablosu + ticari şartlar ── */
-  const priceRows=lines.length?lines:[{desc:(q.subject||p.title||p.code||''),unit:'1 ADET',qty:1,unitPrice:total}];
+  // v0.9.5 — Fiyat tablosunda açıklama olarak proje kodu kullanılır; firma
+  // tüm ödeme ve iş takibini bu kod üzerinden yapıyor.
+  const priceDesc=(l)=>String((l&&l.desc)||'').trim()||p.code||q.subject||'';
+  const priceRows=lines.length?lines:[{desc:p.code||q.subject||'',unit:'1 ADET',qty:1,unitPrice:total}];
   body+=sec()
     +'<h2>Teklif Fiyatı</h2>'
     +'<table class="mt-price"><thead><tr><th style="width:60px">POZ</th><th>AÇIKLAMA</th><th style="width:90px">BİRİM</th><th style="width:70px">ADET</th><th style="width:120px">BİRİM FİYAT</th><th style="width:130px">TOPLAM</th></tr></thead><tbody>'
-    +priceRows.map((l,i)=>'<tr><td>Poz.'+(i+1)+'</td><td>'+htmlEsc(l.desc||'')+'</td><td>'+htmlEsc(l.unit||'ADET')+'</td><td class="num">'+(n(l.qty)||1)+'</td><td class="num">'+money(n(l.unitPrice))+'</td><td class="num strong">'+money(lines.length?quoteLineAmount(l):total)+'</td></tr>').join('')
+    +priceRows.map((l,i)=>'<tr><td>Poz.'+(i+1)+'</td><td>'+htmlEsc(priceDesc(l))+'</td><td>'+htmlEsc(l.unit||'ADET')+'</td><td class="num">'+(n(l.qty)||1)+'</td><td class="num">'+money(n(l.unitPrice))+'</td><td class="num strong">'+money(lines.length?quoteLineAmount(l):total)+'</td></tr>').join('')
     +'</tbody><tfoot><tr><td colspan="5" class="num strong">TOPLAM (KDV Hariç)</td><td class="num strong">'+money(total)+'</td></tr></tfoot></table>'
     +'<p class="mt-note">Fiyatlarımıza KDV dahil değildir.</p>'
     +'<h2>Ödeme Şekli</h2>'+mtList(paymentList)
@@ -10220,6 +10230,13 @@ function syncProjectCollectionStatus(p){
   }
   return false;
 }
+/* Açıklamada proje kodu yoksa başına ekler; varsa olduğu gibi bırakır. */
+function withProjectCode(text,code){
+  const t=String(text||'').trim(), c=String(code||'').trim();
+  if(!c)return t;
+  if(!t)return c;
+  return t.toUpperCase().includes(c.toUpperCase())?t:(c+' — '+t);
+}
 function selectedFinanceProject(){
   const sel=document.getElementById('pfin-project');
   return mtpro().projects.find(x=>String(x.id)===String(sel&&sel.value))||null;
@@ -10240,7 +10257,8 @@ function saveProjectInvoice(){
   const rec={id:editId||makeId('inv'),no,date,amount,currency:cur,rate,
     vatRate:parseDecimalInput(document.getElementById('inv-vat').value)||0,
     dueDate:document.getElementById('inv-due').value||'',
-    note:(document.getElementById('inv-note').value||'').trim(),
+    note:withProjectCode((document.getElementById('inv-note').value||'').trim(),p.code),
+    projectCode:p.code||'',
     updatedAt:new Date().toISOString(),updatedBy:(currentUser&&currentUser.email)||''};
   if(!Array.isArray(p.invoices))p.invoices=[];
   const idx=p.invoices.findIndex(x=>String(x.id)===String(editId));
@@ -10260,6 +10278,7 @@ function clearInvoiceForm(){
   const d=document.getElementById('inv-due');if(d)d.value='';
   const e=document.getElementById('inv-edit-id');if(e)e.value='';
   const dt=document.getElementById('inv-date');if(dt)dt.value=todayYmd();
+  applyProjectCodeDefaults(selectedFinanceProject());
 }
 function editProjectInvoice(id){
   const p=selectedFinanceProject();if(!p)return;
@@ -10302,7 +10321,8 @@ function saveProjectCollection(){
   const rate=cur==='TRY'?1:(parseDecimalInput(document.getElementById('col-rate').value)||0);
   if(cur!=='TRY'&&rate<=1){alert(CURRENCY_LABELS[cur]+' tahsilatta kayıt kuru zorunludur.');return;}
   const rec={id:editId||makeId('col'),invoiceId,date,amount,currency:cur,rate,
-    note:(document.getElementById('col-note').value||'').trim(),
+    note:withProjectCode((document.getElementById('col-note').value||'').trim(),p.code),
+    projectCode:p.code||'',
     updatedAt:new Date().toISOString(),updatedBy:(currentUser&&currentUser.email)||''};
   if(!Array.isArray(p.collections))p.collections=[];
   const idx=p.collections.findIndex(x=>String(x.id)===String(editId));
@@ -10317,6 +10337,7 @@ function clearCollectionForm(){
   const nt=document.getElementById('col-note');if(nt)nt.value='';
   const e=document.getElementById('col-edit-id');if(e)e.value='';
   const d=document.getElementById('col-date');if(d)d.value=todayYmd();
+  applyProjectCodeDefaults(selectedFinanceProject());
 }
 function editProjectCollection(id){
   const p=selectedFinanceProject();if(!p)return;
@@ -10375,9 +10396,22 @@ function renderPaymentAlerts(){
       +'<td style="text-align:right;font-weight:700;color:'+(r.info.state==='overdue'?'var(--expense)':'var(--fixed)')+'">'+fmtTL(r.remaining)+'</td></tr>').join('')
     +'</tbody></table></div>';
 }
+/* v0.9.5 — Fatura ve tahsilat açıklamaları proje koduyla ön doldurulur. */
+function applyProjectCodeDefaults(p){
+  if(!p)return;
+  const code=p.code||'';
+  const inv=document.getElementById('inv-note');
+  const col=document.getElementById('col-note');
+  const editingInv=(document.getElementById('inv-edit-id')||{}).value||'';
+  const editingCol=(document.getElementById('col-edit-id')||{}).value||'';
+  if(inv&&!editingInv&&!inv.value.trim())inv.value=code;
+  if(col&&!editingCol&&!col.value.trim())col.value=code;
+  [['inv-note',inv],['col-note',col]].forEach(([id,el])=>{if(el)el.placeholder=code?(code+' — açıklama ekleyebilirsiniz'):'Açıklama';});
+}
 function renderProjectInvoicing(){
   renderPaymentAlerts();
   const p=selectedFinanceProject();
+  applyProjectCodeDefaults(p);
   const invWrap=document.getElementById('invoice-table');
   const colWrap=document.getElementById('collection-table');
   const colSel=document.getElementById('col-invoice');

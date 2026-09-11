@@ -1,0 +1,21 @@
+NakitPilot v0.9.5 Test Notu
+
+- index.html satır içi JavaScript sözdizimi doğrulandı: hata yok.
+- Proje kodu ekleme mantığı kaynağın kendisinden okunarak Node üzerinde
+  çalıştırıldı. 8 senaryo, 8 başarılı:
+  * Boş açıklama -> sadece proje kodu
+  * Açıklama varsa kod başa ekleniyor ("MTP26-1 — Avans faturası")
+  * Kod zaten varsa tekrar eklenmiyor
+  * Kod küçük harfle geçse de tekrar eklenmiyor
+  * Kod metnin ortasında geçiyorsa tekrar eklenmiyor
+  * Proje kodu boşsa metin bozulmuyor
+  * İkisi de boşsa boş dönüyor
+  * Baştaki ve sondaki boşluklar temizleniyor
+
+- Teklif belgesi kalem girilmeden üretildi ve fiyat tablosunun AÇIKLAMA
+  sütununda proje kodunun yazdırıldığı doğrulandı: "MTP26-80".
+- Kalemli teklif çıktısı yeniden üretildi; elle yazılmış açıklamaların
+  değişmediği doğrulandı.
+- Yedek parça şablonu toplamı yeniden doğrulandı: 91.250,00 TL.
+
+Supabase SQL gereksinimi: Yok.

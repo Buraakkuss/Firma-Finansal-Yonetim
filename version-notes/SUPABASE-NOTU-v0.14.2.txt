@@ -1,0 +1,19 @@
+NakitPilot v0.14.2 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+Mevcut veri üzerinde hiçbir toplu güncelleme (backfill) çalıştırılmaz.
+
+Davranış notları:
+- syncProjectCollectionStatus artık iki yönlü çalışır ve proje durumunu
+  data.mtpro.projects[].status üzerinde günceller. Her değişiklik
+  data.mtpro.activity içine 'status' tipiyle yazılır.
+- saveProductionPlan artık durumu doğrudan atamak yerine
+  applyProjectStatusChange üzerinden geçirir; aşama ve not değişiklikleri
+  activity'ye 'stage' ve 'note' tipiyle eklenir.
+- Proje tahsilatı ve tedarikçi ödemesi kaydı, ilgili faturanın kalanını aşarsa
+  hiçbir kayıt yazılmadan reddedilir.
+- Raporlardaki "Toplam Portföy" yalnız etiket olarak "Kasa Portföyü" oldu;
+  getCumulativePortfolioForMonth hesabı değişmedi.
+
+Bu alanların hiçbiri Banka Merkezi'nin normalize tablo senkronizasyonuna dahil
+değildir; trg_company_data_banking_sync tetikleyicisi etkilenmez.

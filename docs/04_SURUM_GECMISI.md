@@ -215,4 +215,28 @@
 - Form üstündeki açıklama vadenin cariden mi yoksa siparişe özel mi
   geldiğini söyler.
 
-Güncel baz sürüm: **v0.14.1**
+## v0.14.2
+- Tüm modüller demo veriyle uçtan uca test edildi (464 senaryo); bulunan
+  8 hata düzeltildi.
+- **Teklif penceresi açılmıyordu**: `_quoteBaseline` tanımsızdı, sayfa
+  açıldıktan sonraki ilk teklif açılışında ReferenceError veriyordu.
+- **Üretim Takibi ekranı geçiş kurallarını atlıyordu**: durum doğrudan
+  atanıyor, irsaliye/fatura/tahsilat şartı denetlenmiyor ve hareket geçmişine
+  yazılmıyordu. Artık `applyProjectStatusChange` üzerinden geçer; aşama ve not
+  değişiklikleri de geçmişe yazılır.
+- **Durum eşitlemesi iki yönlü oldu**: tahsilat silinir/azaltılır veya yeni
+  fatura eklenirse proje "Faturalandırıldı"ya geri döner; son fatura silinirse
+  "Teslim Edildi"ye döner.
+- **Fazla tahsilat/ödeme engellendi**: proje tahsilatı faturanın kalanını,
+  tedarikçi ödemesi faturanın kalan borcunu aşamaz.
+- **Yönetici panelinde yanıltıcı kâr**: gerçek maliyeti girilmemiş projede
+  "gerçek kâr = satış, marj %100" yerine "ölçülemiyor" gösterilir.
+- **Proje kodu açıklamaya iki kez yazılıyordu**: proje değişince otomatik kod
+  yenilenir, kullanıcı metni korunur; kod eşleşmesi sınır duyarlı oldu.
+- **Talep aşamasındaki siparişte "Mal Kabul"** butonu kaldırıldı.
+- **Raporlardaki "Toplam Portföy"** etiketi "Kasa Portföyü · banka hesapları
+  hariç" olarak netleştirildi (hesap değişmedi).
+- Liste ekranlarında işlem butonları için sütun genişletildi; boş vade ipucu
+  satırı gizlendi.
+
+Güncel baz sürüm: **v0.14.2**

@@ -1,0 +1,12 @@
+NakitPilot v0.9.6 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Bu sürümde proje tahsilatı, mevcut data.income dizisine standart bir gelir
+kaydı olarak yazılır. Kayıt, diğer gelir kayıtlarıyla aynı alanları kullanır
+(paymentAccount, paymentAllocations, fixedLinkId) ve ek olarak projectId,
+projectCode, invoiceId, collectionId geri referanslarını taşır.
+
+Banka bakiyeleri uygulama tarafında paymentAllocations üzerinden hesaplandığı
+için tahsilatlar normalize banka tablolarına da mevcut senkronizasyon
+mekanizmasıyla yansır; ayrıca komut çalıştırmaya gerek yoktur.

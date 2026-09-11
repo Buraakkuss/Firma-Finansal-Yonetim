@@ -1,0 +1,38 @@
+NakitPilot v0.9.6 — Proje ile finans modülü birbirine bağlandı
+
+Giderilen temel eksik
+- Proje tahsilatları yalnız proje ekranında duruyordu. Şirketin gelir defterine
+  yazılmıyor, banka bakiyesine işlemiyor ve ödeme planındaki beklenen gelir
+  kalemini kapatmıyordu.
+- Sonuç olarak nakit akışı projeksiyonu, tahsil edilmiş paraları sürekli
+  "gelecekte beklenen gelir" olarak göstermeye devam ediyordu.
+
+Yeni: tahsilat artık şirket defterine işliyor
+- Tahsilat kaydedildiğinde otomatik olarak Tamamlanmış Gelir kaydı oluşur.
+- Kategori: PROJE TAHSİLATI. Açıklamada proje kodu yer alır.
+- Tahsilat formuna "Tahsil Edilen Hesap" alanı eklendi. Seçilen banka hesabı,
+  nakit kasa veya KMH bakiyesi buna göre hareket eder.
+- Tahsilat formuna "Ödeme Planı Kalemi" alanı eklendi. Seçildiğinde ilgili
+  beklenen gelir kalemi kapanır ve projeksiyondan düşer.
+- Faturanın kalanı kapanıyorsa ödeme planı kalemi tam kapatma, kısmi tahsilatta
+  kısmi kapatma olarak işaretlenir.
+- Gelir kaydı projeye, faturaya ve tahsilata geri referanslarla bağlanır.
+
+Yeni: geri alınabilirlik
+- Tahsilat düzenlenirse bağlı gelir kaydı güncellenir, kopya oluşmaz.
+- Tahsilat silinirse bağlı gelir kaydı da geri alınır (is kurali 10).
+- Tahsilat tablosunda her satırın hangi hesaba işlendiği ve finans modülüne
+  yazılıp yazılmadığı görünür.
+
+Düzeltilen: ödeme planı durum atlaması
+- Proje ödeme planı oluşturulduğunda projenin durumu, geçiş kurallarını
+  atlayarak doğrudan "Onaylandı" yapılıyordu. Artık normal geçiş kurallarından
+  geçiyor ve hareket geçmişine yazılıyor.
+
+Sistem bütünlüğü
+- Beklenen gelir (ödeme planı) ve gerçekleşen gelir (tahsilat) artık aynı
+  kayda bağlı; aynı para iki kez sayılmaz (is kurali 12 ve 14).
+- Proje parası ile şirket parası tek defterde buluşur.
+
+Supabase
+- Şema değişikliği gerekmez.

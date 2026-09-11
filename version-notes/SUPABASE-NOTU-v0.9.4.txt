@@ -1,0 +1,4 @@
+NakitPilot v0.9.4 Supabase Notu
+
+Şema değişikliği yoktur. Bu sürüm yalnızca arayüz renklerini içerir.
+Yeni tablo, kolon, RPC veya migration gerekmez.

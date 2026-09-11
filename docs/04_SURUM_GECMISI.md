@@ -114,4 +114,11 @@
   gömülü taşınır, kaydedilen PDF'te de görünür.
 - Kapak bilgi tablosunda sağ sütunu boş kalan satırlardaki boş kutu giderildi.
 
-Güncel baz sürüm: **v0.9.3**
+## v0.9.4
+- Uygulama ve teklif belgesi renk paleti Marmara Teknik logosunun renklerine göre
+  yeniden kuruldu: ana renk lacivert #2E4F6E, sol menü #142D48, vurgu çelik mavi
+  #7FA8CC, zeminler soğuk gri.
+- PWA simgeleri, favicon ve tema renkleri logo gradyanıyla güncellendi.
+- Anlam taşıyan renkler korundu: gelir yeşil, gider/borç kırmızı, uyarı turuncu.
+
+Güncel baz sürüm: **v0.9.4**

@@ -1,15 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="NakitPilot">
   <defs>
     <linearGradient id="np" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2DD4BF"/>
-      <stop offset="1" stop-color="#2563EB"/>
+      <stop offset="0" stop-color="#4D6E8A"/>
+      <stop offset="1" stop-color="#142D48"/>
     </linearGradient>
   </defs>
   <rect width="512" height="512" rx="112" ry="112" fill="url(#np)"/>
   <g fill="#FFFFFF">
-    <!-- N -->
     <path d="M123.4 163.8h39.9l63.9 100.7V163.8h39.9v184.4h-39.9l-63.9-100.7v100.7h-39.9z"/>
-    <!-- P -->
     <path d="M287.2 163.8h60.6c43.1 0 74.4 27.4 74.4 67.8s-31.3 67.8-74.4 67.8h-20.7v48.8h-39.9zm39.9 38.4v58.8h19.4c20.4 0 34.1-11.6 34.1-29.4s-13.7-29.4-34.1-29.4z"/>
   </g>
 </svg>

@@ -1,0 +1,74 @@
+NakitPilot v0.19.0 — Test raporu
+Tarih: 11 Eylül 2026
+
+ÖZET
+  710 test çalıştı, 710 geçti, 0 kaldı.
+  Yeni: e2e-11-klasor (43 test) — klasörün tamamını yükleme.
+  Mevcut 667 testin tamamı yeniden çalıştırıldı; gerileme yok.
+
+SÖZDİZİMİ VE DOSYA DOĞRULAMASI
+  index.html script blokları ....... 1 blok, 0 hata
+  sw.js ............................ node --check temiz
+  manifest.webmanifest ............. geçerli JSON
+
+TEST VERİSİ (gerçek klasör ağacı)
+  DogusKalip/
+    Kalip-A/genel-montaj.step
+    Kalip-A/Thumbs.db                (sistem dosyası — atlanmalı)
+    Kalip-A/Ust Grup/ust-plaka.step  (boşluklu ve Türkçe klasör adı)
+    Kalip-A/Ust Grup/Plakalar/plaka-01.dwg
+    Kalip-A/Ust Grup/Plakalar/plaka-02.dwg
+    Kalip-A/Alt Grup/alt-plaka.step
+    Kalip-B/govde.step
+    Kalip-B/buyuk-montaj.step        (3 MB — yüklenmeli)
+    Kalip-B/dev-montaj.step          (53 MB — sınır üstü, atlanmalı)
+    Kalip-B/Standart Parcalar/pim-10x50.step
+
+1) YAPI KORUNUYOR MU (24 test)
+   - 4 kademeye kadar klasör ağacı birebir oluştu
+     (Doğuş Kalıp CAD > DogusKalip > Kalip-A > Ust Grup > Plakalar).
+   - Boşluklu ve Türkçe klasör adları bozulmadı.
+   - Hazır başlıklar bozulmadı; 5 mevcut + 7 yeni = 12 klasör.
+   - Her dosya kendi klasörüne gitti (8 dosya).
+   - Thumbs.db atlandı, 53 MB dosya atlandı ve adıyla uyarıldı,
+     3 MB dosya yüklendi.
+   - Storage yolları firma kimliği ile başlıyor, Türkçe karakter/boşluk yok.
+   - Onay penceresinde dosya sayısı ve boyut soruldu.
+   - Özet: "8 dosya yüklendi · 7 klasör oluşturuldu · 1 dosya 50 MB üstü".
+   - İlerleme çubuğu ve durdur butonu iş bitince gizlendi, seçim temizlendi,
+     kayıt yapıldı, liste ekranda doğru göründü.
+
+2) AYNI KLASÖRÜ TEKRAR YÜKLEME (4 test)
+   - Dosya ve klasör sayısı değişmedi (çoğalma yok).
+   - Hiçbir dosya tekrar yüklenmedi (0 storage çağrısı).
+   - Özette "zaten vardı, atlandı" bilgisi var.
+
+3) YÜKLEMEYİ DURDURMA (6 test)
+   - 3. dosyada durduruldu; yükleme kesildi, o ana kadarki kayıtlar duruyor.
+   - Durum mesajında "Durduruldu", butonlar eski haline döndü.
+   - Aynı klasör tekrar seçildiğinde kalan 5 dosya yüklendi, toplam 8 oldu.
+
+4) HATA YÖNETİMİ (4 test)
+   - Bir dosyada ağ hatası verildi: o dosya kaydedilmedi, diğer 7 dosya
+     yüklenmeye devam etti, özette hata sayısı ve mesajı göründü.
+   - Sayfada JavaScript hatası yok.
+
+5) YETKİ (2 test)
+   - Rapor kullanıcısı klasör yükleyemiyor, yetki uyarısı gösteriliyor.
+
+GERİLEME TESTLERİ (667 test — hepsi geçti)
+  e2e-1-finans 14 · e2e-2-proje 43 · e2e-3-kenar 39 · e2e-4-satinalma 50
+  e2e-5-butun 28 · e2e-6-yetki 31 · e2e-7-kisi 58 · e2e-8-kilavuz 28
+  e2e-9-muhendislik 36 · e2e-10-kutuphane 80 · ui-test 33 · test-v0140 65
+  test-v083 7 · test-v090 25 · test-v092 18 · test-v095 8 · test-v096 20
+  test-v0100 26 · test-v0110 27 · test-v0120 31
+
+DÜZELTİLEN HATA
+  "Yüklemeyi Durdur" butonu gizlenemiyordu: .pro-grid .form-action .btn
+  kuralı display:flex !important olduğu için satır içi display:none etkisizdi.
+  Gizleme .stdlib-gizli sınıfına çevrildi, test hesaplanmış stile bakıyor.
+
+NOT — TEST ORTAMI
+  Supabase Storage çağrıları taklit edildi (upload/createSignedUrl/remove
+  kaydediliyor, istenen dosyada hata döndürülüyor). Gerçek yükleme hızı ve
+  depolama sınırı canlı ortamda görülür.

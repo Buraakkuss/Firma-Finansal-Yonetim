@@ -1,0 +1,54 @@
+NakitPilot v0.22.0 — Supabase notu
+
+ÇALIŞTIRILACAK DOSYA (zorunlu, tek parça)
+  sql/nakitpilot-ekip-kurulum-v0.22.0.sql
+Birden çok kez çalıştırılabilir. Firma, kullanıcı ve finans verisine dokunmaz.
+
+NE YAPAR
+1) Eski akışı kaldırır:
+   DROP: np_list_join_requests, np_approve_join_request, np_reject_join_request,
+         np_request_join, np_my_join_requests, np_cancel_my_join_request,
+         np_list_open_companies, np_set_join_requests_open,
+         np_pending_join_count, np_invite_info, np_claim_invitation
+   DROP TABLE: join_requests
+   company_invitations tablosu DURUR (veri kaybı olmasın diye); yalnız
+   'pending' davetler 'cancelled' yapılır.
+
+2) public.np_admin_config tablosu (key/value):
+     project_url       -> Supabase proje adresiniz (dosyada hazır gelir)
+     service_role_key  -> SİZİN dolduracağınız anahtar
+   RLS açıktır ve anon/authenticated rollerine hiçbir yetki verilmez; tabloyu
+   yalnız SECURITY DEFINER fonksiyonlar okur. Anahtar tarayıcıya inmez.
+
+3) http eklentisi (pgsql-http) açılır. Veritabanı, Supabase'in kendi admin
+   servisine (/auth/v1/admin/users) bu eklentiyle istek atar.
+   Eklenti kapalıysa: Dashboard > Database > Extensions > http.
+
+4) Fonksiyonlar:
+   np_admin_api(method, path, body)         -> iç kullanım, anon/authenticated'a
+                                               yetki verilmez
+   np_create_member(company, email, password, full_name, role)
+        - çağıran o firmada 'admin' değilse hata
+        - e-posta ve şifre doğrulaması (şifre >= 6)
+        - kullanıcı yoksa admin servisinde oluşturur (email_confirm: true),
+          varsa oluşturmaz, yalnız ekibe ekler
+        - company_members kaydını açar/günceller
+   np_set_member_password(company, member_user_id, password)
+        - yalnız o firmanın yöneticisi, yalnız o firmanın üyesi için
+   np_admin_setup_ready()  -> anahtar girilmiş mi (uygulama uyarı göstermek için)
+   np_get_team(company)    -> e-posta artık ::text ile döndürülür
+                              ("structure of query does not match function
+                               result type" hatasına karşı)
+
+GÜVENLİK ÖZETİ
+- service_role anahtarı yalnız veritabanında; istemciye hiç gönderilmez.
+- Kullanıcı oluşturma ve şifre değiştirme, çağıranın o firmada yönetici
+  olmasını şart koşar (np_user_role kontrolü).
+- np_admin_api doğrudan çağrılamaz (yetkisi geri alınır).
+- Anahtarı doldurduğunuz SQL dosyasını paylaşmayın. Anahtar sızarsa
+  Supabase > Project Settings > API Keys ekranından yenileyin ve SQL'i yeni
+  anahtarla tekrar çalıştırın.
+
+DOKUNULMAYANLAR
+company_data.data, banka merkezi tetikleyicisi, Storage politikaları ve diğer
+tüm iş fonksiyonları değişmez.

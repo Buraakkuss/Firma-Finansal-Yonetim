@@ -411,4 +411,52 @@
   `np_claim_invitation` eklendi; `np_list_join_requests` davet bilgisini döner;
   onay/red davet durumunu günceller.
 
-Güncel baz sürüm: **v0.21.0**
+## v0.21.1
+- Davet bağlantısını açan kişinin e-postasında zaten hesap varsa mesaj artık ne
+  yapacağını söylüyor: "o hesabın şifresiyle giriş yapın — giriş anında davet
+  uygulanacak ve kaydınız yöneticinin onayına düşecek". Ekran giriş sekmesine
+  geçip imleci şifre alanına koyuyor.
+- Şifre sıfırlama başarı mesajı dürüstleştirildi: Supabase'in yerleşik mail
+  servisi yalnız proje üyelerine ve saatlik sınırla gönderdiği için mesaj
+  "gelmezse yönetici SMTP Settings'te kendi sunucusunu tanımlamalı" diyor.
+
+## v0.21.2
+- **Düzeltme:** Üyelik Talepleri listesi canlıda "structure of query does not
+  match function result type" hatası veriyordu. `np_list_join_requests`,
+  kararı veren yöneticinin e-postasını `auth.users.email` alanından okuyor;
+  Supabase'de bu alan `varchar(255)`, fonksiyon ise `text` bekliyordu.
+  Alan artık `::text` ile döndürülüyor.
+  Düzeltme `sql/nakitpilot-duzeltme-v0.21.2.sql` (kısa) veya güncellenen
+  `sql/nakitpilot-uyelik-davet-v0.21.0.sql` dosyası ile uygulanır.
+- Test altyapısı düzeltildi: yerel şema taklidinde `auth.users.email` artık
+  gerçeği gibi `varchar(255)`; bu hata sınıfı bundan sonra testte yakalanıyor
+  (düzeltme öncesi testler gerçekten kırmızıya döndü).
+- Ekrandaki "şu SQL dosyasını çalıştırın" uyarılarında sürüm numarası
+  toplu değiştirme sırasında yanlışlıkla dosya adına da yazılmıştı; doğru dosya
+  adı gösteriliyor.
+
+## v0.22.0
+- **Ekip yönetimi baştan kuruldu.** Kullanıcı kendi kendine kayıt olamaz;
+  davet bağlantısı, üyelik talebi ve onay akışı tamamen kaldırıldı. Yönetici
+  Firma & Ekip ekranından ad, e-posta, şifre ve rolü girer; hesap anında açılır
+  (e-posta doğrulaması kapalı gelir) ve ekibe eklenir. Kişi bu bilgilerle
+  doğrudan giriş yapar — hiçbir aşamada e-posta gönderimi gerekmez.
+- Oluşturma sonrası giriş adresi, e-posta, şifre ve rol tek kutuda gösterilir;
+  **📋 Bilgileri Kopyala** ile panoya alınır. Şifre üreteci (10 hane, karışan
+  karakterler yok) eklendi.
+- Ekip listesinde her kullanıcı için **🔑 Şifre Belirle**: yönetici yeni şifre
+  belirler, kişiye iletir. Şifre sıfırlama maili beklemeye gerek kalmaz.
+- Giriş ekranı sadeleşti: yalnız Giriş Yap ve Şifremi Unuttum. Firmaya bağlı
+  olmayan kullanıcıya "yöneticinizden sizi eklemesini isteyin" bilgisi ve
+  yetkiyi yeniden kontrol düğmesi gösterilir.
+- Supabase tarafı: `sql/nakitpilot-ekip-kurulum-v0.22.0.sql` tek parça çalışır.
+  Eski üyelik talebi tablosu ve fonksiyonları kaldırılır, bekleyen davetler
+  kapatılır. Yeni: `np_admin_config` (service_role anahtarı RLS kapalı tabloda,
+  tarayıcıya asla gitmez), `np_admin_api` (http eklentisiyle Supabase admin
+  servisine istek), `np_create_member`, `np_set_member_password`,
+  `np_admin_setup_ready`. `np_get_team` artık e-postayı açıkça `::text`
+  döndürüyor.
+- Kurulum yapılmadıysa ekranda hangi SQL dosyasının çalıştırılacağı ve `http`
+  eklentisinin açılması gerektiği yazılı olarak gösteriliyor.
+
+Güncel baz sürüm: **v0.22.0**

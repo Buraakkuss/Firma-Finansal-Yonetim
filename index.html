@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.21.1">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.21.1" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.21.1">
-  <title>NakitPilot Marmara Teknik — v0.21.1</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.22.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.22.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.22.0">
+  <title>NakitPilot Marmara Teknik — v0.22.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -307,44 +307,29 @@
   .password-reset-panel { display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
   .password-reset-panel .btn { width:100%; margin-top:10px; }
   body.company-setup-mode .auth-login-fields, body.company-setup-mode .auth-actions,
-  body.company-setup-mode .auth-tabs, body.company-setup-mode .auth-signup-fields,
   body.company-setup-mode .auth-link-helper { display:none; }
   body.company-setup-mode .company-setup { display:block; }
   body.password-reset-mode .auth-login-fields,
   body.password-reset-mode .auth-actions,
-  body.password-reset-mode .auth-tabs,
-  body.password-reset-mode .auth-signup-fields,
   body.password-reset-mode .auth-link-helper,
   body.password-reset-mode .company-setup,
   body.password-reset-mode .auth-note { display:none; }
-  /* v0.20.0 — Giriş / Kayıt sekmeleri ve üyelik talebi paneli */
-  .auth-tabs { display:flex; gap:6px; margin-bottom:14px; padding:4px; border-radius:12px;
-    background:var(--bg-secondary); border:1px solid var(--border); }
-  .auth-tab { flex:1; padding:9px 10px; border:0; border-radius:9px; background:transparent; cursor:pointer;
-    font-family:inherit; font-size:13px; font-weight:700; color:var(--text-muted); }
-  .auth-tab.active { background:var(--bg-card); color:var(--primary); box-shadow:0 2px 6px rgba(0,0,0,.06); }
-  .auth-signup-fields { display:none; }
-  body.signup-mode .auth-login-fields, body.signup-mode .auth-actions,
-  body.signup-mode .auth-link-helper { display:none; }
-  body.signup-mode .auth-signup-fields { display:block; }
-  .auth-signup-fields .btn { width:100%; margin-top:10px; }
-  .auth-invite-banner { margin-bottom:12px; padding:11px 12px; border-radius:10px; font-size:12.5px; line-height:1.6;
-    background:rgba(46,125,50,.10); border:1px solid rgba(46,125,50,.35); color:var(--text); }
-  .auth-invite-banner.err { background:rgba(200,60,60,.09); border-color:rgba(200,60,60,.40); }
-  .auth-signup-fields input.locked { background:var(--bg-secondary); color:var(--text-muted); cursor:not-allowed; }
-  .field-note { display:block; margin-top:5px; font-size:11.5px; color:var(--text-muted); }
+  /* v0.22.0 — Firma bağlantısı bekleyen kullanıcı ekranı ve kullanıcı oluşturma */
   .join-panel { display:grid; gap:10px; }
-  .join-state { padding:12px; border-radius:11px; border:1px solid var(--border); background:var(--bg-secondary); font-size:13px; }
-  .join-state.warn { border-color:rgba(230,145,30,.45); background:rgba(230,145,30,.10); }
-  .join-state.err { border-color:rgba(200,60,60,.40); background:rgba(200,60,60,.09); }
-  .join-state.ok { border-color:rgba(46,125,50,.40); background:rgba(46,125,50,.10); }
+  .join-state { padding:12px; border-radius:11px; border:1px solid var(--border); background:var(--bg-secondary); font-size:13px; line-height:1.6; }
   .join-panel details { border:1px solid var(--border); border-radius:11px; padding:10px 12px; background:var(--bg-secondary); }
   .join-panel details summary { cursor:pointer; font-size:12.5px; font-weight:700; color:var(--text-muted); }
-  .join-req-card { border:1px solid var(--border); border-radius:12px; padding:12px 13px; background:var(--bg-card); margin-bottom:10px; }
-  .join-req-head { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; }
-  .join-req-meta { font-size:12px; color:var(--text-muted); margin-top:4px; overflow-wrap:anywhere; }
-  .join-req-actions { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:9px; }
-  .join-req-actions select { max-width:200px; }
+  .setup-warn { margin:0 0 12px; padding:11px 12px; border-radius:10px; font-size:12.5px; line-height:1.6;
+    background:rgba(230,145,30,.10); border:1px solid rgba(230,145,30,.45); color:var(--text); }
+  .member-result { margin-top:12px; padding:13px 14px; border-radius:12px;
+    background:rgba(46,125,50,.08); border:1px solid rgba(46,125,50,.35); }
+  .member-result-title { font-size:14px; font-weight:800; margin-bottom:9px; }
+  .member-result-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; padding:5px 0;
+    border-bottom:1px dashed var(--border); font-size:13px; }
+  .member-result-row span { color:var(--text-muted); }
+  .member-result-row strong { overflow-wrap:anywhere; font-family:ui-monospace,Menlo,Consolas,monospace; }
+  .member-result-actions { display:flex; gap:7px; flex-wrap:wrap; margin-top:10px; }
+  .member-result-note { margin-top:9px; font-size:12px; color:var(--text-muted); line-height:1.6; }
   body.password-reset-mode .password-reset-panel { display:block; }
   .auth-message { min-height:22px; margin-top:14px; font-size:12px; color:var(--text-muted); }
   .auth-message.error { color:var(--expense); }
@@ -2660,11 +2645,6 @@
   <div class="auth-card">
     <h1>NakitPilot</h1>
     <p>İşletmenizin nakit akışını, alacaklarını ve borçlarını tek panelden takip edin.</p>
-    <div class="auth-invite-banner" id="auth-invite-banner" hidden></div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="auth-tab-login" onclick="setAuthMode('login')" type="button">Giriş Yap</button>
-      <button class="auth-tab" id="auth-tab-signup" onclick="setAuthMode('signup')" type="button">Kayıt Ol</button>
-    </div>
     <div class="auth-login-fields">
       <div class="form-group"><label>E-posta</label><input type="email" id="auth-email" autocomplete="email" placeholder="ornek@firma.com"></div>
       <div class="form-group"><label>Şifre</label><input type="password" id="auth-password" autocomplete="current-password" placeholder="En az 6 karakter"></div>
@@ -2672,15 +2652,6 @@
     <div class="auth-actions">
       <button class="btn btn-primary" onclick="authLogin()" type="button">Giriş Yap</button>
       <button class="btn wide" onclick="requestPasswordReset()" type="button">Şifremi Unuttum</button>
-    </div>
-    <div class="auth-signup-fields" id="auth-signup-fields">
-      <div class="form-group"><label>Ad Soyad</label><input type="text" id="signup-name" autocomplete="name" placeholder="Örn. Ahmet Yılmaz"></div>
-      <div class="form-group"><label>E-posta</label><input type="email" id="signup-email" autocomplete="email" placeholder="ad.soyad@marmarateknik.com.tr"><small class="field-note" id="signup-email-note" hidden></small></div>
-      <div class="form-group"><label>Telefon (opsiyonel)</label><input type="tel" id="signup-phone" autocomplete="tel" placeholder="0532 000 00 00"></div>
-      <div class="form-group"><label>Şifre</label><input type="password" id="signup-password" autocomplete="new-password" placeholder="En az 6 karakter"></div>
-      <div class="form-group"><label>Şifre (tekrar)</label><input type="password" id="signup-password2" autocomplete="new-password" placeholder="Şifreyi tekrar yazın"></div>
-      <button class="btn btn-primary" onclick="authSignup()" type="button">Hesap Oluştur</button>
-      <div class="auth-note" style="margin-top:12px">Hesabınız oluşturulduktan sonra <strong>firmaya katılma talebi</strong> gönderilir; yönetici onaylayınca panel açılır. Davet bağlantısıyla geldiyseniz talep <strong>kendiliğinden</strong> oluşur, siz bir şey yapmazsınız — yöneticinin onayını beklemeniz yeterlidir.</div>
     </div>
     <div class="auth-link-helper">
       <label>Reset linki açılmıyorsa</label>
@@ -2695,16 +2666,8 @@
     </div>
     <div class="company-setup" id="company-setup">
       <div class="join-panel">
-        <div id="join-state" class="join-state">Üyelik durumu kontrol ediliyor...</div>
-        <div id="join-form" hidden>
-          <div class="form-group"><label>Katılmak istediğiniz firma</label><select id="join-company"></select></div>
-          <div class="form-group"><label>Görev / istediğiniz rol</label><select id="join-role"></select></div>
-          <div class="form-group"><label>Ad Soyad</label><input type="text" id="join-name" autocomplete="name" placeholder="Örn. Ahmet Yılmaz"></div>
-          <div class="form-group"><label>Telefon (opsiyonel)</label><input type="tel" id="join-phone" autocomplete="tel" placeholder="0532 000 00 00"></div>
-          <div class="form-group"><label>Not (opsiyonel)</label><input type="text" id="join-note" placeholder="Örn. Üretim planlama ekibindeyim"></div>
-          <button class="btn btn-primary" id="join-submit-btn" onclick="submitJoinRequest()" type="button">Katılma Talebi Gönder</button>
-        </div>
-        <button class="btn" id="join-refresh-btn" onclick="refreshJoinStatus()" type="button">↻ Onaylandı mı? Kontrol Et</button>
+        <div id="join-state" class="join-state">Hesabınız açık ama henüz bir firmaya bağlı değilsiniz. Yöneticinizden sizi <strong>Firma &amp; Ekip</strong> ekranından eklemesini isteyin, sonra tekrar giriş yapın.</div>
+        <button class="btn" id="join-refresh-btn" onclick="refreshMembershipStatus()" type="button">↻ Yetkimi Yeniden Kontrol Et</button>
         <details id="join-create-company">
           <summary>Kendi firmamı oluşturmak istiyorum</summary>
           <div class="form-group" style="margin-top:10px"><label>Firma Adı</label><input type="text" id="company-name-input" autocomplete="organization" placeholder="Örn. Test Firma" onkeydown="if(event.key==='Enter')createFirstCompanyFromForm()"></div>
@@ -2722,7 +2685,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.21.1</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.22.0</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -3754,7 +3717,7 @@
       <section class="guide-sec" id="gs-6"><h2><span class="gnum">6</span>Cari hesaplar</h2><p class="guide-lead">Kimden ne kadar alacağınız, kime ne kadar borcunuz olduğu — vade yaşlandırmasıyla.</p><div class="guide-item"><h3>Alacaklar</h3><p>Proje faturalarından tahsil edilmemiş tutarlar <strong>müşteri bazında</strong> toplanır ve vade yaşına göre gruplanır.</p><figure class="guide-shot"><div class="gimg"><img src="guide/17-alacaklar.jpg" alt="Alacaklar ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Toplam alacak, vadesi geçmiş tutar ve müşteri sayısı.</li><li>Müşteri adının altında kaç açık fatura olduğu ve hangi projelere ait olduğu.</li><li>Yaşlandırma sütunları: Vadesi Gelmedi / 1-30 / 31-60 / 61-90 / 90+ gün.</li><li>En altta toplam satırı.</li></ol><div class="guide-note">Bu ekran salt okunurdur; buradan veri girilmez. Bir rakam yanlışsa <strong>Proje Finans Durumu</strong> ekranındaki fatura veya tahsilat kaydını düzeltin.</div><div class="guide-warn">90+ Gün sütununda tutar varsa o müşteriyle öncelikle görüşün.</div></div><div class="guide-item"><h3>Borçlar</h3><p>Tedarikçi faturalarından ödenmemiş tutarlar <strong>tedarikçi bazında</strong> ve aynı yaşlandırma mantığıyla gösterilir. Kısmi ödenen faturalarda yalnız kalan borç sayılır.</p><figure class="guide-shot"><div class="gimg"><img src="guide/18-borclar.jpg" alt="Borçlar ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Bir borç kapandığı hâlde listede duruyorsa Satın Alma &gt; Faturalar &amp; Ödemeler ekranından ödemenin girilip girilmediğini kontrol edin.</div></div></section>
       <section class="guide-sec" id="gs-7"><h2><span class="gnum">7</span>Yönetim raporu ve kârlılık</h2><p class="guide-lead">İşletme sahibinin tek bakışta durumu gördüğü ekran.</p><div class="guide-item"><h3>Yönetici Paneli</h3><figure class="guide-shot"><div class="gimg"><img src="guide/19-yonetici.jpg" alt="Yönetici paneli" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Özet kartlar: teklif aşaması, onay bekleyen, üretimdeki, geciken proje sayıları.</li><li>Tahsil edilecek ve ödenecek tutarlar, teklif onay oranı ve onaylanan ciro.</li><li>Proje kârlılığı tablosu.</li><li>Geciken projeler listesi — teslim tarihi geçmiş ve kapanmamış projeler.</li></ol><table class="guide-kv"><tbody><tr><th>Satış</th><td>Projenin onaylanan teklif tutarı.</td></tr><tr><th>Tahmini Maliyet</th><td>Projenin seçili maliyet çalışmasından gelir.</td></tr><tr><th>Gerçek Maliyet</th><td>Projeye bağlanan <strong>tedarikçi faturalarından</strong> gelir.</td></tr><tr><th>Gerçek Kâr</th><td>Satış eksi gerçek maliyet.</td></tr><tr><th>Marj</th><td>Gerçek kârın satışa oranı.</td></tr><tr><th>Kalan Alacak</th><td>Faturalanmış ama henüz tahsil edilmemiş tutar.</td></tr></tbody></table><div class="guide-warn">Bir projede <strong>"ölçülemiyor"</strong> yazıyorsa o projeye hiç tedarikçi faturası bağlanmamıştır. Gerçek maliyet bilinmediği için kâr da hesaplanamaz. Maliyetin doğru çıkması için tedarikçi faturalarında <strong>PROJE alanını mutlaka doldurun</strong>.</div></div><div class="guide-item"><h3>Raporlar ekranı</h3><p>Seçtiğiniz tarih aralığında nakit akışı, kategori dağılımı, aylık tablo ve risk durumu. Excel, CSV ve görsel rapor olarak indirilebilir.</p><figure class="guide-shot"><div class="gimg"><img src="guide/24-raporlar.jpg" alt="Raporlar ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note"><strong>Kasa Portföyü</strong> yalnız nakit kasayı kapsar, <u>banka hesaplarını içermez</u>. Banka dâhil toplam için Özet Paneli'ne veya Banka Merkezi'ne bakın.</div></div><div class="guide-item"><h3>Özet Paneli</h3><figure class="guide-shot"><div class="gimg"><img src="guide/01-ozet.jpg" alt="Özet paneli" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Net finansal varlık ve banka/kart/KMH dağılımı.</li><li>Dönem kartları: gelir, gider, beklenen kalemler, tahmini net.</li><li>Gelir-gider grafiği ve gider kategori dağılımı.</li><li>Nakit akışı projeksiyonu — gelecek ayların tahmini portföyü.</li><li>Tahsilat vade uyarıları — vadesi geçen ve 7 gün içinde dolacak faturalar.</li></ol></div></section>
       <section class="guide-sec" id="gs-8"><h2><span class="gnum">8</span>Kişi kartları ve belgelerdeki bilgiler</h2><p class="guide-lead">Teklif ve sipariş belgelerinde kimin bilgisi görünecek.</p><div class="guide-item"><h3>Belgelerde sorumlu kişi nasıl seçilir</h3><p>Hem teklif penceresinde hem satın alma sipariş formunda <strong>Sorumlu Kişi</strong> alanı vardır.</p><ol class="guide-steps"><li>Belgeyi açtığınızda <strong>varsayılan olarak sizin kartınız</strong> seçili gelir.</li><li>Arkadaşınız yerinde değilse ve onun adına belge düzenliyorsanız listeden onun kartını seçin.</li><li>Ad, <strong>cep telefonu</strong> ve e-posta üçü birden o kişininkiyle değişir.</li><li>İsterseniz bu alanları elle de düzenleyebilirsiniz.</li></ol><table class="guide-kv"><tbody><tr><th>Belgede görünen numara</th><td>Kişinin <strong>cep telefonu</strong>. Girilmemişse kartın sabit numarası yazılır.</td></tr><tr><th>Belgenin en altındaki künye</th><td>Firma unvanı · şehir · web adresi · <strong>firma sabit telefonu</strong>.</td></tr><tr><th>Kart seçilmezse</th><td>Firma varsayılan bilgileri basılır (eski davranış).</td></tr></tbody></table><div class="guide-note">Bir kişi herhangi bir teklif veya siparişte sorumlu olarak geçiyorsa <strong>kartı silinemez</strong>. Kişi işten ayrıldıysa kartı silmeyin; not alanına düşün ki geçmiş belgeler bozulmasın.</div></div></section>
-      <section class="guide-sec" id="gs-9"><h2><span class="gnum">9</span>Yetkiler ve roller</h2><p class="guide-lead">Kim neyi görebilir, kim neyi değiştirebilir.</p><div class="guide-item"><h3>Rollerin varsayılan yetkileri</h3><table class="guide-kv"><tbody><tr><th>Yönetici</th><td>Her modülde tam yetki. Firma & Ekip, Yasal ve kişi kartı yönetimi yalnız bu roldedir.</td></tr><tr><th>Muhasebe</th><td>Finans ve Cari düzenler; Proje ve Satın Alma'yı görür ama değiştiremez.</td></tr><tr><th>Mühendis / Proje</th><td>Proje düzenler; Satın Alma ve Cari'yi görür. Finans girişi ve Yönetim Raporu'nu göremez.</td></tr><tr><th>Satın Alma</th><td>Satın Alma düzenler; Finans ve Proje'yi görür ama değiştiremez.</td></tr><tr><th>Rapor Kullanıcısı</th><td>Her modülü görüntüler, hiçbir şeyi değiştiremez.</td></tr></tbody></table><p>Bu varsayılanlar <strong>Ayarlar &gt; Firma &amp; Ekip</strong> ekranındaki <em>Modül Yetkileri</em> matrisinden kişi bazında değiştirilebilir. Her kullanıcı her modülde üç seviyeden birini alır: <strong>erişim yok</strong> / <strong>görüntüleme</strong> / <strong>düzenleme</strong>.</p><figure class="guide-shot"><div class="gimg"><img src="guide/21-yetki.jpg" alt="Firma & Ekip ve modül yetkileri" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Muhasebe parayı girer; satın alma ve proje ekibi aynı veriyi <strong>izleyebilir</strong> ama değiştiremez. Sistem bu ayrımı korumak üzere kurulmuştur.</div></div><div class="guide-item"><h3>Yeni kullanıcı ekleme — iki yol</h3><p>Sisteme yeni birini eklemenin iki yolu vardır: <strong>davet bağlantısı</strong> göndermek veya kişinin <strong>kendisinin kayıt olup onay beklemesi</strong>. İkisinde de son sözü yönetici söyler.</p><p><strong>Yol 1 — Davet bağlantısı (en hızlısı):</strong> Kişiye bağlantıyı gönderirsiniz, o kayıt olur, siz onaylarsınız.</p><ol class="guide-pins"><li>Ayarlar → <strong>Firma & Ekip</strong> → <strong>Ekip Daveti</strong> kutusuna kişinin e-postasını yazın.</li><li>Rolü seçin: Rapor Kullanıcısı, Muhasebe, Mühendis / Proje, Satın Alma veya Yönetici.</li><li><strong>Davet Oluştur</strong> deyin. Alttaki kutuda bağlantı çıkar; <strong>Kopyala</strong> ile alın veya <strong>✉️ Mail ile Gönder</strong> ile hazır metinle yollayın.</li><li>Karşı taraf bağlantıyı açar. Ekran <strong>kendiliğinden Kayıt Ol formuna</strong> geçer ve davet ettiğiniz e-posta alana yazılıp kilitlenir; kişi sadece ad soyad ve şifresini yazar. Başka bir e-posta ile kayıt olmaya çalışırsa sistem "bu e-posta davet edilen adresle eşleşmiyor" der.</li><li>Kayıt biter bitmez sistem <strong>üyelik talebini kendisi açar</strong> (rol davetten gelir) ve size düşer. Üyelik Talepleri kartında bu kişi <strong>✉️ Davet ettiğiniz kişi</strong> rozetiyle görünür; <strong>✓ Onayla</strong> dediğinizde giriş yapabilir.</li><li>Aynı kişiye ikinci davet oluşturursanız eski bağlantı iptal olur; her zaman son gönderdiğiniz bağlantı geçerlidir. Davet 14 gün geçerlidir. Süresi dolmuş, iptal edilmiş veya kullanılmış bağlantıyı açan kişi ekranda sebebini görür.</li></ol><p><strong>Yol 2 — Kişi kayıt olur, siz onaylarsınız:</strong></p><ol class="guide-pins"><li>Kişi giriş ekranında <strong>Kayıt Ol</strong> sekmesine geçer; ad soyad, e-posta, telefon ve şifresini yazar.</li><li>Giriş yaptığında karşısına <strong>üyelik talebi</strong> ekranı gelir: firmayı seçer, istediği rolü, adını ve isterse bir not yazıp talebi gönderir.</li><li>Siz Ayarlar → Firma & Ekip → <strong>Üyelik Talepleri</strong> kartında talebi görürsünüz (ad, e-posta, telefon, not, istediği rol, tarih).</li><li><strong>Verilecek rol</strong>ü seçip <strong>✓ Onayla</strong> deyin. Kişi artık o rolle giriş yapabilir. Uygun değilse <strong>Reddet</strong> deyip sebep yazın; kişi bu sebebi kendi ekranında görür.</li><li>Kişi onaydan sonra kendi ekranındaki <strong>↻ Onaylandı mı? Kontrol Et</strong> düğmesine basar veya tekrar giriş yapar; panel açılır.</li></ol><div class="guide-ok">Dışarıdan kimse talep göndersin istemiyorsanız Firma & Ekip ekranındaki <strong>"Bu firma yeni üyelik taleplerine açık olsun"</strong> kutusunun işaretini kaldırın. O zaman kullanıcı yalnız davet bağlantısıyla eklenir.</div><div class="guide-note">Onaylanan veya davetle gelen kullanıcının rolünü sonradan <strong>Ekip ve Bekleyen Davetler</strong> tablosundan değiştirebilir, kullanıcıyı <strong>Çıkar</strong> ile firmadan alabilirsiniz. Modül bazında ince ayar için <strong>Modül Yetkileri</strong> tablosunu kullanın.</div><div class="guide-warn">Firma sahibinin yönetici yetkisi kaldırılamaz; firma yöneticisiz kalmasın diye sistem buna izin vermez. Bir kişiyi <strong>Yönetici</strong> yaparsanız o kişi de üyelik onaylayabilir, davet oluşturabilir ve yetki değiştirebilir.</div></div></section>
+      <section class="guide-sec" id="gs-9"><h2><span class="gnum">9</span>Yetkiler ve roller</h2><p class="guide-lead">Kim neyi görebilir, kim neyi değiştirebilir.</p><div class="guide-item"><h3>Rollerin varsayılan yetkileri</h3><table class="guide-kv"><tbody><tr><th>Yönetici</th><td>Her modülde tam yetki. Firma & Ekip, Yasal ve kişi kartı yönetimi yalnız bu roldedir.</td></tr><tr><th>Muhasebe</th><td>Finans ve Cari düzenler; Proje ve Satın Alma'yı görür ama değiştiremez.</td></tr><tr><th>Mühendis / Proje</th><td>Proje düzenler; Satın Alma ve Cari'yi görür. Finans girişi ve Yönetim Raporu'nu göremez.</td></tr><tr><th>Satın Alma</th><td>Satın Alma düzenler; Finans ve Proje'yi görür ama değiştiremez.</td></tr><tr><th>Rapor Kullanıcısı</th><td>Her modülü görüntüler, hiçbir şeyi değiştiremez.</td></tr></tbody></table><p>Bu varsayılanlar <strong>Ayarlar &gt; Firma &amp; Ekip</strong> ekranındaki <em>Modül Yetkileri</em> matrisinden kişi bazında değiştirilebilir. Her kullanıcı her modülde üç seviyeden birini alır: <strong>erişim yok</strong> / <strong>görüntüleme</strong> / <strong>düzenleme</strong>.</p><figure class="guide-shot"><div class="gimg"><img src="guide/21-yetki.jpg" alt="Firma & Ekip ve modül yetkileri" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Muhasebe parayı girer; satın alma ve proje ekibi aynı veriyi <strong>izleyebilir</strong> ama değiştiremez. Sistem bu ayrımı korumak üzere kurulmuştur.</div></div><div class="guide-item"><h3>Yeni kullanıcı ekleme</h3><p>Kullanıcılar kendi kendine kayıt olamaz; hesapları <strong>yönetici açar</strong>. Davet bağlantısı, e-posta doğrulaması ve onay adımı yoktur.</p><ol class="guide-pins"><li>Ayarlar → <strong>Firma &amp; Ekip</strong> → <strong>👤 Yeni Kullanıcı Oluştur</strong> kartına gelin.</li><li><strong>Ad Soyad</strong>, <strong>E-posta</strong> ve <strong>Rol</strong> girin (Rapor Kullanıcısı, Muhasebe, Mühendis / Proje, Satın Alma, Yönetici).</li><li>Şifreyi kendiniz yazın veya <strong>🎲 Şifre Üret</strong> ile 10 haneli bir şifre üretin (karışan harfler — O/0, l/I — kullanılmaz).</li><li><strong>Kullanıcıyı Oluştur</strong> deyin. Hesap anında açılır ve ekibe eklenir.</li><li>Açılan yeşil kutuda <strong>giriş adresi, e-posta, şifre ve rol</strong> görünür. <strong>📋 Bilgileri Kopyala</strong> ile alıp kişiye WhatsApp/mail ile iletin.</li><li>Kişi bu bilgilerle giriş yapar; başka hiçbir adım yoktur.</li></ol><div class="guide-ok"><strong>Şifre unutulursa:</strong> Ekip Kullanıcıları tablosunda o satırdaki <strong>🔑 Şifre Belirle</strong> düğmesine basın, yeni şifreyi yazın (veya önerilen şifreyi kabul edin) ve kişiye iletin. Mail beklemeye gerek yoktur.</div><div class="guide-note">Aynı e-posta ile daha önce bir hesap açıldıysa sistem yeni hesap oluşturmaz; var olan hesabı ekibe ekler ve şifresini değiştirmez. Şifresini de yenilemek isterseniz listeden <strong>🔑 Şifre Belirle</strong> deyin.</div><div class="guide-note">Kullanıcının rolünü sonradan tablodan değiştirip <strong>Rolü Kaydet</strong> diyebilir, <strong>Çıkar</strong> ile firmadan alabilirsiniz. Modül bazında ince ayar için <strong>Modül Yetkileri</strong> tablosunu kullanın.</div><div class="guide-warn">Bu özellik çalışmıyorsa ekranda "kurulum tamamlanmamış" uyarısı çıkar: yöneticinin <strong>sql/nakitpilot-ekip-kurulum-v0.22.0.sql</strong> dosyasını Supabase'de bir kez çalıştırmış olması gerekir. Firma sahibinin yönetici yetkisi kaldırılamaz.</div></div></section>
       <section class="guide-sec" id="gs-10"><h2><span class="gnum">10</span>Mühendislik araçları</h2><p class="guide-lead">Tasarım ve maliyet çalışması sırasında kullanılan hesaplama araçları.</p><div class="guide-item"><h3>Ağırlık hesaplama</h3><p>Profil, sac, lama, boru, köşebent gibi ürünlerin malzeme cinsine ve ölçülerine göre ağırlığını hesaplar. Ölçüler <strong>milimetre</strong>, yoğunluk <strong>kg/dm³</strong>, sonuç <strong>kilogram</strong>dır.</p><ol class="guide-steps"><li><strong>Mühendislik &gt; Ağırlık Hesaplama</strong>.</li><li><strong>Malzeme</strong>yi seçin; yoğunluk otomatik gelir. Listede olmayan bir malzeme için "Özel" seçip yoğunluğu elle yazın.</li><li><strong>Kesit Tipi</strong>ni seçin. Sağda o kesitin şeması ve ölçü harfleri görünür.</li><li>Ölçüleri ve uzunluğu girin; sonuç anında hesaplanır.</li><li><strong>Adet</strong> girerek toplam ağırlığı görün.</li><li>İsterseniz <strong>Listeye Ekle</strong> ile birden çok kalemi biriktirin.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/25-agirlik.jpg" alt="Ağırlık hesaplama ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Malzeme, yoğunluk, kesit tipi ve adet.</li><li>Seçilen kesite göre değişen ölçü alanları.</li><li>Kesit şeması — ölçü harfleri formdaki alanlarla aynıdır.</li><li>Sonuç kartları: kesit alanı, kg/m, parça ağırlığı ve toplam.</li><li>Hesabın nasıl yapıldığını adım adım gösteren satır.</li><li>Hesap listesi; malzeme fiyatı girilirse tutar da çıkar.</li></ol><table class="guide-kv"><tbody><tr><th>Kesit tipleri</th><td>Sac/plaka · lama · kare dolu · yuvarlak dolu (mil) · boru · kutu profil (kare ve dikdörtgen) · altıgen · köşebent · U · T · I/H profil</td></tr><tr><th>Malzemeler</th><td>Çelik, paslanmaz 304/316, dökme demir, alüminyum, bakır, pirinç, bronz, çinko, kurşun, titanyum, nikel, magnezyum, PVC, PE, POM, PA6, PTFE, pleksi, cam, ahşap ve özel</td></tr></tbody></table><div class="guide-ok">Liste hazırken <strong>Listeyi Kopyala</strong> ile panoya alıp maliyet çalışmasına veya e-postaya yapıştırabilirsiniz. Malzeme fiyatı (TL/kg) girerseniz her satırın ve toplamın tutarı da hesaplanır.</div><div class="guide-note">Köşebent, U, T ve I/H profillerde köşe radyusları ve flanş eğimleri hesaba katılmaz; sonuç standart katalog değerinden yaklaşık %1-3 sapabilir. Kritik işlerde üretici kataloğundan doğrulayın.</div><div class="guide-warn">Hesap listesi kaydedilmez; ekrandan çıkınca veya sayfayı yenileyince silinir. Saklamak istediğiniz listeyi kopyalayın.</div></div><div class="guide-item"><h3>Standart Ekipmanlar — Hazır CAD Datalar ve Kataloglar</h3><p>Mühendislik başlığının altındaki <strong>Standart Ekipmanlar</strong> bölümünde iki kütüphane vardır: <strong>Hazır CAD Datalar</strong> (STEP, STP, DWG, DXF, IGES ve teknik resimler) ve <strong>Kataloglar</strong> (üretici katalogları, ölçü tabloları, PDF dokümanlar). İkisi de aynı şekilde çalışır.</p><ol class="guide-pins"><li>Menü → <strong>Mühendislik</strong> → <strong>Hazır CAD Datalar</strong>. İlk açılışta hazır başlıklar gelir: Yataklı Rulmanlar CAD, Doğuş Kalıp CAD, Alhan CAD, Emes Teker CAD, Surfence CAD.</li><li>Bir başlığa <strong>tıklayınca içine girersiniz</strong>. Üstteki yol çubuğundan (🏠 Hazır CAD Datalar › … ) istediğiniz kademeye geri dönebilir, <strong>⬆️ Üst klasör</strong> ile bir üst kademeye çıkabilirsiniz.</li><li>Yeni klasör açmak için <strong>Yeni başlık (klasör) adı</strong> kutusuna adı yazıp <strong>Klasör Oluştur</strong>a basın. İçindeyken açtığınız klasör <strong>alt klasör</strong> olur: Yataklı Rulmanlar CAD › <strong>UCF Serisi</strong> › <strong>UCF205</strong> gibi. Kademe sınırı yoktur.</li><li>Kök seviyede klasör açarak <strong>yeni bir kütüphane başlığı</strong> da ekleyebilirsiniz (örn. yeni bir tedarikçi).</li><li>Dosya eklemek için klasörün içine girin, alttaki <strong>Dosya Yükle</strong> kartından dosyayı seçin (<strong>birden fazla dosya</strong> seçebilirsiniz), istersek görünecek adı ve notu yazıp <strong>Yükle</strong>ye basın.</li><li><strong>Elinizdeki bir klasörü olduğu gibi yüklemek için</strong> (alt klasörleriyle birlikte): hedef klasörün içine girin, "veya klasörün tamamını yükle" kutusundan bilgisayarınızdaki klasörü seçin ve <strong>📂 Klasörü Yükle</strong>ye basın. Kaç dosya ve kaç MB yükleneceği sorulur, onaylayınca klasör yapısı burada aynen oluşturulur.</li><li>Yükleme sürerken çubukta kaçıncı dosyada olduğunuz, yüzde ve tahmini kalan süre görünür. <strong>⛔ Yüklemeyi Durdur</strong> ile durdurabilirsiniz; o ana kadar yüklenenler kayıtlı kalır. Aynı klasörü aynı yerde tekrar seçerseniz yüklenmiş dosyalar atlanır, <strong>kaldığı yerden devam eder</strong> — büyük kütüphaneleri birkaç oturumda yükleyebilirsiniz.</li><li>Mühendis dosyanın üzerindeki <strong>⬇️ İndir</strong> butonuna basınca dosya doğrudan bilgisayarına iner. PDF ve resimlerde <strong>👁</strong> butonu dosyayı yeni sekmede açar.</li><li>Üstteki <strong>arama kutusu</strong> kütüphanenin tamamında arar: klasör adı, dosya adı ve not içinde. Sonuçta dosyanın hangi klasörde olduğu da yazar.</li><li><strong>✏️</strong> adı değiştirir, <strong>🗑</strong> siler. Dolu bir klasör silinmez; önce içindekileri silmeniz istenir.</li></ol><div class="guide-ok">Dış kaynaktaki bir dosyayı kütüphaneye almak istemiyorsanız <strong>dış bağlantı adresi</strong> alanına üreticinin sayfa adresini yazıp kaydedebilirsiniz; kart 🔗 ikonuyla görünür.</div><div class="guide-note">Tek dosya sınırı <strong>50 MB</strong>. Klasör yüklerken bu sınırın üstündeki dosyalar atlanır ve sonunda listelenir; onları ZIP yapıp ekleyebilirsiniz. Thumbs.db, desktop.ini gibi sistem dosyaları kendiliğinden atlanır. Dosyalar firmanın bulut alanında saklanır; sadece o firmanın kullanıcıları görebilir.</div><div class="guide-warn">Klasör açma, dosya yükleme ve silme için <strong>Mühendislik modülünde düzenleme yetkisi</strong> gerekir. Görüntüleme yetkisi olan herkes dosyaları <strong>indirebilir</strong>. Silinen dosya buluttan da kalkar, geri alınamaz.</div></div></section>
       <section class="guide-sec" id="gs-11"><h2><span class="gnum">11</span>Telefonda kullanım</h2><p class="guide-lead">Sistem telefonda da tam çalışır.</p><div class="guide-item"><h3>Mobil menü ve ekranlar</h3><ol class="guide-steps"><li>Üst soldaki <strong>☰</strong> butonuna basın; menü çekmece olarak açılır.</li><li>Modül başlığına basınca alt ekranlar açılır.</li><li>Bir ekran seçince menü kendiliğinden kapanır.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/22-mobil.jpg" alt="Telefonda menü" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Telefonda formlar tek sütuna iner, butonlar parmakla basılacak boyuttadır ve geniş tablolar kendi içinde yana kaydırılır. Sayfa asla yana taşmaz.</div></div></section>
       <section class="guide-sec" id="gs-12"><h2><span class="gnum">12</span>Uyarı mesajları ve anlamları</h2><p class="guide-lead">Sistemin verdiği uyarıların ne demek olduğu ve ne yapmanız gerektiği.</p><div class="guide-item"><h3>Sık karşılaşılan uyarılar</h3><table class="guide-kv"><tbody><tr><th>"Önce bu projeye ait teklif kaydı oluşturun"</th><td>Projeyi Onaylandı veya üretim durumuna almaya çalıştınız ama projede teklif yok. Teklif &amp; Maliyet ekranından teklif oluşturun.</td></tr><tr><th>"Teslim Edildi durumuna geçmek için teslim tarihi girilmelidir"</th><td>Projeyi düzenleyip durumu Teslim Edildi seçin; açılan alanlara teslim tarihi ve irsaliye numarasını girin.</td></tr><tr><th>"Faturalandırıldı durumuna geçmek için önce fatura kaydı girilmelidir"</th><td>Proje Finans Durumu ekranından faturayı kaydedin.</td></tr><tr><th>"Kalan alacak ... Tahsilat tamamlanmadan bu duruma geçilemez"</th><td>Henüz tahsil edilmemiş tutar var. Tahsilatı girin; durum kendiliğinden ilerler.</td></tr><tr><th>"Tahsilat tutarı faturanın kalanından fazla"</th><td>Fatura tutarı, kalan ve girdiğiniz tutar uyarıda yazar. En fazla kalan kadar girebilirsiniz.</td></tr><tr><th>"Ödeme tutarı faturanın kalan borcundan fazla"</th><td>Aynı kural tedarikçi ödemelerinde de geçerlidir.</td></tr><tr><th>"Bu faturaya bağlı ... tahsilat var. Önce tahsilatları silin"</th><td>Tahsilatı olan fatura silinemez. Önce tahsilat kayıtlarını silin.</td></tr><tr><th>"Bu tedarikçiye bağlı sipariş veya fatura var"</th><td>Kayıt kullanılıyor; silinemez.</td></tr><tr><th>"Bu kayıt henüz talep/teklif aşamasında"</th><td>Mal kabul yapmadan önce fiyatları girip durumu Sipariş Verildi yapın.</td></tr><tr><th>"Bu e-posta başka bir kişi kartında kayıtlı"</th><td>Aynı e-posta ile ikinci kart açılamaz.</td></tr><tr><th>"... yetkiniz yok"</th><td>Rolünüz bu işlemi yapmaya izin vermiyor. Yöneticinizden yetki isteyin.</td></tr></tbody></table></div></section>
@@ -4099,36 +4062,26 @@
             </div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-title">✉️ Ekip Daveti</div>
+        <div class="card" id="member-create-card">
+          <div class="card-title">👤 Yeni Kullanıcı Oluştur</div>
+          <div class="section-sub">Kullanıcı adını, e-postasını ve şifresini siz belirlersiniz; hesap anında açılır ve ekibe eklenir. Kişi bu bilgilerle doğrudan giriş yapar — mail doğrulaması, davet veya onay adımı yoktur.</div>
+          <div class="setup-warn" id="member-setup-warn" hidden></div>
           <div class="form-grid form-grid-3">
-            <div class="form-group"><label>E-posta</label><input type="email" id="team-invite-email" placeholder="muhasebe@firma.com"></div>
-            <div class="form-group"><label>Rol</label><select id="team-invite-role"><option value="viewer">Rapor Kullanıcısı</option><option value="accounting">Muhasebe</option><option value="engineer">Mühendis / Proje</option><option value="purchasing">Satın Alma</option><option value="admin">Yönetici</option></select></div>
-            <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="inviteTeamMember()" type="button">Davet Oluştur</button></div>
+            <div class="form-group"><label>Ad Soyad</label><input type="text" id="member-name" placeholder="Örn. Ahmet Yılmaz"></div>
+            <div class="form-group"><label>E-posta</label><input type="email" id="member-email" placeholder="ad.soyad@marmarateknikmakine.com.tr" autocomplete="off"></div>
+            <div class="form-group"><label>Rol</label><select id="member-role"><option value="viewer">Rapor Kullanıcısı</option><option value="accounting">Muhasebe</option><option value="engineer">Mühendis / Proje</option><option value="purchasing">Satın Alma</option><option value="admin">Yönetici</option></select></div>
           </div>
-          <div class="section-sub">Davet bağlantısını gönderdiğiniz kişi bu bağlantıyı açar; hesabı yoksa <strong>Kayıt Ol</strong> ile hesap açar, hesabı varsa giriş yapar. Davet otomatik uygulanır, ayrıca onay gerekmez.</div>
-          <div class="team-copy-row" id="team-invite-link-row">
-            <input type="text" id="team-invite-link" readonly>
-            <button class="btn" onclick="copyCurrentInviteLink()" type="button">Kopyala</button>
-            <button class="btn" onclick="mailCurrentInviteLink()" type="button">✉️ Mail ile Gönder</button>
+          <div class="form-grid form-grid-3">
+            <div class="form-group"><label>Şifre (en az 6 karakter)</label><input type="text" id="member-password" placeholder="Şifreyi siz belirleyin" autocomplete="off"></div>
+            <div class="form-group"><label>&nbsp;</label><button class="btn" onclick="generateMemberPassword()" type="button">🎲 Şifre Üret</button></div>
+            <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" id="member-create-btn" onclick="createTeamMember()" type="button">Kullanıcıyı Oluştur</button></div>
           </div>
+          <div class="member-result" id="member-result" hidden></div>
           <div class="team-message" id="team-message"></div>
         </div>
-        <div class="card" id="join-request-card">
-          <div class="card-title" style="justify-content:space-between;gap:10px;flex-wrap:wrap">
-            <span id="join-request-title">🙋 Üyelik Talepleri</span>
-            <button class="btn btn-sm" onclick="renderJoinRequests()" type="button">↻ Yenile</button>
-          </div>
-          <div class="section-sub">Giriş ekranından <strong>Kayıt Ol</strong> ile hesap açıp firmaya katılmak isteyenler burada görünür. Onayladığınızda kullanıcı seçtiğiniz rolle giriş yapabilir; reddederseniz sebebini görür.</div>
-          <label class="join-open-toggle" style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:10px">
-            <input type="checkbox" id="join-open-switch" onchange="toggleJoinRequestsOpen()">
-            <span>Bu firma yeni üyelik taleplerine <strong>açık</strong> olsun (kapalıyken kimse talep gönderemez)</span>
-          </label>
-          <div id="join-request-list"></div>
-        </div>
         <div class="card">
           <div class="card-title" style="justify-content:space-between;gap:10px;flex-wrap:wrap">
-            <span>👥 Ekip ve Bekleyen Davetler</span>
+            <span>👥 Ekip Kullanıcıları</span>
             <button class="btn btn-sm" onclick="refreshTeamList()" type="button">↻ Listeyi Yenile</button>
           </div>
           <div id="team-list"></div>
@@ -4702,7 +4655,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={weightCalc:'Mühendislik · Ağırlık Hesaplama',cadLibrary:'Standart Ekipmanlar · Hazır CAD Datalar',catalogs:'Standart Ekipmanlar · Kataloglar',guide:'Kullanım Kılavuzu',people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.21.1';
+const APP_VERSION='0.22.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -4718,12 +4671,9 @@ const SAVE_DATA_RPC='np_save_company_data';
 const ADD_DAILY_RPC='np_add_daily_record';
 const UPDATE_DAILY_LINK_RPC='np_update_daily_record_link';
 const BACKUP_RPC='np_create_company_backup';
-const INVITE_MEMBER_RPC='np_invite_member';
-const ACCEPT_INVITATION_RPC='np_accept_invitation';
 const GET_TEAM_RPC='np_get_team';
 const UPDATE_MEMBER_ROLE_RPC='np_update_member_role';
 const REMOVE_MEMBER_RPC='np_remove_member';
-const CANCEL_INVITATION_RPC='np_cancel_invitation';
 const SAVE_FX_RATE_RPC='np_save_fx_rate';
 const REQUEST_SUBSCRIPTION_RPC='np_request_subscription';
 const GET_SUBSCRIPTION_REQUESTS_RPC='np_get_subscription_requests';
@@ -4742,17 +4692,7 @@ const CREATE_SETTINGS_REQUEST_RPC='np_create_settings_request';
 const GET_SETTINGS_REQUESTS_RPC='np_get_settings_requests';
 const DECIDE_SETTINGS_REQUEST_RPC='np_decide_settings_request';
 const MARK_SETTINGS_REQUEST_APPLIED_RPC='np_mark_settings_request_applied';
-/* v0.20.0 — üyelik talebi (kayıt ol → yönetici onayı → giriş) */
-const LIST_OPEN_COMPANIES_RPC='np_list_open_companies';
-const REQUEST_JOIN_RPC='np_request_join';
-const MY_JOIN_REQUESTS_RPC='np_my_join_requests';
-const CANCEL_MY_JOIN_RPC='np_cancel_my_join_request';
-const LIST_JOIN_REQUESTS_RPC='np_list_join_requests';
-const APPROVE_JOIN_RPC='np_approve_join_request';
-const REJECT_JOIN_RPC='np_reject_join_request';
-const SET_JOIN_OPEN_RPC='np_set_join_requests_open';
 const APP_ROLES=['admin','accounting','engineer','purchasing','viewer'];
-const INVITE_TOKEN_KEY='nakitpilot_pending_invite';
 const CENTRAL_FX_DRAFT_KEY='nakitpilot_central_fx_draft_v1';
 const SETTINGS_PREF_KEY='nakitpilot_user_preferences_v1';
 let charts={};
@@ -4781,8 +4721,6 @@ let passwordRecoveryMode=false;
 let subscriptionRequests=[];
 let userCompanies=[];
 let companySwitchInProgress=false;
-let lastInviteLink='';
-let pendingInviteToken=getInviteTokenFromUrl()||readRememberedInviteToken();
 let appAdminRole=null;
 let appAdminContextLoaded=false;
 let mySupportTickets=[];
@@ -4862,16 +4800,6 @@ const PACKAGE_CARDS=[
   {code:'business',name:'Business',price:'999 TL',period:'/ ay',desc:'Ekipli çalışan ve daha fazla kullanıcı isteyen işletmeler için.',features:['3 firmaya kadar','10 kullanıcı','Rol yönetimi ve ekip daveti','Yedekleme ve gelişmiş raporlar']},
   {code:'enterprise',name:'Kurumsal',price:'Teklif',period:'',desc:'Çok firmalı, yüksek kullanıcı sayılı ve özel ihtiyaçlı kullanım.',features:['Özel firma ve kullanıcı limiti','Öncelikli destek','Özel kurulum ve veri aktarımı','Sözleşmeli kurumsal kullanım']}
 ];
-function getInviteTokenFromUrl(){
-  /* Davet bağlantısındaki jeton okunur ve tarayıcıya yazılır; e-posta
-     doğrulaması gibi araya giren yönlendirmelerde adres kaybolsa bile
-     davet uygulanabilsin diye. */
-  try{
-    const t=new URLSearchParams(location.search).get('invite')||'';
-    if(t)rememberInviteToken(t);
-    return t;
-  }catch(e){return '';}
-}
 function getPasswordRecoveryInfoFromUrl(sourceUrl){
   try{
     const parsed=sourceUrl?new URL(sourceUrl,location.href):new URL(location.href);
@@ -4968,15 +4896,6 @@ async function establishPasswordRecoverySession(sb,recoveryInfo){
   saveAuthMirror(recoverySession);
   showPasswordResetScreen();
   return recoverySession;
-}
-function clearInviteTokenFromUrl(){
-  pendingInviteToken='';
-  forgetInviteToken();
-  try{
-    const url=new URL(location.href);
-    url.searchParams.delete('invite');
-    history.replaceState(null,'',url.pathname+(url.search?url.search:'')+url.hash);
-  }catch(e){}
 }
 function escapeHtml(v){
   return String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -5387,7 +5306,6 @@ async function restoreAuthMirror(sb){
 function showAuthScreen(){
   passwordRecoveryMode=false;
   document.body.classList.remove('company-setup-mode');
-  updateInviteBanner();
   document.body.classList.remove('password-reset-mode');
   document.body.classList.remove('cloud-ready');document.body.classList.add('cloud-locked');
   document.body.classList.remove('billing-locked');
@@ -5413,14 +5331,13 @@ function showPasswordResetScreen(refocus=true){
 }
 function showCompanySetup(defaultName){
   passwordRecoveryMode=false;
-  document.body.classList.remove('cloud-ready','password-reset-mode','signup-mode');
+  document.body.classList.remove('cloud-ready','password-reset-mode');
   document.body.classList.add('cloud-locked','company-setup-mode');
   setCloudUser(currentUser);
-  setCloudStatus('☁️ Üyelik onayı bekleniyor','warn');
-  setAuthMessage('Hesabınız açık ama henüz bir firmaya bağlı değilsiniz.','');
+  setCloudStatus('☁️ Firma yetkisi bekleniyor','warn');
+  setAuthMessage('Hesabınız açık ama henüz bir firmaya bağlı değilsiniz. Yöneticinizden sizi ekibe eklemesini isteyin.','');
   const input=document.getElementById('company-name-input');
   if(input&&!input.value)input.value=defaultName||'';
-  loadJoinContext();
 }
 async function initSupabaseAuth(){
   const sb=ensureSupabase();
@@ -5488,7 +5405,7 @@ async function handleAuthSession(session,fromEvent){
     setCloudUser(currentUser);
     return;
   }
-  if(fromEvent&&sameUser&&cloudReady&&!pendingInviteToken){
+  if(fromEvent&&sameUser&&cloudReady){
     currentUser=session.user;
     setCloudUser(currentUser);
     return;
@@ -5501,10 +5418,6 @@ async function handleAuthSession(session,fromEvent){
       showAuthScreen();
     }
     setCloudUser(currentUser);setCloudStatus('☁️ Yetki kontrol ediliyor','warn');
-    if(pendingInviteToken){
-      const bitti=await claimInvitationToken(pendingInviteToken);
-      if(bitti)return;
-    }
     await loadCloudData();
   }finally{
     authSessionLoadInProgress=false;
@@ -5682,65 +5595,6 @@ async function authLogin(){
   if(loginData&&loginData.session) saveAuthMirror(loginData.session);
   await handleAuthSession(loginData.session,false);
   logClientActivity('auth.login','Kullanıcı giriş yaptı','auth',currentUser&&currentUser.id?currentUser.id:'',{email:currentUser&&currentUser.email?currentUser.email:email});
-}
-async function authSignup(){
-  const sb=ensureSupabase();if(!sb)return;
-  const v=signupFieldValues();
-  if(!v.name){setAuthMessage('Ad soyad yazın.','error');return;}
-  if(!v.email||v.email.indexOf('@')<1){setAuthMessage('Geçerli bir e-posta adresi yazın.','error');return;}
-  /* Davet bağlantısıyla gelindiyse yalnız davet edilen adresle kayıt olunur. */
-  const davetli=inviteEmail();
-  if(davetli&&v.email.toLowerCase()!==davetli){
-    setAuthMessage('Bu e-posta davet edilen adresle eşleşmiyor. Davet '+davetli+' adresine gönderildi; kayıt olurken o adresi kullanın.','error');
-    applyInviteToSignupForm();
-    return;
-  }
-  if(v.pass.length<6){setAuthMessage('Şifre en az 6 karakter olmalı.','error');return;}
-  if(v.pass!==v.pass2){setAuthMessage('İki şifre aynı değil. Şifreyi tekrar yazın.','error');return;}
-  rememberSignupProfile(v);
-  const btnler=document.querySelectorAll('.auth-signup-fields .btn');
-  btnler.forEach(b=>b.disabled=true);
-  setAuthMessage('Hesabınız oluşturuluyor...','');
-  let signData=null,error=null;
-  try{
-    const sonuc=await withTimeout(sb.auth.signUp({
-      email:v.email,password:v.pass,
-      options:{data:{full_name:v.name,phone:v.phone},emailRedirectTo:getPasswordRedirectUrlWithVersion()}
-    }),AUTH_TIMEOUT_MS,'Kayıt isteği');
-    signData=sonuc.data;error=sonuc.error;
-  }catch(e){
-    btnler.forEach(b=>b.disabled=false);
-    setAuthMessage(isNetworkError(e)?authNetworkMessage():('Kayıt başarısız: '+String(e&&e.message||e)),'error');
-    return;
-  }
-  btnler.forEach(b=>b.disabled=false);
-  if(error){
-    const msg=String(error.message||'');
-    if(/rate limit/i.test(msg)){
-      setAuthMessage('Supabase e-posta limiti doldu. Bu limit yeni kullanıcı doğrulama mailini de etkiler. Yaklaşık 1 saat sonra tekrar deneyin.','error');
-      return;
-    }
-    if(/already registered|already been registered|user already/i.test(msg)){
-      /* Davetle gelindiyse: giriş yapması yeterli, davet giriş anında uygulanır. */
-      setAuthMessage(pendingInviteToken
-        ? 'Bu e-posta ile zaten bir hesap var. Aşağıdan o hesabın şifresiyle giriş yapın — giriş yaptığınız anda davet uygulanacak ve kaydınız yöneticinin onayına düşecek. Şifrenizi bilmiyorsanız Şifremi Unuttum deyin.'
-        : 'Bu e-posta ile zaten bir hesap var. Giriş Yap sekmesinden girin; şifrenizi unuttuysanız Şifremi Unuttum deyin.','error');
-      setAuthMode('login');
-      const el=document.getElementById('auth-email');if(el)el.value=v.email;
-      const pw=document.getElementById('auth-password');if(pw)setTimeout(()=>pw.focus(),80);
-      return;
-    }
-    setAuthMessage('Kayıt başarısız: '+msg,'error');return;
-  }
-  if(signData&&signData.session){
-    saveAuthMirror(signData.session);
-    setAuthMessage('Hesabınız oluşturuldu.','ok');
-    await handleAuthSession(signData.session,false);
-    return;
-  }
-  setAuthMode('login');
-  const el=document.getElementById('auth-email');if(el)el.value=v.email;
-  setAuthMessage('Hesabınız oluşturuldu. E-postanıza gelen doğrulama bağlantısını açın, sonra buradan giriş yapın. Giriş yaptıktan sonra firmaya katılma talebi göndereceksiniz.','ok');
 }
 async function authLogout(){
   const sb=ensureSupabase();if(!sb)return;
@@ -6106,13 +5960,6 @@ async function createAdditionalCompany(){
     if(btn){btn.disabled=false;btn.textContent='Yeni Firma Oluştur';}
   }
 }
-function inviteLinkFromToken(token){
-  const url=new URL(location.href);
-  url.search='';
-  url.hash='';
-  url.searchParams.set('invite',token);
-  return url.toString();
-}
 function copyTextFallback(text){
   const area=document.createElement('textarea');
   area.value=text;
@@ -6133,17 +5980,6 @@ async function copyTextValue(text){
   }catch(e){}
   return copyTextFallback(text);
 }
-async function copyCurrentInviteLink(){
-  const input=document.getElementById('team-invite-link');
-  const text=input?input.value:lastInviteLink;
-  const ok=await copyTextValue(text);
-  setTeamMessage(ok?'Davet bağlantısı kopyalandı.':'Bağlantı kopyalanamadı. Kutudaki bağlantıyı elle seçip kopyalayın.',ok?'ok':'error');
-}
-async function copyInviteLink(token){
-  const link=inviteLinkFromToken(token);
-  const ok=await copyTextValue(link);
-  setTeamMessage(ok?'Davet bağlantısı kopyalandı.':'Bağlantı kopyalanamadı. Kutudaki bağlantıyı elle seçip kopyalayın.',ok?'ok':'error');
-}
 function roleSelectHtml(userId,role,disabled){
   const opts=APP_ROLES.map(r=>`<option value="${r}"${r===role?' selected':''}>${ROLE_LABELS[r]||r}</option>`).join('');
   return `<select class="team-role-select" id="team-role-${escapeHtml(userId)}"${disabled?' disabled':''}>${opts}</select>`;
@@ -6159,500 +5995,145 @@ function renderTeamSummary(){
   if(role)role.textContent=ROLE_LABELS[getUserRole()]||getUserRole();
   renderCompanySwitcher();
 }
-async function inviteTeamMember(){
-  const sb=ensureSupabase();if(!sb||!currentUser)return;
-  if(!isAdmin())return denyAction('Ekip daveti için yönetici yetkisi gerekir.');
-  if(isBillingLocked())return denyAction('Ekip daveti abonelik gerektiği için kapalıdır.');
-  if(!currentCompanyId)return denyAction('Firma seçimi bulunamadı. Lütfen tekrar giriş yapın.');
-  const email=(document.getElementById('team-invite-email')||{}).value||'';
-  const role=(document.getElementById('team-invite-role')||{}).value||'viewer';
-  if(!email.trim()||email.indexOf('@')<1){setTeamMessage('Geçerli bir e-posta yazın.','error');return;}
-  setTeamMessage('Davet oluşturuluyor...','');
-  const {data:inviteData,error}=await sb.rpc(INVITE_MEMBER_RPC,{p_company_id:currentCompanyId,p_email:email.trim(),p_role:role});
-  if(error){setTeamMessage('Davet oluşturulamadı: '+error.message,'error');return;}
-  const row=getRpcRow(inviteData);
-  if(row&&row.token){
-    lastInviteLink=inviteLinkFromToken(row.token);
-    const wrap=document.getElementById('team-invite-link-row');
-    const input=document.getElementById('team-invite-link');
-    if(input)input.value=lastInviteLink;
-    if(wrap)wrap.classList.add('open');
-    setTeamMessage('Davet oluşturuldu. Bağlantıyı davet edeceğiniz kullanıcıya gönderin.','ok');
-    await refreshTeamList();
-  }else{
-    setTeamMessage('Davet oluşturuldu, ancak bağlantı üretilemedi. Listeyi yenileyin.','ok');
-    await refreshTeamList();
-  }
+/* ──────── v0.22.0 — EKİP KULLANICILARI (yönetici oluşturur) ────────
+   Kullanıcı kendi kendine kayıt olmaz, davet ve onay yoktur. Yönetici ad,
+   e-posta, şifre ve rolü girer; kullanıcı Supabase tarafında anında açılır
+   (e-posta doğrulaması kapalı gelir) ve ekibe eklenir. Şifre unutulursa
+   yönetici yeni şifre belirler; hiçbir adımda e-posta gönderimi gerekmez.
+   Şifreyi belirleyen admin servisidir; anahtarı veritabanında saklandığı için
+   tarayıcıya hiç inmez (bkz. sql/nakitpilot-ekip-kurulum-v0.22.0.sql). */
+const CREATE_MEMBER_RPC='np_create_member';
+const SET_MEMBER_PASSWORD_RPC='np_set_member_password';
+const ADMIN_SETUP_READY_RPC='np_admin_setup_ready';
+let _adminSetupReady=null;
+const SETUP_SQL_ADI='sql/nakitpilot-ekip-kurulum-v0.22.0.sql';
+function memberPasswordSuggestion(){
+  /* Okunması kolay, karıştırılmayan karakterlerden 10 haneli şifre. */
+  const harf='abcdefghijkmnpqrstuvwxyz';
+  const buyuk='ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const rakam='23456789';
+  const hepsi=harf+buyuk+rakam;
+  const rnd=(k)=>k[Math.floor(Math.random()*k.length)];
+  let p=rnd(buyuk)+rnd(harf)+rnd(rakam);
+  for(let i=0;i<7;i++)p+=rnd(hepsi);
+  return p.split('').sort(()=>Math.random()-0.5).join('');
 }
-
-/* ──────── v0.20.0 — KAYIT OL / ÜYELİK TALEBİ / YÖNETİCİ ONAYI ────────
-   Akış: kullanıcı giriş ekranından "Kayıt Ol" ile hesap açar → firmaya
-   katılma talebi gönderir → yönetici Firma & Ekip ekranından onaylar →
-   kullanıcı giriş yapınca panel açılır. Davet bağlantısıyla gelen kişide
-   onay adımı yoktur; davet jetonu tarayıcıda saklandığı için e-posta
-   doğrulamasından sonra dönse bile davet uygulanır. */
-let _joinOpenCompanies=[];
-let _joinMyRequests=[];
-let _joinBusy=false;
-let _joinRequestsCache=[];
-function setAuthMode(mode){
-  const signup=mode==='signup';
-  document.body.classList.toggle('signup-mode',signup);
-  const tl=document.getElementById('auth-tab-login');
-  const ts=document.getElementById('auth-tab-signup');
-  if(tl)tl.classList.toggle('active',!signup);
-  if(ts)ts.classList.toggle('active',signup);
-  if(signup){
-    const mail=(document.getElementById('auth-email')||{}).value||'';
-    const se=document.getElementById('signup-email');
-    if(se&&!se.value&&mail)se.value=mail;
-    setTimeout(()=>{const el=document.getElementById('signup-name');if(el)el.focus();},60);
-  }else{
-    setTimeout(()=>{const el=document.getElementById('auth-email');if(el)el.focus();},60);
-  }
+function generateMemberPassword(){
+  const el=document.getElementById('member-password');
+  if(!el)return;
+  el.value=memberPasswordSuggestion();
+  el.focus();
+  el.select();
 }
-function rememberInviteToken(token){
-  const t=String(token||'').trim();
-  if(!t)return;
-  try{localStorage.setItem(INVITE_TOKEN_KEY,JSON.stringify({token:t,at:Date.now()}));}catch(e){}
-}
-function readRememberedInviteToken(){
-  try{
-    const raw=localStorage.getItem(INVITE_TOKEN_KEY);
-    if(!raw)return '';
-    const o=JSON.parse(raw);
-    if(!o||!o.token)return '';
-    /* Davet 14 gün geçerli; eskiyen jeton tarayıcıda tutulmaz. */
-    if(Date.now()-Number(o.at||0)>14*24*60*60*1000){forgetInviteToken();return '';}
-    return String(o.token);
-  }catch(e){return '';}
-}
-function forgetInviteToken(){
-  try{localStorage.removeItem(INVITE_TOKEN_KEY);}catch(e){}
-}
-function signupFieldValues(){
-  const g=(id)=>((document.getElementById(id)||{}).value||'').trim();
-  return {name:g('signup-name'),email:g('signup-email'),phone:g('signup-phone'),
-          pass:(document.getElementById('signup-password')||{}).value||'',
-          pass2:(document.getElementById('signup-password2')||{}).value||''};
-}
-function rememberSignupProfile(v){
-  try{localStorage.setItem('nakitpilot_signup_profile',JSON.stringify({name:v.name||'',phone:v.phone||''}));}catch(e){}
-}
-function readSignupProfile(){
-  try{return JSON.parse(localStorage.getItem('nakitpilot_signup_profile')||'{}')||{};}catch(e){return {};}
-}
-/* ── Üyelik talebi paneli ── */
-function joinRoleOptions(selected){
-  return APP_ROLES.filter(r=>r!=='admin').map(r=>'<option value="'+r+'"'+(r===selected?' selected':'')+'>'+htmlEsc(ROLE_LABELS[r]||r)+'</option>').join('');
-}
-function joinStatusLabel(st){
-  return ({pending:'Onay bekliyor',approved:'Onaylandı',rejected:'Reddedildi',cancelled:'Geri çekildi'})[st]||st;
-}
-async function loadJoinContext(){
+async function checkAdminSetup(){
   const sb=ensureSupabase();
-  if(!sb||!currentUser)return;
-  const stateEl=document.getElementById('join-state');
-  if(stateEl){stateEl.className='join-state';stateEl.textContent='Üyelik durumu kontrol ediliyor...';}
-  let hata='';
+  if(!sb||!currentCompanyId)return false;
   try{
-    const mine=await sb.rpc(MY_JOIN_REQUESTS_RPC);
-    if(mine.error)throw mine.error;
-    _joinMyRequests=Array.isArray(mine.data)?mine.data:[];
-    const open=await sb.rpc(LIST_OPEN_COMPANIES_RPC);
-    if(open.error)throw open.error;
-    _joinOpenCompanies=Array.isArray(open.data)?open.data:[];
+    const {data,error}=await sb.rpc(ADMIN_SETUP_READY_RPC);
+    if(error)throw error;
+    _adminSetupReady=data===true;
   }catch(e){
-    hata=String(e&&e.message||e);
-    _joinMyRequests=[];_joinOpenCompanies=[];
+    _adminSetupReady=false;
   }
-  renderJoinPanel(hata);
+  const uyari=document.getElementById('member-setup-warn');
+  if(uyari){
+    uyari.hidden=!!_adminSetupReady;
+    if(!_adminSetupReady){
+      uyari.innerHTML='⚠️ <strong>Kurulum tamamlanmamış.</strong> Kullanıcı oluşturabilmek için '
+        +'<strong>'+htmlEsc(SETUP_SQL_ADI)+'</strong> dosyasını Supabase → SQL Editor\'de çalıştırın '
+        +'ve dosyadaki <strong>service_role</strong> anahtarı alanını kendi anahtarınızla doldurun.';
+    }
+  }
+  return _adminSetupReady;
 }
-function renderJoinPanel(hata){
-  const stateEl=document.getElementById('join-state');
-  const formEl=document.getElementById('join-form');
-  const refreshBtn=document.getElementById('join-refresh-btn');
-  const detailsEl=document.getElementById('join-create-company');
-  if(!stateEl||!formEl)return;
-  if(hata){
-    stateEl.className='join-state err';
-    stateEl.innerHTML='Üyelik talebi ekranı açılamadı: '+htmlEsc(hata)
-      +'<br><small>SQL kurulumu yapılmadıysa yöneticiniz <strong>nakitpilot-uyelik-onay-v0.21.1.sql</strong> dosyasını çalıştırmalıdır.</small>';
-    formEl.hidden=true;
-    if(refreshBtn)refreshBtn.hidden=false;
-    if(detailsEl)detailsEl.hidden=false;
-    return;
-  }
-  const pending=_joinMyRequests.find(r=>r.status==='pending');
-  const approved=_joinMyRequests.find(r=>r.status==='approved');
-  const rejected=_joinMyRequests.filter(r=>r.status==='rejected').sort((a,b)=>String(b.decided_at||'').localeCompare(String(a.decided_at||'')))[0];
-  if(pending){
-    stateEl.className='join-state warn';
-    stateEl.innerHTML='⏳ <strong>'+htmlEsc(pending.company_name||'Firma')+'</strong> için üyelik talebiniz yöneticiye iletildi.<br>'
-      +'Talep tarihi: '+htmlEsc(formatDateTime(pending.created_at))+' · İstenen rol: '+htmlEsc(ROLE_LABELS[pending.requested_role]||pending.requested_role)+'<br>'
-      +'Yönetici onayladığında bu ekrandan <strong>Onaylandı mı?</strong> düğmesine basarak panele girebilirsiniz.'
-      +'<div style="margin-top:8px"><button class="btn btn-sm btn-del" type="button" onclick="cancelMyJoinRequest(\''+pending.id+'\')">Talebi Geri Çek</button></div>';
-    formEl.hidden=true;
-    if(detailsEl)detailsEl.hidden=true;
-    if(refreshBtn)refreshBtn.hidden=false;
-    return;
-  }
-  if(approved&&!_joinOpenCompanies.length){
-    stateEl.className='join-state ok';
-    stateEl.textContent='Talebiniz onaylanmış görünüyor. "Onaylandı mı? Kontrol Et" düğmesine basın.';
-  }else if(rejected){
-    stateEl.className='join-state err';
-    stateEl.innerHTML='⛔ <strong>'+htmlEsc(rejected.company_name||'Firma')+'</strong> için talebiniz reddedildi.'
-      +(rejected.decision_note?'<br>Yönetici notu: <strong>'+htmlEsc(rejected.decision_note)+'</strong>':'')
-      +'<br>Gerekirse aşağıdan yeniden talep gönderebilir veya yöneticinizden davet bağlantısı isteyebilirsiniz.';
-  }else{
-    stateEl.className='join-state';
-    stateEl.innerHTML='Hesabınız açıldı. Panele girebilmek için <strong>firmanıza katılma talebi</strong> gönderin; yönetici onayladığında giriş yapabilirsiniz.';
-  }
-  const sel=document.getElementById('join-company');
-  const secilebilir=_joinOpenCompanies.filter(c=>!c.already_member);
-  if(sel){
-    sel.innerHTML=secilebilir.length
-      ? secilebilir.map(c=>'<option value="'+htmlEsc(c.company_id)+'">'+htmlEsc(c.company_name)+'</option>').join('')
-      : '<option value="">Katılmaya açık firma bulunamadı</option>';
-  }
-  const rolSel=document.getElementById('join-role');
-  if(rolSel&&!rolSel.innerHTML)rolSel.innerHTML=joinRoleOptions('viewer');
-  const nameEl=document.getElementById('join-name');
-  if(nameEl&&!nameEl.value){
-    const meta=(currentUser&&currentUser.user_metadata)||{};
-    const kayit=readSignupProfile();
-    nameEl.value=meta.full_name||kayit.name||'';
-  }
-  const phoneEl=document.getElementById('join-phone');
-  if(phoneEl&&!phoneEl.value){
-    const meta=(currentUser&&currentUser.user_metadata)||{};
-    const kayit=readSignupProfile();
-    phoneEl.value=meta.phone||kayit.phone||'';
-  }
-  formEl.hidden=false;
-  const btn=document.getElementById('join-submit-btn');
-  if(btn)btn.disabled=!secilebilir.length;
-  if(detailsEl)detailsEl.hidden=false;
-  if(refreshBtn)refreshBtn.hidden=false;
-  if(!secilebilir.length&&!rejected){
-    stateEl.className='join-state warn';
-    stateEl.innerHTML='Katılmaya açık firma bulunamadı. Yöneticiniz firmayı üyelik taleplerine kapatmış olabilir; '
-      +'ondan <strong>davet bağlantısı</strong> isteyin veya aşağıdan kendi firmanızı oluşturun.';
-  }
+function memberResultBox(mail,sifre,rol,bilgi){
+  const kutu=document.getElementById('member-result');
+  if(!kutu)return;
+  const adres=getAppBaseUrl();
+  kutu.hidden=false;
+  kutu.innerHTML='<div class="member-result-title">✅ '+htmlEsc(bilgi||'Kullanıcı hazır.')+'</div>'
+    +'<div class="member-result-row"><span>Giriş adresi</span><strong>'+htmlEsc(adres)+'</strong></div>'
+    +'<div class="member-result-row"><span>E-posta</span><strong>'+htmlEsc(mail)+'</strong></div>'
+    +(sifre?'<div class="member-result-row"><span>Şifre</span><strong>'+htmlEsc(sifre)+'</strong></div>':'')
+    +'<div class="member-result-row"><span>Rol</span><strong>'+htmlEsc(ROLE_LABELS[rol]||rol)+'</strong></div>'
+    +'<div class="member-result-actions">'
+    +'<button class="btn btn-sm btn-primary" type="button" onclick="copyMemberCredentials()">📋 Bilgileri Kopyala</button>'
+    +'<button class="btn btn-sm" type="button" onclick="document.getElementById(\'member-result\').hidden=true">Gizle</button>'
+    +'</div>'
+    +'<div class="member-result-note">Bu bilgileri kişiye iletin. Şifre burada bir kez gösterilir; '
+    +'sonradan gerekirse listeden <strong>🔑 Şifre Belirle</strong> ile yenisini verebilirsiniz.</div>';
+  kutu.dataset.pano='NakitPilot giriş bilgileri\n'
+    +'Adres: '+adres+'\n'
+    +'E-posta: '+mail+'\n'
+    +(sifre?'Şifre: '+sifre+'\n':'')
+    +'Rol: '+(ROLE_LABELS[rol]||rol);
 }
-async function submitJoinRequest(){
+async function copyMemberCredentials(){
+  const kutu=document.getElementById('member-result');
+  const metin=(kutu&&kutu.dataset.pano)||'';
+  const ok=await copyTextValue(metin);
+  setTeamMessage(ok?'Giriş bilgileri panoya kopyalandı.':'Kopyalanamadı; bilgileri elle seçip kopyalayın.',ok?'ok':'error');
+}
+async function createTeamMember(){
   const sb=ensureSupabase();
   if(!sb||!currentUser)return;
-  if(_joinBusy)return;
-  const companyId=(document.getElementById('join-company')||{}).value||'';
-  if(!companyId){setAuthMessage('Katılmak istediğiniz firmayı seçin.','error');return;}
-  /* Bekleyen talebi olan ikinci kez gönderemez; sunucu da engeller. */
-  if(_joinMyRequests.some(r=>r.status==='pending'&&String(r.company_id)===String(companyId))){
-    setAuthMessage('Bu firma için zaten bekleyen bir talebiniz var.','error');
-    renderJoinPanel('');
+  if(!isAdmin())return denyAction('Kullanıcı oluşturmak için yönetici yetkisi gerekir.');
+  if(!currentCompanyId)return denyAction('Firma seçimi bulunamadı.');
+  const ad=((document.getElementById('member-name')||{}).value||'').trim();
+  const mail=((document.getElementById('member-email')||{}).value||'').trim().toLowerCase();
+  const sifre=((document.getElementById('member-password')||{}).value||'').trim();
+  const rol=(document.getElementById('member-role')||{}).value||'viewer';
+  if(!mail||mail.indexOf('@')<1){setTeamMessage('Geçerli bir e-posta adresi yazın.','error');return;}
+  if(sifre.length<6){setTeamMessage('Şifre en az 6 karakter olmalı. "🎲 Şifre Üret" ile hazır şifre alabilirsiniz.','error');return;}
+  const btn=document.getElementById('member-create-btn');
+  if(btn){btn.disabled=true;btn.textContent='Oluşturuluyor...';}
+  setTeamMessage('Kullanıcı oluşturuluyor...','');
+  const {data,error}=await sb.rpc(CREATE_MEMBER_RPC,
+    {p_company_id:currentCompanyId,p_email:mail,p_password:sifre,p_full_name:ad,p_role:rol});
+  if(btn){btn.disabled=false;btn.textContent='Kullanıcıyı Oluştur';}
+  if(error){
+    const msg=String(error.message||'');
+    if(/anahtari tanimlanmamis|anahtarı tanımlanmamış/i.test(msg)){
+      setTeamMessage('Kurulum tamamlanmamış: '+SETUP_SQL_ADI+' dosyasını service_role anahtarınızla doldurup Supabase\'de çalıştırın.','error');
+      checkAdminSetup();
+      return;
+    }
+    if(/http|extension/i.test(msg)){
+      setTeamMessage('Supabase\'de "http" eklentisi açık değil. Database → Extensions ekranından http eklentisini açıp tekrar deneyin. ('+msg+')','error');
+      return;
+    }
+    setTeamMessage('Kullanıcı oluşturulamadı: '+msg,'error');
     return;
   }
-  const ad=((document.getElementById('join-name')||{}).value||'').trim();
-  if(!ad){setAuthMessage('Ad soyad yazın; yönetici sizi buradan tanıyacak.','error');return;}
-  const tel=((document.getElementById('join-phone')||{}).value||'').trim();
-  const not=((document.getElementById('join-note')||{}).value||'').trim();
-  const rol=(document.getElementById('join-role')||{}).value||'viewer';
-  const btn=document.getElementById('join-submit-btn');
-  _joinBusy=true;
-  if(btn){btn.disabled=true;btn.textContent='Gönderiliyor...';}
-  setAuthMessage('Üyelik talebiniz gönderiliyor...','');
-  const {error}=await sb.rpc(REQUEST_JOIN_RPC,{p_company_id:companyId,p_full_name:ad,p_phone:tel,p_note:not,p_role:rol});
-  _joinBusy=false;
-  if(btn){btn.disabled=false;btn.textContent='Katılma Talebi Gönder';}
-  if(error){setAuthMessage('Talep gönderilemedi: '+error.message,'error');return;}
-  setAuthMessage('Talebiniz yöneticiye iletildi. Onaylandığında giriş yapabilirsiniz.','ok');
-  await loadJoinContext();
+  const row=getRpcRow(data)||{};
+  memberResultBox(row.member_email||mail,row.was_created?sifre:'',row.member_role||rol,row.info);
+  setTeamMessage(row.info||'Kullanıcı hazır.','ok');
+  ['member-name','member-email','member-password'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  await refreshTeamList();
 }
-async function cancelMyJoinRequest(id){
+async function setMemberPassword(userId,email){
   const sb=ensureSupabase();
-  if(!sb||!currentUser)return;
-  if(!confirm('Üyelik talebinizi geri çekmek istiyor musunuz?'))return;
-  const {error}=await sb.rpc(CANCEL_MY_JOIN_RPC,{p_request_id:id});
-  if(error){setAuthMessage('Talep geri çekilemedi: '+error.message,'error');return;}
-  setAuthMessage('Talebiniz geri çekildi.','ok');
-  await loadJoinContext();
+  if(!sb||!currentCompanyId)return;
+  if(!isAdmin())return denyAction('Şifre belirlemek için yönetici yetkisi gerekir.');
+  const onerilen=memberPasswordSuggestion();
+  const sifre=prompt('"'+(email||'kullanıcı')+'" için yeni şifre (en az 6 karakter).\nBu şifreyi kişiye siz ileteceksiniz:',onerilen);
+  if(sifre===null)return;
+  const temiz=String(sifre).trim();
+  if(temiz.length<6){setTeamMessage('Şifre en az 6 karakter olmalı.','error');return;}
+  setTeamMessage('Şifre değiştiriliyor...','');
+  const {error}=await sb.rpc(SET_MEMBER_PASSWORD_RPC,
+    {p_company_id:currentCompanyId,p_member_user_id:userId,p_password:temiz});
+  if(error){setTeamMessage('Şifre değiştirilemedi: '+error.message,'error');return;}
+  memberResultBox(email||'',temiz,'','Şifre değiştirildi.');
+  setTeamMessage('Yeni şifre belirlendi. Bilgileri kişiye iletin.','ok');
 }
-async function refreshJoinStatus(){
+async function refreshMembershipStatus(){
   const btn=document.getElementById('join-refresh-btn');
   if(btn){btn.disabled=true;btn.textContent='Kontrol ediliyor...';}
   setAuthMessage('Yetkiniz kontrol ediliyor...','');
   await loadCloudData();
-  if(btn){btn.disabled=false;btn.textContent='↻ Onaylandı mı? Kontrol Et';}
-  if(!cloudReady){
-    await loadJoinContext();
-    const pending=_joinMyRequests.find(r=>r.status==='pending');
-    setAuthMessage(pending?'Talebiniz hâlâ onay bekliyor.':'Henüz bir firmaya bağlı değilsiniz.','');
-  }
-}
-/* ── Yönetici tarafı: üyelik taleplerini onayla / reddet ── */
-function joinRequestRoleSelect(id,requested){
-  return '<select id="joinrole-'+htmlEsc(id)+'">'+joinRoleOptions(requested)
-    +'<option value="admin"'+(requested==='admin'?' selected':'')+'>'+htmlEsc(ROLE_LABELS.admin)+'</option></select>';
-}
-async function renderJoinRequests(){
-  const card=document.getElementById('join-request-card');
-  const list=document.getElementById('join-request-list');
-  if(!card||!list)return;
-  if(!isAdmin()){card.style.display='none';return;}
-  card.style.display='';
-  const sb=ensureSupabase();
-  if(!sb||!currentCompanyId){list.innerHTML='<div class="empty">Firma bağlantısı bekleniyor.</div>';return;}
-  list.innerHTML='<div class="empty">Üyelik talepleri yükleniyor...</div>';
-  const {data,error}=await sb.rpc(LIST_JOIN_REQUESTS_RPC,{p_company_id:currentCompanyId});
-  if(error){
-    list.innerHTML='<div class="role-warning">Üyelik talepleri alınamadı: '+escapeHtml(error.message)
-      +'<br><small>Bu özellik için <strong>sql/nakitpilot-uyelik-onay-v0.21.1.sql</strong> dosyasının Supabase\'de çalıştırılmış olması gerekir.</small></div>';
-    return;
-  }
-  _joinRequestsCache=Array.isArray(data)?data:[];
-  const bekleyen=_joinRequestsCache.filter(r=>r.status==='pending');
-  const gecmis=_joinRequestsCache.filter(r=>r.status!=='pending').slice(0,20);
-  const baslik=document.getElementById('join-request-title');
-  if(baslik)baslik.innerHTML='🙋 Üyelik Talepleri'+(bekleyen.length?' <span class="status-chip warn">'+bekleyen.length+' bekliyor</span>':'');
-  /* Firmanın taleplere açık olup olmadığını açık firma listesinden okuruz. */
-  try{
-    const open=await sb.rpc(LIST_OPEN_COMPANIES_RPC);
-    const acik=Array.isArray(open.data)&&open.data.some(c=>String(c.company_id)===String(currentCompanyId));
-    const sw=document.getElementById('join-open-switch');
-    if(sw)sw.checked=!!acik;
-  }catch(e){}
-  let html='';
-  if(!bekleyen.length)html+='<div class="empty">Bekleyen üyelik talebi yok.</div>';
-  else html+=bekleyen.map(r=>{
-    const satir=[r.email,r.phone,r.note].filter(Boolean).map(escapeHtml).join(' · ');
-    return '<div class="join-req-card">'
-      +'<div class="join-req-head"><strong>'+escapeHtml(r.full_name||r.email||'Kullanıcı')+'</strong>'
-      +(r.from_invitation?'<span class="status-chip ok">✉️ Davet ettiğiniz kişi</span>':'')
-      +'<span class="status-chip warn">'+escapeHtml(formatDateTime(r.created_at))+'</span></div>'
-      +'<div class="join-req-meta">'+satir+'</div>'
-      +'<div class="join-req-meta">İstediği rol: <strong>'+escapeHtml(ROLE_LABELS[r.requested_role]||r.requested_role)+'</strong></div>'
-      +'<div class="join-req-actions">'
-      +'<span style="font-size:12px;color:var(--text-muted)">Verilecek rol:</span>'
-      +joinRequestRoleSelect(r.id,r.requested_role)
-      +'<button class="btn btn-sm btn-primary" type="button" onclick="approveJoinRequest(\''+r.id+'\')">✓ Onayla</button>'
-      +'<button class="btn btn-sm btn-del" type="button" onclick="rejectJoinRequest(\''+r.id+'\')">Reddet</button>'
-      +'</div></div>';
-  }).join('');
-  if(gecmis.length){
-    html+='<div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>Kişi</th><th>Durum</th><th>Karar</th><th>Not</th></tr></thead><tbody>'
-      +gecmis.map(r=>'<tr><td><strong>'+escapeHtml(r.full_name||r.email)+'</strong><div style="font-size:11px;color:var(--text-muted)">'+escapeHtml(r.email)+'</div></td>'
-        +'<td><span class="status-chip '+(r.status==='approved'?'ok':'')+'">'+escapeHtml(joinStatusLabel(r.status))+'</span></td>'
-        +'<td>'+escapeHtml(formatDateTime(r.decided_at))+(r.decided_by_email?'<div style="font-size:11px;color:var(--text-muted)">'+escapeHtml(r.decided_by_email)+'</div>':'')+'</td>'
-        +'<td>'+escapeHtml(r.decision_note||'')+'</td></tr>').join('')
-      +'</tbody></table></div>';
-  }
-  list.innerHTML=html;
-}
-async function approveJoinRequest(id){
-  const sb=ensureSupabase();
-  if(!sb||!currentCompanyId)return;
-  if(!isAdmin())return denyAction('Üyelik onayı için yönetici yetkisi gerekir.');
-  const sel=document.getElementById('joinrole-'+id);
-  const rol=sel?sel.value:'viewer';
-  const kayit=_joinRequestsCache.find(r=>String(r.id)===String(id));
-  const kim=(kayit&&(kayit.full_name||kayit.email))||'Kullanıcı';
-  if(!confirm(kim+' için üyelik onaylansın mı?\nVerilecek rol: '+(ROLE_LABELS[rol]||rol)))return;
-  setTeamMessage('Üyelik onaylanıyor...','');
-  const {error}=await sb.rpc(APPROVE_JOIN_RPC,{p_company_id:currentCompanyId,p_request_id:id,p_role:rol});
-  if(error){setTeamMessage('Onaylanamadı: '+error.message,'error');return;}
-  setTeamMessage(kim+' artık '+(ROLE_LABELS[rol]||rol)+' rolüyle firmaya bağlı. Giriş yapabilir.','ok');
-  await refreshTeamList();
-}
-async function rejectJoinRequest(id){
-  const sb=ensureSupabase();
-  if(!sb||!currentCompanyId)return;
-  if(!isAdmin())return denyAction('Üyelik reddi için yönetici yetkisi gerekir.');
-  const not=prompt('Red sebebi (kullanıcı bu notu görecek, boş bırakabilirsiniz):','');
-  if(not===null)return;
-  setTeamMessage('Talep reddediliyor...','');
-  const {error}=await sb.rpc(REJECT_JOIN_RPC,{p_company_id:currentCompanyId,p_request_id:id,p_note:not});
-  if(error){setTeamMessage('Reddedilemedi: '+error.message,'error');return;}
-  setTeamMessage('Talep reddedildi.','ok');
-  await renderJoinRequests();
-}
-async function toggleJoinRequestsOpen(){
-  const sb=ensureSupabase();
-  const sw=document.getElementById('join-open-switch');
-  if(!sb||!currentCompanyId||!sw)return;
-  if(!isAdmin()){sw.checked=!sw.checked;return denyAction('Bu ayar için yönetici yetkisi gerekir.');}
-  const {error}=await sb.rpc(SET_JOIN_OPEN_RPC,{p_company_id:currentCompanyId,p_open:sw.checked});
-  if(error){
-    sw.checked=!sw.checked;
-    setTeamMessage('Ayar kaydedilemedi: '+error.message,'error');
-    return;
-  }
-  setTeamMessage(sw.checked?'Firma yeni üyelik taleplerine açıldı.':'Firma yeni üyelik taleplerine kapatıldı.','ok');
-}
-async function mailCurrentInviteLink(){
-  const input=document.getElementById('team-invite-link');
-  const link=(input&&input.value)||lastInviteLink;
-  if(!link){setTeamMessage('Önce davet oluşturun.','error');return;}
-  const mail=((document.getElementById('team-invite-email')||{}).value||'').trim();
-  const konu='NakitPilot · '+(currentCompanyName||'Firma')+' ekibine davet';
-  const govde='Merhaba,\n\n'+(currentCompanyName||'Firmamız')+' NakitPilot panelinde sizin için bir kullanıcı daveti oluşturuldu.\n\n'
-    +'Aşağıdaki bağlantıyı açın:\n'+link+'\n\n'
-    +'Hesabınız yoksa açılan ekranda "Kayıt Ol" ile hesap oluşturun; hesabınız varsa giriş yapın. '
-    +'Davet giriş yaptığınız anda otomatik uygulanır.\n\nİyi çalışmalar.';
-  const url='mailto:'+encodeURIComponent(mail)+'?subject='+encodeURIComponent(konu)+'&body='+encodeURIComponent(govde);
-  window.location.href=url;
-  setTeamMessage('Mail programınız açılıyor. Açılmazsa bağlantıyı kopyalayıp elle gönderin.','ok');
-}
-
-/* ──────── v0.21.0 — DAVET BAĞLANTISI İLE KAYIT ────────
-   Davet bağlantısını açan kişi doğrudan Kayıt Ol formuna düşer; davet edilen
-   e-posta kilitli gelir. Kayıt olduktan sonra sistem o firmaya üyelik talebini
-   kendisi açar ve yöneticinin onayına düşer. Başka bir e-posta ile kayıt
-   olunmaya çalışılırsa hem ekran hem sunucu eşleşmediğini söyler. */
-const INVITE_INFO_RPC='np_invite_info';
-const CLAIM_INVITATION_RPC='np_claim_invitation';
-let _inviteInfo=null;
-let _inviteInfoLoading=false;
-function inviteEmail(){return _inviteInfo&&_inviteInfo.is_valid?String(_inviteInfo.invited_email||'').toLowerCase():'';}
-async function loadInviteInfo(){
-  if(!pendingInviteToken||_inviteInfoLoading)return _inviteInfo;
-  const sb=ensureSupabase();
-  if(!sb)return null;
-  _inviteInfoLoading=true;
-  try{
-    const {data,error}=await sb.rpc(INVITE_INFO_RPC,{p_token:pendingInviteToken});
-    if(error)throw error;
-    _inviteInfo=getRpcRow(data)||null;
-  }catch(e){
-    /* SQL kurulmadıysa veya ağ yoksa davet bilgisi okunamaz; akış bozulmasın. */
-    _inviteInfo={is_valid:null,reason:String(e&&e.message||e)};
-  }
-  _inviteInfoLoading=false;
-  updateInviteBanner();
-  applyInviteToSignupForm();
-  return _inviteInfo;
-}
-function applyInviteToSignupForm(){
-  const mail=document.getElementById('signup-email');
-  const kilitNot=document.getElementById('signup-email-note');
-  const davetli=inviteEmail();
-  if(!mail)return;
-  if(davetli){
-    mail.value=davetli;
-    mail.readOnly=true;
-    mail.classList.add('locked');
-    if(kilitNot){
-      kilitNot.hidden=false;
-      kilitNot.textContent='Davet bu adrese gönderildi; bu adresle kayıt olmalısınız.';
-    }
-  }else{
-    mail.readOnly=false;
-    mail.classList.remove('locked');
-    if(kilitNot)kilitNot.hidden=true;
-  }
-}
-function inviteRoleLabel(){
-  const r=_inviteInfo&&_inviteInfo.invited_role;
-  return r?(ROLE_LABELS[r]||r):'';
-}
-function updateInviteBanner(){
-  const el=document.getElementById('auth-invite-banner');
-  if(!el)return;
-  /* Davet geçersizse jeton silinse bile sebep ekranda kalmalı. */
-  const gecersiz=!!(_inviteInfo&&_inviteInfo.is_valid===false);
-  if(!pendingInviteToken&&!gecersiz){el.hidden=true;el.textContent='';el.className='auth-invite-banner';return;}
-  el.hidden=false;
-  if(_inviteInfo&&_inviteInfo.is_valid===true){
-    el.className='auth-invite-banner';
-    el.innerHTML='✉️ <strong>'+htmlEsc(_inviteInfo.company_name||'Firma')+'</strong> ekibine davet edildiniz'
-      +(inviteRoleLabel()?' · rol: <strong>'+htmlEsc(inviteRoleLabel())+'</strong>':'')+'.<br>'
-      +'Davet <strong>'+htmlEsc(_inviteInfo.invited_email||'')+'</strong> adresine gönderildi. '
-      +'Aşağıdaki <strong>Kayıt Ol</strong> formundan şifrenizi belirleyip hesabınızı açın; '
-      +'kaydınız yöneticinin onayına düşecek. Hesabınız zaten varsa <strong>Giriş Yap</strong> deyin.';
-  }else if(_inviteInfo&&_inviteInfo.is_valid===false){
-    const sebep={'Davet bulunamadi':'Davet bulunamadı.','Davet daha once kullanilmis':'Bu davet daha önce kullanılmış.',
-      'Davet iptal edilmis':'Bu davet iptal edilmiş.','Davetin suresi dolmus':'Davetin süresi dolmuş.'}[_inviteInfo.reason]||'Davet geçersiz.';
-    el.className='auth-invite-banner err';
-    el.innerHTML='⛔ '+htmlEsc(sebep)+' Yöneticinizden yeni bir davet bağlantısı isteyin.';
-  }else{
-    el.className='auth-invite-banner';
-    el.innerHTML='✉️ <strong>Firma daveti aldınız.</strong> Hesabınız varsa giriş yapın; yoksa <strong>Kayıt Ol</strong> sekmesinden hesap açın.';
-  }
-}
-/* Davet bağlantısıyla gelindiyse kayıt sekmesi kendiliğinden açılır. */
-async function startInviteFlow(){
-  if(!pendingInviteToken)return;
-  updateInviteBanner();
-  const bilgi=await loadInviteInfo();
-  if(bilgi&&bilgi.is_valid===true&&!currentUser){
-    setAuthMode('signup');
-    applyInviteToSignupForm();
-    setAuthMessage('Davet edilen adres hazır. Ad soyadınızı ve şifrenizi yazıp hesabınızı açın.','');
-  }
-  if(bilgi&&bilgi.is_valid===false){
-    /* Jeton bir daha denenmesin; sebep mesajı ekranda kalır. */
-    forgetInviteToken();
-    pendingInviteToken='';
-    updateInviteBanner();
-    setAuthMessage('Davet bağlantısı geçerli değil. Yöneticinizden yeni bağlantı isteyin.','error');
-  }
-}
-/* Kayıt/giriş sonrası daveti kullanır: üyelik talebi açılır, yönetici onaylar. */
-async function claimInvitationToken(token){
-  const sb=ensureSupabase();
-  if(!sb||!currentUser)return false;
-  const clean=String(token||'').trim();
-  if(!clean)return false;
-  setCloudStatus('☁️ Davet kontrol ediliyor','warn');
-  const {data,error}=await sb.rpc(CLAIM_INVITATION_RPC,{p_token:clean});
-  if(error){
-    const msg=String(error.message||'');
-    if(/eslesmiyor|eşleşmiyor/i.test(msg)){
-      const hedef=(msg.match(/gonderildi\.?\s*$/i)?msg:msg).replace('eslesmiyor','eşleşmiyor').replace('gonderildi','gönderildi');
-      setAuthMessage('Bu hesabın e-postası davet edilen adresle eşleşmiyor. '+hedef
-        +' Davet edilen adresle kayıt olun veya o hesapla giriş yapın.','error');
-    }else if(/suresi dolmus|süresi dolmuş/i.test(msg)){
-      setAuthMessage('Davetin süresi dolmuş. Yöneticinizden yeni davet isteyin.','error');
-      forgetInviteToken();pendingInviteToken='';
-    }else if(/iptal/i.test(msg)){
-      setAuthMessage('Bu davet iptal edilmiş. Yöneticinizden yeni davet isteyin.','error');
-      forgetInviteToken();pendingInviteToken='';
-    }else{
-      setAuthMessage('Davet uygulanamadı: '+msg,'error');
-    }
-    setCloudStatus('☁️ Davet hatası','error');
-    return false;
-  }
-  const row=getRpcRow(data)||{};
-  clearInviteTokenFromUrl();
-  forgetInviteToken();
-  pendingInviteToken='';
-  if(row.claim_status==='member'){
-    setAuthMessage('Davet kabul edildi, firmaya bağlandınız.','ok');
-    return false; /* üyelik zaten var; normal yükleme devam etsin */
-  }
-  setAuthMessage('Kayıt talebiniz '+(row.target_company_name||'firma')+' yöneticisine iletildi. Onaylandığında giriş yapabilirsiniz.','ok');
-  return false;
-}
-async function acceptInvitationToken(token,fromUrl){
-  const sb=ensureSupabase();if(!sb||!currentUser)return false;
-  const clean=String(token||'').trim();
-  if(!clean)return false;
-  setCloudStatus('☁️ Davet kabul ediliyor','warn');
-  setAuthMessage('Davet kabul ediliyor...','');
-  const {data:rpcData,error}=await sb.rpc(ACCEPT_INVITATION_RPC,{p_token:clean});
-  if(error){
-    setAuthMessage('Davet kabul edilemedi: '+error.message,'error');
-    setCloudStatus('☁️ Davet hatası','error');
-    if(fromUrl)clearInviteTokenFromUrl();
-    return false;
-  }
-  clearInviteTokenFromUrl();
-  forgetInviteToken();
-  applyCloudRow(getRpcRow(rpcData),'Davet kabul edildi');
-  setAuthMessage('Davet kabul edildi, firmaya bağlandınız.','ok');
-  startCloudPolling();
-  return true;
+  if(btn){btn.disabled=false;btn.textContent='↻ Yetkimi Yeniden Kontrol Et';}
+  if(!cloudReady)setAuthMessage('Henüz bir firmaya bağlı değilsiniz. Yöneticiniz sizi ekledikten sonra tekrar deneyin.','');
 }
 async function refreshTeamList(){
   await renderTeam();
@@ -6730,7 +6211,7 @@ function resetModulePermissions(){
 }
 async function renderTeam(){
   renderTeamSummary();
-  renderJoinRequests();
+  checkAdminSetup();
   const list=document.getElementById('team-list');if(!list)return;
   if(!isAdmin()){
     list.innerHTML='<div class="role-warning">Bu sayfa yalnızca yönetici rolündeki kullanıcılar içindir.</div>';
@@ -6750,7 +6231,11 @@ async function renderTeam(){
   const memberRows=rows.filter(r=>r.row_type==='member').map(r=>{
     const locked=!!(r.is_owner||r.is_current_user);
     const safeUserId=escapeHtml(r.user_id);
-    const actionHtml=locked?'<span class="status-chip">Kilitli</span>':`<button class="btn btn-sm btn-edit" onclick="updateTeamMemberRole('${safeUserId}')">Rolü Kaydet</button> <button class="btn btn-sm btn-del" onclick="removeTeamMember('${safeUserId}')">Çıkar</button>`;
+    const safeMail=escapeHtml(r.email||'');
+    const sifreBtn=`<button class="btn btn-sm" onclick="setMemberPassword('${safeUserId}','${safeMail}')" title="Bu kullanıcıya yeni şifre belirle">🔑 Şifre Belirle</button>`;
+    const actionHtml=locked
+      ? `<span class="status-chip">Kilitli</span> ${sifreBtn}`
+      : `<button class="btn btn-sm btn-edit" onclick="updateTeamMemberRole('${safeUserId}')">Rolü Kaydet</button> ${sifreBtn} <button class="btn btn-sm btn-del" onclick="removeTeamMember('${safeUserId}')">Çıkar</button>`;
     return `<tr>
       <td><strong>${escapeHtml(r.email||'E-posta yok')}</strong>${r.is_owner?' <span class="status-chip ok">Firma Sahibi</span>':''}${r.is_current_user?' <span class="status-chip">Siz</span>':''}</td>
       <td>${roleSelectHtml(r.user_id,r.role,locked)}</td>
@@ -6759,19 +6244,9 @@ async function renderTeam(){
       <td>${actionHtml}</td>
     </tr>`;
   }).join('');
-  const inviteRows=rows.filter(r=>r.row_type==='invitation').map(r=>`<tr>
-      <td><strong>${escapeHtml(r.email)}</strong></td>
-      <td>${ROLE_LABELS[r.role]||escapeHtml(r.role)}</td>
-      <td><span class="status-chip warn">Davet bekliyor</span></td>
-      <td>${escapeHtml(formatDateTime(r.expires_at))}</td>
-      <td>
-        <button class="btn btn-sm" onclick="copyInviteLink('${escapeHtml(r.invitation_token||'')}')">Linki Kopyala</button>
-        <button class="btn btn-sm btn-del" onclick="cancelTeamInvitation('${escapeHtml(r.row_id)}')">İptal</button>
-      </td>
-    </tr>`).join('');
   list.innerHTML=`<div class="table-wrap"><table>
-    <thead><tr><th>Kullanıcı / Davet</th><th>Rol</th><th>Durum</th><th>Tarih</th><th>İşlem</th></tr></thead>
-    <tbody>${memberRows}${inviteRows}</tbody>
+    <thead><tr><th>Kullanıcı</th><th>Rol</th><th>Durum</th><th>Eklenme</th><th>İşlem</th></tr></thead>
+    <tbody>${memberRows}</tbody>
   </table></div>`;
 }
 function formatDateTime(value){
@@ -6797,15 +6272,6 @@ async function removeTeamMember(userId){
   const {error}=await sb.rpc(REMOVE_MEMBER_RPC,{p_company_id:currentCompanyId,p_member_user_id:userId});
   if(error){setTeamMessage('Kullanıcı çıkarılamadı: '+error.message,'error');return;}
   setTeamMessage('Kullanıcı firmadan çıkarıldı.','ok');
-  await refreshTeamList();
-}
-async function cancelTeamInvitation(invitationId){
-  const sb=ensureSupabase();if(!sb||!currentCompanyId)return;
-  if(!confirm('Bu daveti iptal etmek istiyor musunuz?'))return;
-  setTeamMessage('Davet iptal ediliyor...','');
-  const {error}=await sb.rpc(CANCEL_INVITATION_RPC,{p_company_id:currentCompanyId,p_invitation_id:invitationId});
-  if(error){setTeamMessage('Davet iptal edilemedi: '+error.message,'error');return;}
-  setTeamMessage('Davet iptal edildi.','ok');
   await refreshTeamList();
 }
 function billingValue(value,fallback){
@@ -17393,10 +16859,8 @@ function applyProfessionalSheetLayout(ws,sheet,aoa){
 document.addEventListener('DOMContentLoaded',()=>{
   const pass=document.getElementById('auth-password');
   if(pass)pass.addEventListener('keydown',e=>{if(e.key==='Enter')authLogin();});
-  const sPass=document.getElementById('signup-password2');
-  if(sPass)sPass.addEventListener('keydown',e=>{if(e.key==='Enter')authSignup();});
-  const sMail=document.getElementById('signup-email');
-  if(sMail)sMail.addEventListener('keydown',e=>{if(e.key==='Enter'){const el=document.getElementById('signup-password');if(el)el.focus();}});
+  const mPass=document.getElementById('member-password');
+  if(mPass)mPass.addEventListener('keydown',e=>{if(e.key==='Enter')createTeamMember();});
   ['reset-password-new','reset-password-repeat'].forEach(id=>{
     const input=document.getElementById(id);
     if(input)input.addEventListener('keydown',e=>{if(e.key==='Enter')completePasswordReset();});
@@ -17556,7 +17020,6 @@ async function initApp(){
   // Oturum kontrolü TCMB kur çekme işleminden önce yapılır.
   // Böylece sayfa yenilendiğinde kur servisi beklenirken kullanıcı gereksiz yere giriş ekranına düşmez.
   await initSupabaseAuth();
-  startInviteFlow();
 
   fetchTcmbRates(false).then(()=>{
     if(cloudReady) renderDashboard();

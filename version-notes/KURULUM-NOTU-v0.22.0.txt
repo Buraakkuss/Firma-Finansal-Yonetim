@@ -1,0 +1,42 @@
+NakitPilot v0.22.0 — Kurulum notu
+
+1) SUPABASE (zorunlu, tek parça)
+   sql/nakitpilot-ekip-kurulum-v0.22.0.sql
+   - Dosyayı açın, "BURAYA_SERVICE_ROLE_ANAHTARINIZI_YAPISTIRIN" yazan yeri
+     kendi service_role anahtarınızla değiştirin
+     (Supabase > Project Settings > API Keys > service_role > Reveal).
+   - Tamamını SQL Editor'e yapıştırıp Run deyin.
+   - Sonuçta 6 satır döner, hepsi true olmalı:
+       ayar tablosu / http eklentisi / service_role anahtari girildi /
+       kullanici olusturma fonksiyonu / sifre belirleme fonksiyonu /
+       eski uyelik talebi tablosu kaldirildi
+   - "http eklentisi" false ise: Database > Extensions > "http" açın,
+     SQL'i tekrar çalıştırın.
+
+2) DOSYALAR
+   index.html            (değişti)
+   sw.js                 (değişti — APP_VERSION 0.22.0)
+   manifest.webmanifest  (değişti — start_url ?v=0.22.0)
+   Domaine kopyalayın; GitHub otomatik yayını main'e birleşince bunu kendisi
+   yapar.
+
+3) SIRALAMA
+   Önce SQL, sonra dosyalar. SQL çalıştırılmadan yeni sürüm açılırsa
+   Firma & Ekip ekranında "kurulum tamamlanmamış" uyarısı çıkar; diğer tüm
+   ekranlar normal çalışır.
+
+4) İLK DENEME
+   - Yönetici olarak girin, Ayarlar > Firma & Ekip.
+   - "Yeni Kullanıcı Oluştur" kartında uyarı olmamalı.
+   - Kendinize deneme amaçlı bir kullanıcı açın (örn. deneme@firmaniz.com),
+     gizli pencerede o bilgilerle giriş yapın, çalıştığını görün.
+   - İşiniz bitince o kullanıcıyı listeden "Çıkar" ile firmadan alabilirsiniz.
+
+5) ESKİ SÜRÜMDEN GELENLER
+   Daha önce davetle/kayıtla eklenmiş kullanıcılar ve firma üyelikleri aynen
+   durur. Yalnız bekleyen davetler ve bekleyen üyelik talepleri iptal edilir.
+
+6) SUPABASE MAİL AYARLARI ARTIK ZORUNLU DEĞİL
+   Kullanıcı açma ve şifre değiştirme mail kullanmaz. "Şifremi Unuttum"
+   düğmesi duruyor ama çalışması için SMTP kurulumu gerekir; kurmasanız da
+   yönetici şifre belirleyebildiği için sistem tam çalışır.

@@ -1,0 +1,44 @@
+NakitPilot v0.11.0 — Satın Alma modülü
+
+Sol menüye "Satın Alma" bölümü ve üç yeni ekran eklendi.
+
+1) Tedarikçiler
+- Tedarikçi adı, vergi no, yetkili kişi, telefon, e-posta, adres ve not.
+- Listede her tedarikçinin AÇIK BORCU görünür (ödenmemiş fatura toplamı).
+- Siparişi veya faturası olan tedarikçi silinemez.
+
+2) Satın Alma Siparişleri
+- Otomatik sipariş kodu: SA26-1, SA26-2 ... (yıllık sayaç).
+- Tedarikçi, proje, sipariş tarihi, beklenen teslim, para birimi ve kur.
+- Çok satırlı kalem tablosu: malzeme, miktar, birim, birim fiyat, tutar.
+- Durumlar: Talep, Onay Bekliyor, Sipariş Verildi, Kısmi Teslim,
+  Teslim Alındı, Faturalandı, İptal.
+- "Mal Kabul" butonu siparişi tek tuşla teslim alındı yapar; teslim oranı
+  yüzde olarak izlenir.
+- Beklenen teslim tarihi geçmiş ve tamamlanmamış siparişler kırmızı gösterilir.
+- Siparişi projeye bağlarsanız proje hareket geçmişine yazılır.
+
+3) Tedarikçi Faturaları ve Ödemeler
+- Fatura: no, tarih, tutar, para birimi, kur, KDV, vade, sipariş ve proje bağlantısı.
+- Ödeme: faturaya bağlı, kısmi olabilir, ödenen hesap seçilir.
+- Vade uyarı kartı: gecikmiş ve 7 gün içinde vadesi dolacak faturalar.
+
+FİNANS ENTEGRASYONU (gelir tarafıyla simetrik)
+- Tedarikçi faturası kaydedilince otomatik GELECEKTEKİ KESİN GİDER kalemi
+  oluşur ve vade tarihiyle nakit akışı projeksiyonuna girer.
+- Ödeme kaydedilince TAMAMLANMIŞ GİDER oluşur, seçilen banka hesabından düşer
+  ve faturanın beklenen gider kalemi kapanır.
+- Fatura silinince beklenen gider kalemi, ödeme silinince gider kaydı geri alınır.
+- Aynı para iki kez sayılmaz.
+
+PROJE ENTEGRASYONU
+- Projeye bağlanan tedarikçi faturaları projenin GERÇEK MALİYETİNİ oluşturur.
+- Böylece tahmini maliyet ile gerçek maliyet karşılaştırılabilir hale gelir.
+
+YETKİ
+- Bu ekranlar Satın Alma modülüne bağlıdır.
+- Muhasebe ve proje ekibi varsayılan olarak görüntüleyebilir, değiştiremez.
+- Tedarikçi ödemesi satın alma veya finans düzenleme yetkisiyle yapılabilir.
+
+Supabase
+- Şema değişikliği gerekmez.

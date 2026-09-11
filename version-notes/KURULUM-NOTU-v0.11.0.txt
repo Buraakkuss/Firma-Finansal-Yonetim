@@ -1,0 +1,26 @@
+NakitPilot v0.11.0 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu; dosya yüklemeye gerek yoktur.
+- ?v=0.11.0 ile açın, görünüm eski kalırsa Ctrl + F5.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Satın alma akışı
+
+1) Satın Alma > Tedarikçiler ekranından tedarikçileri girin.
+2) Satın Alma > Satın Alma Siparişleri ekranından sipariş oluşturun.
+   - Malzeme projeye alınacaksa PROJE alanını mutlaka seçin.
+   - Kalemleri "+ Kalem Ekle" ile girin.
+3) Malzeme geldiğinde sipariş satırındaki "Mal Kabul" butonuna basın.
+4) Tedarikçi faturası gelince Satın Alma > Faturalar & Ödemeler ekranından girin.
+   - VADE TARİHİNİ girin; nakit akışı buna göre planlanır.
+   - Proje alanını doldurursanız projenin gerçek maliyetine yazılır.
+5) Ödeme yapıldığında aynı ekrandaki Tedarikçi Ödemesi kartından girin.
+   - ÖDENEN HESAP alanından paranın çıktığı banka hesabını seçin.
+
+Önemli
+- Tedarikçi ödemelerini Günlük Kayıt ekranından AYRICA girmeyin; iki kez sayılır.
+- Fatura kaydı tek başına bankadan para çıkarmaz; yalnız beklenen gideri oluşturur.
+  Para ancak ödeme kaydedilince banka hesabından düşer.

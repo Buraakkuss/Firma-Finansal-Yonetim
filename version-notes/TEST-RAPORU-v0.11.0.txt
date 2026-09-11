@@ -1,0 +1,41 @@
+NakitPilot v0.11.0 Test Notu
+
+- index.html satır içi JavaScript sözdizimi doğrulandı: hata yok.
+- Yeni sayfaların HTML div dengesi doğrulandı.
+- Uygulama yerel sunucuda Chromium ile açıldı; açılışta JavaScript hatası yok.
+- Satın alma motoru kaynağın kendisinden okunarak Node üzerinde çalıştırıldı.
+  27 senaryo, 27 başarılı:
+
+Sipariş hesapları
+  * 1.600 EUR sipariş toplamı, 76.000 TL karşılığı
+  * Kısmi teslimde teslim oranı %83 doğru hesaplandı
+
+Fatura → beklenen gider
+  * Gelecekteki kesin gider kalemi oluştu, tutarı ve tipi doğru
+  * Vade tarihine yerleşti, faturaya bağlandı
+  * Aynı fatura tekrar kaydedilince kopya oluşmadı
+
+Proje gerçek maliyeti
+  * Projeye bağlı fatura projenin gerçek maliyetine yazıldı
+  * Başka projeye yazılmadı
+
+Kısmi ödeme
+  * Gider kaydı oluştu, TL karşılığı doğru, bankadan düştü
+  * Kısmi kapatma işaretlendi, kalan borç 47.500 TL
+
+Faturanın kapanması
+  * Kalan ödeme tam kapatma olarak işaretlendi
+  * Kalan borç ve toplam borç sıfırlandı, fatura "Ödendi" oldu
+
+Geri alma
+  * Ödeme silinince gider kaydı geri alındı, kalan borç geri geldi
+  * Fatura silinince beklenen gider kalemi kaldırıldı
+
+Vade uyarısı
+  * Gecikmiş fatura uyarı listesine girdi, kalan tutar doğru
+
+Gerileme testleri
+  * v0.8.3: 7/7, v0.9.0: 25/25, v0.9.2: 18/18, v0.9.5: 8/8,
+    v0.9.6: 20/20, v0.10.0: 26/26
+
+Toplam 131 senaryo başarılı.

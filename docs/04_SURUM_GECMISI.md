@@ -145,4 +145,13 @@
 - "Satın Alma" rolü eklendi (sql/nakitpilot-satinalma-rolu-v0.10.0.sql).
 - Firma & Ekip ve Yasal sayfaları için yetki sıkılaştırıldı.
 
-Güncel baz sürüm: **v0.10.0**
+## v0.11.0
+- Satın Alma modülü eklendi: Tedarikçiler, Satın Alma Siparişleri,
+  Tedarikçi Faturaları ve Ödemeler.
+- Otomatik sipariş kodu (SA26-1), çok satırlı kalem tablosu, mal kabul ve
+  teslim oranı takibi.
+- Finans entegrasyonu: tedarikçi faturası gelecekteki kesin gider oluşturur,
+  ödeme tamamlanmış gider oluşturup bankadan düşer ve beklenen gideri kapatır.
+- Projeye bağlanan tedarikçi faturaları projenin gerçek maliyetini oluşturur.
+
+Güncel baz sürüm: **v0.11.0**

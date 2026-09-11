@@ -1,0 +1,12 @@
+NakitPilot v0.11.0 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Satın alma verisi company_data.data.purchasing altında tutulur
+(suppliers, orders, invoices, payments) ve Banka Merkezi'nin normalize tablo
+senkronizasyonuna dahil değildir.
+
+Tedarikçi faturaları mevcut data.fixed dizisine standart bir "gelecekteki kesin
+gider" kalemi olarak, ödemeler ise data.expense dizisine standart bir gider
+kaydı olarak yazılır. Bu kayıtlar purchaseInvoiceId ve purchasePaymentId
+alanlarıyla satın alma kayıtlarına bağlanır.

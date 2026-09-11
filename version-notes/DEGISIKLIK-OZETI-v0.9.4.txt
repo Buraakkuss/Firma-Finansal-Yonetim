@@ -1,0 +1,26 @@
+NakitPilot v0.9.4 — Kurumsal renk paleti (logo renkleriyle uyum)
+
+Değişen: uygulama renk paleti
+- Ana renk turkuaz (#0F766E) yerine Marmara Teknik logosunun laciverti (#2E4F6E) oldu.
+- Sol menü zemini logonun derin laciverti (#142D48) ile değiştirildi.
+- Vurgu rengi turkuazdan logonun çelik mavisine (#7FA8CC) geçirildi.
+- Zeminler yeşilimsi griden soğuk griye alındı (#F4F7F6 -> #F4F6F9, #E9F1EF -> #E9EEF4).
+- Kenarlık, gölge ve panel tonları yeni ana renge göre yeniden türetildi.
+- Giriş ekranındaki sıcak/krem gradyan kaldırıldı, logo tonlarıyla değiştirildi.
+- Koyu tema da aynı mantıkla lacivert-çelik mavi düzenine geçirildi.
+
+Değişen: teklif belgesi
+- Başlık çizgileri, bölüm başlıkları ve fiyat tablosu başlığı logonun lacivertine
+  geçirildi. Belge artık logo ile aynı renk ailesinde.
+
+Değişen: uygulama simgesi
+- PWA simgeleri ve favicon logonun lacivert-çelik mavi gradyanıyla yeniden üretildi.
+- Tarayıcı tema rengi ve PWA tema rengi güncellendi.
+
+Korunanlar (is kurali 8)
+- Gelir/pozitif bakiye yesil, gider/borc/eksi bakiye kirmizi, uyari ve risk
+  turuncu tonlari AYNEN korundu. Bu renkler anlam tasidigi icin degistirilmedi.
+- Tahmin mavisi, sabit gider moru ve altin sarisi da korundu.
+
+Supabase
+- Şema değişikliği gerekmez.

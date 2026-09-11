@@ -1,0 +1,23 @@
+NakitPilot v0.9.4 Test Notu
+
+- Logo renkleri kaynak dosyadan ölçülerek belirlendi (tahmin edilmedi):
+  derin lacivert #142D48, ana lacivert #314F6A, çelik mavi #4D6E8A.
+- index.html satır içi JavaScript sözdizimi doğrulandı: hata yok.
+- manifest.webmanifest geçerli JSON, sw.js sözdizimi temiz.
+- Renk değişiklikleri sayılarak uygulandı; her renk için beklenen kullanım
+  sayısı doğrulandı (ör. ana renk 18, kenarlık tonları 60, marka gradyanı 2).
+  Beklenenden farklı sayı bulunsaydı işlem durdurulacaktı.
+
+Görsel doğrulama
+- Uygulama yerel sunucuda Chromium ile açılıp giriş ekranı render edildi;
+  lacivert ana buton, soğuk gri zemin ve temiz gradyan doğrulandı.
+- Teklif belgesi yeniden üretilip render edildi; başlık çizgileri, bölüm
+  başlıkları ve fiyat tablosu başlığının logo ile aynı renk ailesinde olduğu
+  görsel olarak doğrulandı.
+- PWA simgeleri logonun gradyanıyla yeniden üretilip görsel olarak kontrol edildi.
+
+Anlam tasiyan renklerin korundugu dogrulandi
+- Gelir yesili (#1E8A4C), gider kirmizisi (#C0392B), uyari turuncusu (#BF6A00),
+  sabit gider moru ve altin sarisi degistirilmedi.
+
+Supabase SQL gereksinimi: Yok.

@@ -1,0 +1,19 @@
+NakitPilot v0.9.4 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu olduğu için dosya yüklemeye gerek yoktur.
+- Uygulamayı ?v=0.9.4 ile açın.
+- ESKİ RENKLER GÖRÜNÜYORSA Ctrl + F5 (Mac: Cmd + Shift + R) yapın.
+  Renk değişikliği tarayıcı önbelleğinden etkilenir.
+- Telefonda ana ekrana eklediyseniz simgenin güncellenmesi için uygulamayı
+  kapatıp yeniden açmanız gerekebilir.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Kontrol
+- Sol menünün lacivert olduğunu doğrulayın.
+- Bir teklifi Ön İzle ile açın; başlıkların ve fiyat tablosunun logo laciverti
+  ile aynı tonda olduğunu görün.
+- Gelir rakamlarının hâlâ yeşil, gider ve borçların kırmızı, uyarıların turuncu
+  olduğunu doğrulayın.

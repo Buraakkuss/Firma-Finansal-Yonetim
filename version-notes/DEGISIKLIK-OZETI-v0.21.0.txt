@@ -1,0 +1,64 @@
+NakitPilot v0.21.0 — Davet ile kayıt akışı ve şifre sıfırlama düzeltmesi
+
+ÖNCE ŞUNU YAPIN
+Supabase > SQL Editor'de sql/nakitpilot-uyelik-davet-v0.21.0.sql dosyasını tek
+parça çalıştırın. Bu dosya v0.20.0 kurulumunu DA içerir; v0.20 dosyasını daha
+önce çalıştırdıysanız da çalıştırmadıysanız da tek başına yeterlidir.
+
+1) DAVET BAĞLANTISI ARTIK DOĞRU ÇALIŞIYOR
+   Eskiden: davet bağlantısını açan kişi sadece giriş ekranını görüyordu, ne
+   yapacağını anlamıyordu; Mühendis/Satın Alma rolü seçilse bile sunucu rolü
+   "Rapor Kullanıcısı"na düşürüyordu; e-posta doğrulamasından sonra davet
+   kayboluyordu.
+   Şimdi: bağlantı açıldığında ekran KENDİLİĞİNDEN "Kayıt Ol" formuna geçer.
+   - Davet edilen e-posta alana yazılır ve KİLİTLENİR (değiştirilemez).
+   - Üstteki yeşil bantta firma adı, verilecek rol ve davet edilen adres yazar.
+   - Kişi sadece ad soyad ve şifresini yazıp "Hesap Oluştur" der.
+
+2) YANLIŞ E-POSTA İLE KAYIT
+   Kişi başka bir adresle kayıt olmaya kalkarsa:
+   "Bu e-posta davet edilen adresle eşleşmiyor. Davet ... adresine gönderildi;
+    kayıt olurken o adresi kullanın."
+   uyarısı çıkar, istek sunucuya hiç gitmez ve alan tekrar doğru adrese döner.
+   Aynı kontrol sunucuda da vardır; başka bir hesapla daveti kullanmak mümkün
+   değildir.
+
+3) KAYIT SONRASI: YÖNETİCİ ONAYI
+   Davetli kişi kaydını tamamlayınca sistem o firmaya üyelik talebini KENDİSİ
+   açar (rol davetten gelir) ve ekranda "Kayıt talebiniz ... yöneticisine
+   iletildi. Onaylandığında giriş yapabilirsiniz." yazar.
+   Yönetici: Ayarlar > Firma & Ekip > Üyelik Talepleri kartında talebi görür.
+   Davetten gelen talepler "✉️ Davet ettiğiniz kişi" rozetiyle işaretlidir.
+   Onayladığınızda kullanıcı üye olur ve davet "kullanıldı" olur.
+   Reddederseniz davet de iptal edilir; kişi red sebebini görür.
+
+4) GEÇERSİZ DAVET
+   Süresi dolmuş, iptal edilmiş veya daha önce kullanılmış bağlantıda ekranda
+   kırmızı bir bantla sebep yazar ve yeni bağlantı istemesi söylenir.
+   Davet 14 gün geçerlidir.
+
+5) ŞİFRE SIFIRLAMA DÜZELTİLDİ
+   "Şifre sıfırlama maili gönderilemedi: Load failed" hatası, isteğin Supabase'e
+   hiç ulaşamadığı anlamına gelir. Artık:
+   - İstek 25 saniyede yanıt vermezse zaman aşımına uğrar (sonsuz beklemez).
+   - Ağ hatasında bir kez daha denenir.
+   - Sonra Supabase'in sağlık adresi yoklanır ve sorun ayırt edilir:
+       * Supabase'e ulaşılamıyorsa: "Sunucuya ulaşılamadı. İnternet bağlantınızı
+         kontrol edin; kurum ağındaysanız VPN/güvenlik duvarı engelliyor olabilir."
+       * Supabase ayaktaysa: "İstek ulaştı ama mail gönderimi tamamlanamadı;
+         genellikle SMTP ayarı veya saatlik mail limiti sebebidir."
+   - Saatlik mail limiti, izin verilmeyen dönüş adresi (Supabase > Authentication
+     > URL Configuration) ve SMTP hataları için ayrı ayrı, ne yapılacağını
+     söyleyen mesajlar verilir.
+   - Buton işlem boyunca "Gönderiliyor..." olur, sonunda serbest kalır.
+   - Başarılıysa hangi adrese gönderildiği yazar ve spam klasörü hatırlatılır.
+   Giriş ve kayıt ekranı da aynı ağ hatası mesajlarını kullanıyor; hatalı şifre
+   ve "e-posta doğrulanmamış" durumları için ayrı mesajlar eklendi.
+
+EĞER ŞİFRE SIFIRLAMA HÂLÂ ÇALIŞMAZSA (yönetici kontrol listesi)
+   a. Supabase > Authentication > URL Configuration:
+      Site URL ve Redirect URLs listesinde uygulamanın adresi olmalı.
+   b. Supabase > Authentication > Emails: yerleşik mail gönderimi saatte birkaç
+      mailden fazlasına izin vermez. Kalıcı çözüm kendi SMTP'nizi tanımlamaktır.
+   c. Supabase > Project Settings: proje duraklatılmış (paused) olmamalı.
+   Ekrandaki mesaj bu üç durumdan hangisinde olduğunuzu söyler.

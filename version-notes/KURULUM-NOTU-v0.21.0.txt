@@ -1,0 +1,35 @@
+NakitPilot v0.21.0 — Kurulum notu
+
+1) SUPABASE (zorunlu, tek parça)
+   sql/nakitpilot-uyelik-davet-v0.21.0.sql dosyasının TAMAMINI
+   Supabase > SQL Editor'e yapıştırıp Run deyin.
+   Bu dosya KÜMÜLATİFTİR: v0.20.0 içeriğini de kapsar.
+   - v0.20 dosyasını daha önce çalıştırdıysanız sorun olmaz, üstüne yazar.
+   - Hiç çalıştırmadıysanız sadece bu dosya yeterlidir.
+   Sonunda 6 satırlık kontrol tablosu döner; hepsi "true" olmalıdır.
+   ÖNEMLİ: v0.20.0 dosyasını bu dosyadan SONRA çalıştırmayın (fonksiyon
+   imzalarını geriye alır). Dosyanın başına bu uyarı eklendi.
+
+2) DOSYALAR
+   index.html            (değişti)
+   sw.js                 (değişti — APP_VERSION 0.21.0)
+   manifest.webmanifest  (değişti — start_url ?v=0.21.0)
+   Domaine kopyalayın; GitHub otomatik yayını main'e birleşince bunu kendisi yapar.
+
+3) SUPABASE AYARLARI — ŞİFRE SIFIRLAMA VE DOĞRULAMA MAİLLERİ İÇİN
+   Authentication > URL Configuration:
+     Site URL: uygulamanın açıldığı adres (örn. https://alanadi/klasor/)
+     Redirect URLs: aynı adres (ve varsa ?v=... ile açılan hali)
+   Bu liste eksikse şifre sıfırlama ve doğrulama bağlantıları çalışmaz;
+   uygulama bu durumda ekrana "URL Configuration bölümüne şu adresi ekleyin"
+   yazar.
+   Authentication > Emails: yerleşik gönderim saatlik limitlidir. Ekip büyükse
+   kendi SMTP'nizi tanımlayın (Gmail/Yandex/kurumsal sunucu).
+
+4) DENEME LİSTESİ
+   - Yönetici olarak davet oluşturun, bağlantıyı başka bir tarayıcıda açın:
+     ekran doğrudan Kayıt Ol formuna düşmeli, e-posta kilitli gelmeli.
+   - Farklı bir e-posta yazmayı deneyin (alanı açıp): uyarı çıkmalı.
+   - Kaydı tamamlayın: "kayıt talebiniz yöneticiye iletildi" yazmalı.
+   - Yönetici ekranında talebi onaylayın: kullanıcı giriş yapabilmeli.
+   - Şifremi Unuttum'u deneyin: mail gelmezse ekrandaki mesaj sebebi söyler.

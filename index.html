@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.20.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.20.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.20.0">
-  <title>NakitPilot Marmara Teknik — v0.20.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.21.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.21.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.21.0">
+  <title>NakitPilot Marmara Teknik — v0.21.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -328,8 +328,11 @@
   body.signup-mode .auth-link-helper { display:none; }
   body.signup-mode .auth-signup-fields { display:block; }
   .auth-signup-fields .btn { width:100%; margin-top:10px; }
-  .auth-invite-banner { margin-bottom:12px; padding:11px 12px; border-radius:10px; font-size:12.5px;
+  .auth-invite-banner { margin-bottom:12px; padding:11px 12px; border-radius:10px; font-size:12.5px; line-height:1.6;
     background:rgba(46,125,50,.10); border:1px solid rgba(46,125,50,.35); color:var(--text); }
+  .auth-invite-banner.err { background:rgba(200,60,60,.09); border-color:rgba(200,60,60,.40); }
+  .auth-signup-fields input.locked { background:var(--bg-secondary); color:var(--text-muted); cursor:not-allowed; }
+  .field-note { display:block; margin-top:5px; font-size:11.5px; color:var(--text-muted); }
   .join-panel { display:grid; gap:10px; }
   .join-state { padding:12px; border-radius:11px; border:1px solid var(--border); background:var(--bg-secondary); font-size:13px; }
   .join-state.warn { border-color:rgba(230,145,30,.45); background:rgba(230,145,30,.10); }
@@ -2672,12 +2675,12 @@
     </div>
     <div class="auth-signup-fields" id="auth-signup-fields">
       <div class="form-group"><label>Ad Soyad</label><input type="text" id="signup-name" autocomplete="name" placeholder="Örn. Ahmet Yılmaz"></div>
-      <div class="form-group"><label>E-posta</label><input type="email" id="signup-email" autocomplete="email" placeholder="ad.soyad@marmarateknik.com.tr"></div>
+      <div class="form-group"><label>E-posta</label><input type="email" id="signup-email" autocomplete="email" placeholder="ad.soyad@marmarateknik.com.tr"><small class="field-note" id="signup-email-note" hidden></small></div>
       <div class="form-group"><label>Telefon (opsiyonel)</label><input type="tel" id="signup-phone" autocomplete="tel" placeholder="0532 000 00 00"></div>
       <div class="form-group"><label>Şifre</label><input type="password" id="signup-password" autocomplete="new-password" placeholder="En az 6 karakter"></div>
       <div class="form-group"><label>Şifre (tekrar)</label><input type="password" id="signup-password2" autocomplete="new-password" placeholder="Şifreyi tekrar yazın"></div>
       <button class="btn btn-primary" onclick="authSignup()" type="button">Hesap Oluştur</button>
-      <div class="auth-note" style="margin-top:12px">Hesabınız oluşturulduktan sonra <strong>firmaya katılma talebi</strong> gönderirsiniz. Yönetici talebinizi onaylayınca panel açılır. Davet bağlantısıyla geldiyseniz onay gerekmez, hesabınız açılınca firma otomatik tanımlanır.</div>
+      <div class="auth-note" style="margin-top:12px">Hesabınız oluşturulduktan sonra <strong>firmaya katılma talebi</strong> gönderilir; yönetici onaylayınca panel açılır. Davet bağlantısıyla geldiyseniz talep <strong>kendiliğinden</strong> oluşur, siz bir şey yapmazsınız — yöneticinin onayını beklemeniz yeterlidir.</div>
     </div>
     <div class="auth-link-helper">
       <label>Reset linki açılmıyorsa</label>
@@ -2719,7 +2722,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.20.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.21.0</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -3751,7 +3754,7 @@
       <section class="guide-sec" id="gs-6"><h2><span class="gnum">6</span>Cari hesaplar</h2><p class="guide-lead">Kimden ne kadar alacağınız, kime ne kadar borcunuz olduğu — vade yaşlandırmasıyla.</p><div class="guide-item"><h3>Alacaklar</h3><p>Proje faturalarından tahsil edilmemiş tutarlar <strong>müşteri bazında</strong> toplanır ve vade yaşına göre gruplanır.</p><figure class="guide-shot"><div class="gimg"><img src="guide/17-alacaklar.jpg" alt="Alacaklar ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Toplam alacak, vadesi geçmiş tutar ve müşteri sayısı.</li><li>Müşteri adının altında kaç açık fatura olduğu ve hangi projelere ait olduğu.</li><li>Yaşlandırma sütunları: Vadesi Gelmedi / 1-30 / 31-60 / 61-90 / 90+ gün.</li><li>En altta toplam satırı.</li></ol><div class="guide-note">Bu ekran salt okunurdur; buradan veri girilmez. Bir rakam yanlışsa <strong>Proje Finans Durumu</strong> ekranındaki fatura veya tahsilat kaydını düzeltin.</div><div class="guide-warn">90+ Gün sütununda tutar varsa o müşteriyle öncelikle görüşün.</div></div><div class="guide-item"><h3>Borçlar</h3><p>Tedarikçi faturalarından ödenmemiş tutarlar <strong>tedarikçi bazında</strong> ve aynı yaşlandırma mantığıyla gösterilir. Kısmi ödenen faturalarda yalnız kalan borç sayılır.</p><figure class="guide-shot"><div class="gimg"><img src="guide/18-borclar.jpg" alt="Borçlar ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Bir borç kapandığı hâlde listede duruyorsa Satın Alma &gt; Faturalar &amp; Ödemeler ekranından ödemenin girilip girilmediğini kontrol edin.</div></div></section>
       <section class="guide-sec" id="gs-7"><h2><span class="gnum">7</span>Yönetim raporu ve kârlılık</h2><p class="guide-lead">İşletme sahibinin tek bakışta durumu gördüğü ekran.</p><div class="guide-item"><h3>Yönetici Paneli</h3><figure class="guide-shot"><div class="gimg"><img src="guide/19-yonetici.jpg" alt="Yönetici paneli" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Özet kartlar: teklif aşaması, onay bekleyen, üretimdeki, geciken proje sayıları.</li><li>Tahsil edilecek ve ödenecek tutarlar, teklif onay oranı ve onaylanan ciro.</li><li>Proje kârlılığı tablosu.</li><li>Geciken projeler listesi — teslim tarihi geçmiş ve kapanmamış projeler.</li></ol><table class="guide-kv"><tbody><tr><th>Satış</th><td>Projenin onaylanan teklif tutarı.</td></tr><tr><th>Tahmini Maliyet</th><td>Projenin seçili maliyet çalışmasından gelir.</td></tr><tr><th>Gerçek Maliyet</th><td>Projeye bağlanan <strong>tedarikçi faturalarından</strong> gelir.</td></tr><tr><th>Gerçek Kâr</th><td>Satış eksi gerçek maliyet.</td></tr><tr><th>Marj</th><td>Gerçek kârın satışa oranı.</td></tr><tr><th>Kalan Alacak</th><td>Faturalanmış ama henüz tahsil edilmemiş tutar.</td></tr></tbody></table><div class="guide-warn">Bir projede <strong>"ölçülemiyor"</strong> yazıyorsa o projeye hiç tedarikçi faturası bağlanmamıştır. Gerçek maliyet bilinmediği için kâr da hesaplanamaz. Maliyetin doğru çıkması için tedarikçi faturalarında <strong>PROJE alanını mutlaka doldurun</strong>.</div></div><div class="guide-item"><h3>Raporlar ekranı</h3><p>Seçtiğiniz tarih aralığında nakit akışı, kategori dağılımı, aylık tablo ve risk durumu. Excel, CSV ve görsel rapor olarak indirilebilir.</p><figure class="guide-shot"><div class="gimg"><img src="guide/24-raporlar.jpg" alt="Raporlar ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note"><strong>Kasa Portföyü</strong> yalnız nakit kasayı kapsar, <u>banka hesaplarını içermez</u>. Banka dâhil toplam için Özet Paneli'ne veya Banka Merkezi'ne bakın.</div></div><div class="guide-item"><h3>Özet Paneli</h3><figure class="guide-shot"><div class="gimg"><img src="guide/01-ozet.jpg" alt="Özet paneli" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Net finansal varlık ve banka/kart/KMH dağılımı.</li><li>Dönem kartları: gelir, gider, beklenen kalemler, tahmini net.</li><li>Gelir-gider grafiği ve gider kategori dağılımı.</li><li>Nakit akışı projeksiyonu — gelecek ayların tahmini portföyü.</li><li>Tahsilat vade uyarıları — vadesi geçen ve 7 gün içinde dolacak faturalar.</li></ol></div></section>
       <section class="guide-sec" id="gs-8"><h2><span class="gnum">8</span>Kişi kartları ve belgelerdeki bilgiler</h2><p class="guide-lead">Teklif ve sipariş belgelerinde kimin bilgisi görünecek.</p><div class="guide-item"><h3>Belgelerde sorumlu kişi nasıl seçilir</h3><p>Hem teklif penceresinde hem satın alma sipariş formunda <strong>Sorumlu Kişi</strong> alanı vardır.</p><ol class="guide-steps"><li>Belgeyi açtığınızda <strong>varsayılan olarak sizin kartınız</strong> seçili gelir.</li><li>Arkadaşınız yerinde değilse ve onun adına belge düzenliyorsanız listeden onun kartını seçin.</li><li>Ad, <strong>cep telefonu</strong> ve e-posta üçü birden o kişininkiyle değişir.</li><li>İsterseniz bu alanları elle de düzenleyebilirsiniz.</li></ol><table class="guide-kv"><tbody><tr><th>Belgede görünen numara</th><td>Kişinin <strong>cep telefonu</strong>. Girilmemişse kartın sabit numarası yazılır.</td></tr><tr><th>Belgenin en altındaki künye</th><td>Firma unvanı · şehir · web adresi · <strong>firma sabit telefonu</strong>.</td></tr><tr><th>Kart seçilmezse</th><td>Firma varsayılan bilgileri basılır (eski davranış).</td></tr></tbody></table><div class="guide-note">Bir kişi herhangi bir teklif veya siparişte sorumlu olarak geçiyorsa <strong>kartı silinemez</strong>. Kişi işten ayrıldıysa kartı silmeyin; not alanına düşün ki geçmiş belgeler bozulmasın.</div></div></section>
-      <section class="guide-sec" id="gs-9"><h2><span class="gnum">9</span>Yetkiler ve roller</h2><p class="guide-lead">Kim neyi görebilir, kim neyi değiştirebilir.</p><div class="guide-item"><h3>Rollerin varsayılan yetkileri</h3><table class="guide-kv"><tbody><tr><th>Yönetici</th><td>Her modülde tam yetki. Firma & Ekip, Yasal ve kişi kartı yönetimi yalnız bu roldedir.</td></tr><tr><th>Muhasebe</th><td>Finans ve Cari düzenler; Proje ve Satın Alma'yı görür ama değiştiremez.</td></tr><tr><th>Mühendis / Proje</th><td>Proje düzenler; Satın Alma ve Cari'yi görür. Finans girişi ve Yönetim Raporu'nu göremez.</td></tr><tr><th>Satın Alma</th><td>Satın Alma düzenler; Finans ve Proje'yi görür ama değiştiremez.</td></tr><tr><th>Rapor Kullanıcısı</th><td>Her modülü görüntüler, hiçbir şeyi değiştiremez.</td></tr></tbody></table><p>Bu varsayılanlar <strong>Ayarlar &gt; Firma &amp; Ekip</strong> ekranındaki <em>Modül Yetkileri</em> matrisinden kişi bazında değiştirilebilir. Her kullanıcı her modülde üç seviyeden birini alır: <strong>erişim yok</strong> / <strong>görüntüleme</strong> / <strong>düzenleme</strong>.</p><figure class="guide-shot"><div class="gimg"><img src="guide/21-yetki.jpg" alt="Firma & Ekip ve modül yetkileri" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Muhasebe parayı girer; satın alma ve proje ekibi aynı veriyi <strong>izleyebilir</strong> ama değiştiremez. Sistem bu ayrımı korumak üzere kurulmuştur.</div></div><div class="guide-item"><h3>Yeni kullanıcı ekleme — iki yol</h3><p>Sisteme yeni birini eklemenin iki yolu vardır: <strong>davet bağlantısı</strong> göndermek veya kişinin <strong>kendisinin kayıt olup onay beklemesi</strong>. İkisinde de son sözü yönetici söyler.</p><p><strong>Yol 1 — Davet bağlantısı (en hızlısı):</strong></p><ol class="guide-pins"><li>Ayarlar → <strong>Firma & Ekip</strong> → <strong>Ekip Daveti</strong> kutusuna kişinin e-postasını yazın.</li><li>Rolü seçin: Rapor Kullanıcısı, Muhasebe, Mühendis / Proje, Satın Alma veya Yönetici.</li><li><strong>Davet Oluştur</strong> deyin. Alttaki kutuda bağlantı çıkar; <strong>Kopyala</strong> ile alın veya <strong>✉️ Mail ile Gönder</strong> ile hazır metinle yollayın.</li><li>Karşı taraf bağlantıyı açar. Hesabı yoksa <strong>Kayıt Ol</strong> ile hesap açar, varsa giriş yapar. Davet giriş anında otomatik uygulanır; ayrıca onay gerekmez.</li><li>Aynı kişiye ikinci davet oluşturursanız eski bağlantı iptal olur; her zaman son gönderdiğiniz bağlantı geçerlidir. Davet 14 gün geçerlidir.</li></ol><p><strong>Yol 2 — Kişi kayıt olur, siz onaylarsınız:</strong></p><ol class="guide-pins"><li>Kişi giriş ekranında <strong>Kayıt Ol</strong> sekmesine geçer; ad soyad, e-posta, telefon ve şifresini yazar.</li><li>Giriş yaptığında karşısına <strong>üyelik talebi</strong> ekranı gelir: firmayı seçer, istediği rolü, adını ve isterse bir not yazıp talebi gönderir.</li><li>Siz Ayarlar → Firma & Ekip → <strong>Üyelik Talepleri</strong> kartında talebi görürsünüz (ad, e-posta, telefon, not, istediği rol, tarih).</li><li><strong>Verilecek rol</strong>ü seçip <strong>✓ Onayla</strong> deyin. Kişi artık o rolle giriş yapabilir. Uygun değilse <strong>Reddet</strong> deyip sebep yazın; kişi bu sebebi kendi ekranında görür.</li><li>Kişi onaydan sonra kendi ekranındaki <strong>↻ Onaylandı mı? Kontrol Et</strong> düğmesine basar veya tekrar giriş yapar; panel açılır.</li></ol><div class="guide-ok">Dışarıdan kimse talep göndersin istemiyorsanız Firma & Ekip ekranındaki <strong>"Bu firma yeni üyelik taleplerine açık olsun"</strong> kutusunun işaretini kaldırın. O zaman kullanıcı yalnız davet bağlantısıyla eklenir.</div><div class="guide-note">Onaylanan veya davetle gelen kullanıcının rolünü sonradan <strong>Ekip ve Bekleyen Davetler</strong> tablosundan değiştirebilir, kullanıcıyı <strong>Çıkar</strong> ile firmadan alabilirsiniz. Modül bazında ince ayar için <strong>Modül Yetkileri</strong> tablosunu kullanın.</div><div class="guide-warn">Firma sahibinin yönetici yetkisi kaldırılamaz; firma yöneticisiz kalmasın diye sistem buna izin vermez. Bir kişiyi <strong>Yönetici</strong> yaparsanız o kişi de üyelik onaylayabilir, davet oluşturabilir ve yetki değiştirebilir.</div></div></section>
+      <section class="guide-sec" id="gs-9"><h2><span class="gnum">9</span>Yetkiler ve roller</h2><p class="guide-lead">Kim neyi görebilir, kim neyi değiştirebilir.</p><div class="guide-item"><h3>Rollerin varsayılan yetkileri</h3><table class="guide-kv"><tbody><tr><th>Yönetici</th><td>Her modülde tam yetki. Firma & Ekip, Yasal ve kişi kartı yönetimi yalnız bu roldedir.</td></tr><tr><th>Muhasebe</th><td>Finans ve Cari düzenler; Proje ve Satın Alma'yı görür ama değiştiremez.</td></tr><tr><th>Mühendis / Proje</th><td>Proje düzenler; Satın Alma ve Cari'yi görür. Finans girişi ve Yönetim Raporu'nu göremez.</td></tr><tr><th>Satın Alma</th><td>Satın Alma düzenler; Finans ve Proje'yi görür ama değiştiremez.</td></tr><tr><th>Rapor Kullanıcısı</th><td>Her modülü görüntüler, hiçbir şeyi değiştiremez.</td></tr></tbody></table><p>Bu varsayılanlar <strong>Ayarlar &gt; Firma &amp; Ekip</strong> ekranındaki <em>Modül Yetkileri</em> matrisinden kişi bazında değiştirilebilir. Her kullanıcı her modülde üç seviyeden birini alır: <strong>erişim yok</strong> / <strong>görüntüleme</strong> / <strong>düzenleme</strong>.</p><figure class="guide-shot"><div class="gimg"><img src="guide/21-yetki.jpg" alt="Firma & Ekip ve modül yetkileri" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Muhasebe parayı girer; satın alma ve proje ekibi aynı veriyi <strong>izleyebilir</strong> ama değiştiremez. Sistem bu ayrımı korumak üzere kurulmuştur.</div></div><div class="guide-item"><h3>Yeni kullanıcı ekleme — iki yol</h3><p>Sisteme yeni birini eklemenin iki yolu vardır: <strong>davet bağlantısı</strong> göndermek veya kişinin <strong>kendisinin kayıt olup onay beklemesi</strong>. İkisinde de son sözü yönetici söyler.</p><p><strong>Yol 1 — Davet bağlantısı (en hızlısı):</strong> Kişiye bağlantıyı gönderirsiniz, o kayıt olur, siz onaylarsınız.</p><ol class="guide-pins"><li>Ayarlar → <strong>Firma & Ekip</strong> → <strong>Ekip Daveti</strong> kutusuna kişinin e-postasını yazın.</li><li>Rolü seçin: Rapor Kullanıcısı, Muhasebe, Mühendis / Proje, Satın Alma veya Yönetici.</li><li><strong>Davet Oluştur</strong> deyin. Alttaki kutuda bağlantı çıkar; <strong>Kopyala</strong> ile alın veya <strong>✉️ Mail ile Gönder</strong> ile hazır metinle yollayın.</li><li>Karşı taraf bağlantıyı açar. Ekran <strong>kendiliğinden Kayıt Ol formuna</strong> geçer ve davet ettiğiniz e-posta alana yazılıp kilitlenir; kişi sadece ad soyad ve şifresini yazar. Başka bir e-posta ile kayıt olmaya çalışırsa sistem "bu e-posta davet edilen adresle eşleşmiyor" der.</li><li>Kayıt biter bitmez sistem <strong>üyelik talebini kendisi açar</strong> (rol davetten gelir) ve size düşer. Üyelik Talepleri kartında bu kişi <strong>✉️ Davet ettiğiniz kişi</strong> rozetiyle görünür; <strong>✓ Onayla</strong> dediğinizde giriş yapabilir.</li><li>Aynı kişiye ikinci davet oluşturursanız eski bağlantı iptal olur; her zaman son gönderdiğiniz bağlantı geçerlidir. Davet 14 gün geçerlidir. Süresi dolmuş, iptal edilmiş veya kullanılmış bağlantıyı açan kişi ekranda sebebini görür.</li></ol><p><strong>Yol 2 — Kişi kayıt olur, siz onaylarsınız:</strong></p><ol class="guide-pins"><li>Kişi giriş ekranında <strong>Kayıt Ol</strong> sekmesine geçer; ad soyad, e-posta, telefon ve şifresini yazar.</li><li>Giriş yaptığında karşısına <strong>üyelik talebi</strong> ekranı gelir: firmayı seçer, istediği rolü, adını ve isterse bir not yazıp talebi gönderir.</li><li>Siz Ayarlar → Firma & Ekip → <strong>Üyelik Talepleri</strong> kartında talebi görürsünüz (ad, e-posta, telefon, not, istediği rol, tarih).</li><li><strong>Verilecek rol</strong>ü seçip <strong>✓ Onayla</strong> deyin. Kişi artık o rolle giriş yapabilir. Uygun değilse <strong>Reddet</strong> deyip sebep yazın; kişi bu sebebi kendi ekranında görür.</li><li>Kişi onaydan sonra kendi ekranındaki <strong>↻ Onaylandı mı? Kontrol Et</strong> düğmesine basar veya tekrar giriş yapar; panel açılır.</li></ol><div class="guide-ok">Dışarıdan kimse talep göndersin istemiyorsanız Firma & Ekip ekranındaki <strong>"Bu firma yeni üyelik taleplerine açık olsun"</strong> kutusunun işaretini kaldırın. O zaman kullanıcı yalnız davet bağlantısıyla eklenir.</div><div class="guide-note">Onaylanan veya davetle gelen kullanıcının rolünü sonradan <strong>Ekip ve Bekleyen Davetler</strong> tablosundan değiştirebilir, kullanıcıyı <strong>Çıkar</strong> ile firmadan alabilirsiniz. Modül bazında ince ayar için <strong>Modül Yetkileri</strong> tablosunu kullanın.</div><div class="guide-warn">Firma sahibinin yönetici yetkisi kaldırılamaz; firma yöneticisiz kalmasın diye sistem buna izin vermez. Bir kişiyi <strong>Yönetici</strong> yaparsanız o kişi de üyelik onaylayabilir, davet oluşturabilir ve yetki değiştirebilir.</div></div></section>
       <section class="guide-sec" id="gs-10"><h2><span class="gnum">10</span>Mühendislik araçları</h2><p class="guide-lead">Tasarım ve maliyet çalışması sırasında kullanılan hesaplama araçları.</p><div class="guide-item"><h3>Ağırlık hesaplama</h3><p>Profil, sac, lama, boru, köşebent gibi ürünlerin malzeme cinsine ve ölçülerine göre ağırlığını hesaplar. Ölçüler <strong>milimetre</strong>, yoğunluk <strong>kg/dm³</strong>, sonuç <strong>kilogram</strong>dır.</p><ol class="guide-steps"><li><strong>Mühendislik &gt; Ağırlık Hesaplama</strong>.</li><li><strong>Malzeme</strong>yi seçin; yoğunluk otomatik gelir. Listede olmayan bir malzeme için "Özel" seçip yoğunluğu elle yazın.</li><li><strong>Kesit Tipi</strong>ni seçin. Sağda o kesitin şeması ve ölçü harfleri görünür.</li><li>Ölçüleri ve uzunluğu girin; sonuç anında hesaplanır.</li><li><strong>Adet</strong> girerek toplam ağırlığı görün.</li><li>İsterseniz <strong>Listeye Ekle</strong> ile birden çok kalemi biriktirin.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/25-agirlik.jpg" alt="Ağırlık hesaplama ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Malzeme, yoğunluk, kesit tipi ve adet.</li><li>Seçilen kesite göre değişen ölçü alanları.</li><li>Kesit şeması — ölçü harfleri formdaki alanlarla aynıdır.</li><li>Sonuç kartları: kesit alanı, kg/m, parça ağırlığı ve toplam.</li><li>Hesabın nasıl yapıldığını adım adım gösteren satır.</li><li>Hesap listesi; malzeme fiyatı girilirse tutar da çıkar.</li></ol><table class="guide-kv"><tbody><tr><th>Kesit tipleri</th><td>Sac/plaka · lama · kare dolu · yuvarlak dolu (mil) · boru · kutu profil (kare ve dikdörtgen) · altıgen · köşebent · U · T · I/H profil</td></tr><tr><th>Malzemeler</th><td>Çelik, paslanmaz 304/316, dökme demir, alüminyum, bakır, pirinç, bronz, çinko, kurşun, titanyum, nikel, magnezyum, PVC, PE, POM, PA6, PTFE, pleksi, cam, ahşap ve özel</td></tr></tbody></table><div class="guide-ok">Liste hazırken <strong>Listeyi Kopyala</strong> ile panoya alıp maliyet çalışmasına veya e-postaya yapıştırabilirsiniz. Malzeme fiyatı (TL/kg) girerseniz her satırın ve toplamın tutarı da hesaplanır.</div><div class="guide-note">Köşebent, U, T ve I/H profillerde köşe radyusları ve flanş eğimleri hesaba katılmaz; sonuç standart katalog değerinden yaklaşık %1-3 sapabilir. Kritik işlerde üretici kataloğundan doğrulayın.</div><div class="guide-warn">Hesap listesi kaydedilmez; ekrandan çıkınca veya sayfayı yenileyince silinir. Saklamak istediğiniz listeyi kopyalayın.</div></div><div class="guide-item"><h3>Standart Ekipmanlar — Hazır CAD Datalar ve Kataloglar</h3><p>Mühendislik başlığının altındaki <strong>Standart Ekipmanlar</strong> bölümünde iki kütüphane vardır: <strong>Hazır CAD Datalar</strong> (STEP, STP, DWG, DXF, IGES ve teknik resimler) ve <strong>Kataloglar</strong> (üretici katalogları, ölçü tabloları, PDF dokümanlar). İkisi de aynı şekilde çalışır.</p><ol class="guide-pins"><li>Menü → <strong>Mühendislik</strong> → <strong>Hazır CAD Datalar</strong>. İlk açılışta hazır başlıklar gelir: Yataklı Rulmanlar CAD, Doğuş Kalıp CAD, Alhan CAD, Emes Teker CAD, Surfence CAD.</li><li>Bir başlığa <strong>tıklayınca içine girersiniz</strong>. Üstteki yol çubuğundan (🏠 Hazır CAD Datalar › … ) istediğiniz kademeye geri dönebilir, <strong>⬆️ Üst klasör</strong> ile bir üst kademeye çıkabilirsiniz.</li><li>Yeni klasör açmak için <strong>Yeni başlık (klasör) adı</strong> kutusuna adı yazıp <strong>Klasör Oluştur</strong>a basın. İçindeyken açtığınız klasör <strong>alt klasör</strong> olur: Yataklı Rulmanlar CAD › <strong>UCF Serisi</strong> › <strong>UCF205</strong> gibi. Kademe sınırı yoktur.</li><li>Kök seviyede klasör açarak <strong>yeni bir kütüphane başlığı</strong> da ekleyebilirsiniz (örn. yeni bir tedarikçi).</li><li>Dosya eklemek için klasörün içine girin, alttaki <strong>Dosya Yükle</strong> kartından dosyayı seçin (<strong>birden fazla dosya</strong> seçebilirsiniz), istersek görünecek adı ve notu yazıp <strong>Yükle</strong>ye basın.</li><li><strong>Elinizdeki bir klasörü olduğu gibi yüklemek için</strong> (alt klasörleriyle birlikte): hedef klasörün içine girin, "veya klasörün tamamını yükle" kutusundan bilgisayarınızdaki klasörü seçin ve <strong>📂 Klasörü Yükle</strong>ye basın. Kaç dosya ve kaç MB yükleneceği sorulur, onaylayınca klasör yapısı burada aynen oluşturulur.</li><li>Yükleme sürerken çubukta kaçıncı dosyada olduğunuz, yüzde ve tahmini kalan süre görünür. <strong>⛔ Yüklemeyi Durdur</strong> ile durdurabilirsiniz; o ana kadar yüklenenler kayıtlı kalır. Aynı klasörü aynı yerde tekrar seçerseniz yüklenmiş dosyalar atlanır, <strong>kaldığı yerden devam eder</strong> — büyük kütüphaneleri birkaç oturumda yükleyebilirsiniz.</li><li>Mühendis dosyanın üzerindeki <strong>⬇️ İndir</strong> butonuna basınca dosya doğrudan bilgisayarına iner. PDF ve resimlerde <strong>👁</strong> butonu dosyayı yeni sekmede açar.</li><li>Üstteki <strong>arama kutusu</strong> kütüphanenin tamamında arar: klasör adı, dosya adı ve not içinde. Sonuçta dosyanın hangi klasörde olduğu da yazar.</li><li><strong>✏️</strong> adı değiştirir, <strong>🗑</strong> siler. Dolu bir klasör silinmez; önce içindekileri silmeniz istenir.</li></ol><div class="guide-ok">Dış kaynaktaki bir dosyayı kütüphaneye almak istemiyorsanız <strong>dış bağlantı adresi</strong> alanına üreticinin sayfa adresini yazıp kaydedebilirsiniz; kart 🔗 ikonuyla görünür.</div><div class="guide-note">Tek dosya sınırı <strong>50 MB</strong>. Klasör yüklerken bu sınırın üstündeki dosyalar atlanır ve sonunda listelenir; onları ZIP yapıp ekleyebilirsiniz. Thumbs.db, desktop.ini gibi sistem dosyaları kendiliğinden atlanır. Dosyalar firmanın bulut alanında saklanır; sadece o firmanın kullanıcıları görebilir.</div><div class="guide-warn">Klasör açma, dosya yükleme ve silme için <strong>Mühendislik modülünde düzenleme yetkisi</strong> gerekir. Görüntüleme yetkisi olan herkes dosyaları <strong>indirebilir</strong>. Silinen dosya buluttan da kalkar, geri alınamaz.</div></div></section>
       <section class="guide-sec" id="gs-11"><h2><span class="gnum">11</span>Telefonda kullanım</h2><p class="guide-lead">Sistem telefonda da tam çalışır.</p><div class="guide-item"><h3>Mobil menü ve ekranlar</h3><ol class="guide-steps"><li>Üst soldaki <strong>☰</strong> butonuna basın; menü çekmece olarak açılır.</li><li>Modül başlığına basınca alt ekranlar açılır.</li><li>Bir ekran seçince menü kendiliğinden kapanır.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/22-mobil.jpg" alt="Telefonda menü" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Telefonda formlar tek sütuna iner, butonlar parmakla basılacak boyuttadır ve geniş tablolar kendi içinde yana kaydırılır. Sayfa asla yana taşmaz.</div></div></section>
       <section class="guide-sec" id="gs-12"><h2><span class="gnum">12</span>Uyarı mesajları ve anlamları</h2><p class="guide-lead">Sistemin verdiği uyarıların ne demek olduğu ve ne yapmanız gerektiği.</p><div class="guide-item"><h3>Sık karşılaşılan uyarılar</h3><table class="guide-kv"><tbody><tr><th>"Önce bu projeye ait teklif kaydı oluşturun"</th><td>Projeyi Onaylandı veya üretim durumuna almaya çalıştınız ama projede teklif yok. Teklif &amp; Maliyet ekranından teklif oluşturun.</td></tr><tr><th>"Teslim Edildi durumuna geçmek için teslim tarihi girilmelidir"</th><td>Projeyi düzenleyip durumu Teslim Edildi seçin; açılan alanlara teslim tarihi ve irsaliye numarasını girin.</td></tr><tr><th>"Faturalandırıldı durumuna geçmek için önce fatura kaydı girilmelidir"</th><td>Proje Finans Durumu ekranından faturayı kaydedin.</td></tr><tr><th>"Kalan alacak ... Tahsilat tamamlanmadan bu duruma geçilemez"</th><td>Henüz tahsil edilmemiş tutar var. Tahsilatı girin; durum kendiliğinden ilerler.</td></tr><tr><th>"Tahsilat tutarı faturanın kalanından fazla"</th><td>Fatura tutarı, kalan ve girdiğiniz tutar uyarıda yazar. En fazla kalan kadar girebilirsiniz.</td></tr><tr><th>"Ödeme tutarı faturanın kalan borcundan fazla"</th><td>Aynı kural tedarikçi ödemelerinde de geçerlidir.</td></tr><tr><th>"Bu faturaya bağlı ... tahsilat var. Önce tahsilatları silin"</th><td>Tahsilatı olan fatura silinemez. Önce tahsilat kayıtlarını silin.</td></tr><tr><th>"Bu tedarikçiye bağlı sipariş veya fatura var"</th><td>Kayıt kullanılıyor; silinemez.</td></tr><tr><th>"Bu kayıt henüz talep/teklif aşamasında"</th><td>Mal kabul yapmadan önce fiyatları girip durumu Sipariş Verildi yapın.</td></tr><tr><th>"Bu e-posta başka bir kişi kartında kayıtlı"</th><td>Aynı e-posta ile ikinci kart açılamaz.</td></tr><tr><th>"... yetkiniz yok"</th><td>Rolünüz bu işlemi yapmaya izin vermiyor. Yöneticinizden yetki isteyin.</td></tr></tbody></table></div></section>
@@ -4699,7 +4702,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={weightCalc:'Mühendislik · Ağırlık Hesaplama',cadLibrary:'Standart Ekipmanlar · Hazır CAD Datalar',catalogs:'Standart Ekipmanlar · Kataloglar',guide:'Kullanım Kılavuzu',people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.20.0';
+const APP_VERSION='0.21.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -5499,29 +5502,105 @@ async function handleAuthSession(session,fromEvent){
     }
     setCloudUser(currentUser);setCloudStatus('☁️ Yetki kontrol ediliyor','warn');
     if(pendingInviteToken){
-      const accepted=await acceptInvitationToken(pendingInviteToken,true);
-      if(accepted)return;
+      const bitti=await claimInvitationToken(pendingInviteToken);
+      if(bitti)return;
     }
     await loadCloudData();
   }finally{
     authSessionLoadInProgress=false;
   }
 }
+/* ──────── v0.21.0 — ŞİFRE SIFIRLAMA (dayanıklı sürüm) ────────
+   "Load failed" / "Failed to fetch" tarayıcının ağ hatasıdır: istek Supabase'e
+   hiç ulaşamamıştır. Bu durumda tek seferlik tekrar denenir, sonra Supabase'in
+   sağlık ucu yoklanarak sorunun ağda mı yoksa mail gönderiminde mi olduğu
+   ayırt edilir ve kullanıcıya ne yapacağı yazılır. */
+const AUTH_TIMEOUT_MS=25000;
+function isNetworkError(e){
+  const m=String((e&&e.message)||e||'');
+  return /load failed|failed to fetch|networkerror|network error|fetch failed|timeout|zaman aşımı/i.test(m);
+}
+function authNetworkMessage(){
+  return 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin; '
+    +'kurum ağındaysanız VPN/güvenlik duvarı Supabase adresini engelliyor olabilir. '
+    +'Sorun sürerse birkaç dakika sonra tekrar deneyin.';
+}
+function withTimeout(promise,ms,etiket){
+  return Promise.race([
+    promise,
+    new Promise((_,red)=>setTimeout(()=>red(new Error((etiket||'İstek')+' zaman aşımına uğradı')),ms||AUTH_TIMEOUT_MS))
+  ]);
+}
+/* Supabase ayakta mı? Ağ hatasını sunucu hatasından ayırmak için. */
+async function supabaseReachable(){
+  try{
+    const res=await withTimeout(fetch(SUPABASE_URL+'/auth/v1/health',{method:'GET',cache:'no-store'}),8000,'Sağlık kontrolü');
+    return !!(res&&(res.ok||res.status<500));
+  }catch(e){return false;}
+}
 async function requestPasswordReset(){
-  const sb=ensureSupabase();if(!sb)return;
-  const email=(document.getElementById('auth-email').value||'').trim();
-  if(!email){setAuthMessage('Önce e-posta adresinizi yazın, sonra Şifremi Unuttum butonuna basın.','error');return;}
-  setAuthMessage('Şifre sıfırlama maili gönderiliyor...','');
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:getPasswordRedirectUrlWithVersion()});
-  if(error){
-    const msg=String(error.message||'');
-    if(/rate limit/i.test(msg)){
-      setAuthMessage('Supabase e-posta limiti doldu. Yeni mail için yaklaşık 1 saat bekleyin veya az önce gelen reset mailindeki bağlantıyı tekrar açın. Uygulamayı şu adresten kullanın: '+getPasswordRedirectUrlWithVersion(),'error');
-      return;
-    }
-    setAuthMessage('Şifre sıfırlama maili gönderilemedi: '+msg,'error');return;
+  const sb=ensureSupabase();
+  if(!sb){setAuthMessage('Bulut bağlantısı kurulamadı. Sayfayı yenileyip tekrar deneyin.','error');return;}
+  const email=((document.getElementById('auth-email')||{}).value||'').trim();
+  if(!email||email.indexOf('@')<1){
+    setAuthMessage('Önce e-posta adresinizi yazın, sonra Şifremi Unuttum butonuna basın.','error');
+    const el=document.getElementById('auth-email');if(el)el.focus();
+    return;
   }
-  setAuthMessage('Şifre sıfırlama maili gönderildi. Maildeki bağlantıdan yeni şifre belirleyebilirsiniz.','ok');
+  const btn=Array.from(document.querySelectorAll('.auth-actions .btn')).find(b=>/Şifremi Unuttum/.test(b.textContent||''));
+  if(btn){btn.disabled=true;btn.dataset.eski=btn.textContent;btn.textContent='Gönderiliyor...';}
+  setAuthMessage('Şifre sıfırlama maili gönderiliyor...','');
+  const hedef=getPasswordRedirectUrlWithVersion();
+  let sonHata='';
+  for(let deneme=1;deneme<=2;deneme++){
+    try{
+      const {error}=await withTimeout(sb.auth.resetPasswordForEmail(email,{redirectTo:hedef}),AUTH_TIMEOUT_MS,'Şifre sıfırlama isteği');
+      if(!error){
+        if(btn){btn.disabled=false;btn.textContent=btn.dataset.eski||'Şifremi Unuttum';}
+        setAuthMessage('Şifre sıfırlama maili '+email+' adresine gönderildi. Gelen kutusunda yoksa spam/gereksiz klasörüne bakın. '
+          +'Maildeki bağlantı bu adresi açar: '+hedef,'ok');
+        return;
+      }
+      const msg=String(error.message||'');
+      if(/rate limit|too many/i.test(msg)){
+        if(btn){btn.disabled=false;btn.textContent=btn.dataset.eski||'Şifremi Unuttum';}
+        setAuthMessage('Supabase e-posta limiti doldu (saatlik gönderim sınırı). Yaklaşık 1 saat sonra tekrar deneyin '
+          +'veya daha önce gelen sıfırlama mailindeki bağlantıyı kullanın.','error');
+        return;
+      }
+      if(/redirect|not allowed|invalid url/i.test(msg)){
+        if(btn){btn.disabled=false;btn.textContent=btn.dataset.eski||'Şifremi Unuttum';}
+        setAuthMessage('Supabase bu adrese dönüş izni vermiyor. Yönetici: Supabase → Authentication → URL Configuration '
+          +'bölümünde Site URL ve Redirect URLs listesine şu adresi ekleyin: '+hedef,'error');
+        return;
+      }
+      if(/smtp|email|mail/i.test(msg)){
+        if(btn){btn.disabled=false;btn.textContent=btn.dataset.eski||'Şifremi Unuttum';}
+        setAuthMessage('Mail gönderilemedi: '+msg+' — Yönetici: Supabase → Authentication → Emails bölümünde SMTP ayarlarını kontrol edin.','error');
+        return;
+      }
+      sonHata=msg;
+      break;
+    }catch(e){
+      sonHata=String((e&&e.message)||e);
+      if(!isNetworkError(e))break;
+      /* Ağ hatasında bir kez daha denenir. */
+      if(deneme===1)await new Promise(r=>setTimeout(r,1200));
+    }
+  }
+  if(btn){btn.disabled=false;btn.textContent=btn.dataset.eski||'Şifremi Unuttum';}
+  if(isNetworkError(sonHata)){
+    const ayakta=await supabaseReachable();
+    if(ayakta){
+      setAuthMessage('İstek Supabase\'e ulaştı ama mail gönderimi tamamlanamadı ('+sonHata+'). '
+        +'Genellikle SMTP ayarı veya saatlik mail limiti sebebidir. Birkaç dakika sonra tekrar deneyin; '
+        +'sürerse yönetici Supabase → Authentication → Emails bölümünü kontrol etmelidir.','error');
+    }else{
+      setAuthMessage(authNetworkMessage()+' (Teknik ayrıntı: '+sonHata+')','error');
+    }
+    return;
+  }
+  setAuthMessage('Şifre sıfırlama maili gönderilemedi: '+sonHata,'error');
 }
 async function openPasswordResetFromPastedLink(){
   const sb=ensureSupabase();if(!sb)return;
@@ -5579,8 +5658,25 @@ async function authLogin(){
   const password=document.getElementById('auth-password').value||'';
   if(!email||!password){setAuthMessage('E-posta ve şifre girin.','error');return;}
   setAuthMessage('Giriş yapılıyor...','');
-  const {data:loginData,error}=await sb.auth.signInWithPassword({email,password});
-  if(error){setAuthMessage('Giriş başarısız: '+error.message,'error');return;}
+  let loginData=null;
+  try{
+    const sonuc=await withTimeout(sb.auth.signInWithPassword({email,password}),AUTH_TIMEOUT_MS,'Giriş isteği');
+    if(sonuc.error){
+      const m=String(sonuc.error.message||'');
+      if(/invalid login|invalid credentials/i.test(m)){
+        setAuthMessage('E-posta veya şifre hatalı. Şifrenizi unuttuysanız "Şifremi Unuttum" deyin.','error');
+      }else if(/email not confirmed|not confirmed/i.test(m)){
+        setAuthMessage('E-posta adresiniz henüz doğrulanmamış. Mailinize gelen doğrulama bağlantısını açın, sonra tekrar giriş yapın.','error');
+      }else{
+        setAuthMessage('Giriş başarısız: '+m,'error');
+      }
+      return;
+    }
+    loginData=sonuc.data;
+  }catch(e){
+    setAuthMessage(isNetworkError(e)?authNetworkMessage():('Giriş başarısız: '+String(e&&e.message||e)),'error');
+    return;
+  }
   if(loginData&&loginData.session) saveAuthMirror(loginData.session);
   await handleAuthSession(loginData.session,false);
   logClientActivity('auth.login','Kullanıcı giriş yaptı','auth',currentUser&&currentUser.id?currentUser.id:'',{email:currentUser&&currentUser.email?currentUser.email:email});
@@ -5590,16 +5686,31 @@ async function authSignup(){
   const v=signupFieldValues();
   if(!v.name){setAuthMessage('Ad soyad yazın.','error');return;}
   if(!v.email||v.email.indexOf('@')<1){setAuthMessage('Geçerli bir e-posta adresi yazın.','error');return;}
+  /* Davet bağlantısıyla gelindiyse yalnız davet edilen adresle kayıt olunur. */
+  const davetli=inviteEmail();
+  if(davetli&&v.email.toLowerCase()!==davetli){
+    setAuthMessage('Bu e-posta davet edilen adresle eşleşmiyor. Davet '+davetli+' adresine gönderildi; kayıt olurken o adresi kullanın.','error');
+    applyInviteToSignupForm();
+    return;
+  }
   if(v.pass.length<6){setAuthMessage('Şifre en az 6 karakter olmalı.','error');return;}
   if(v.pass!==v.pass2){setAuthMessage('İki şifre aynı değil. Şifreyi tekrar yazın.','error');return;}
   rememberSignupProfile(v);
   const btnler=document.querySelectorAll('.auth-signup-fields .btn');
   btnler.forEach(b=>b.disabled=true);
   setAuthMessage('Hesabınız oluşturuluyor...','');
-  const {data:signData,error}=await sb.auth.signUp({
-    email:v.email,password:v.pass,
-    options:{data:{full_name:v.name,phone:v.phone},emailRedirectTo:getPasswordRedirectUrlWithVersion()}
-  });
+  let signData=null,error=null;
+  try{
+    const sonuc=await withTimeout(sb.auth.signUp({
+      email:v.email,password:v.pass,
+      options:{data:{full_name:v.name,phone:v.phone},emailRedirectTo:getPasswordRedirectUrlWithVersion()}
+    }),AUTH_TIMEOUT_MS,'Kayıt isteği');
+    signData=sonuc.data;error=sonuc.error;
+  }catch(e){
+    btnler.forEach(b=>b.disabled=false);
+    setAuthMessage(isNetworkError(e)?authNetworkMessage():('Kayıt başarısız: '+String(e&&e.message||e)),'error');
+    return;
+  }
   btnler.forEach(b=>b.disabled=false);
   if(error){
     const msg=String(error.message||'');
@@ -6113,17 +6224,6 @@ function readRememberedInviteToken(){
 function forgetInviteToken(){
   try{localStorage.removeItem(INVITE_TOKEN_KEY);}catch(e){}
 }
-function updateInviteBanner(){
-  const el=document.getElementById('auth-invite-banner');
-  if(!el)return;
-  if(pendingInviteToken){
-    el.hidden=false;
-    el.innerHTML='✉️ <strong>Firma daveti aldınız.</strong> Hesabınız varsa giriş yapın; yoksa <strong>Kayıt Ol</strong> sekmesinden hesap açın. Davet giriş yaptığınız anda otomatik uygulanır.';
-  }else{
-    el.hidden=true;
-    el.textContent='';
-  }
-}
 function signupFieldValues(){
   const g=(id)=>((document.getElementById(id)||{}).value||'').trim();
   return {name:g('signup-name'),email:g('signup-email'),phone:g('signup-phone'),
@@ -6171,7 +6271,7 @@ function renderJoinPanel(hata){
   if(hata){
     stateEl.className='join-state err';
     stateEl.innerHTML='Üyelik talebi ekranı açılamadı: '+htmlEsc(hata)
-      +'<br><small>SQL kurulumu yapılmadıysa yöneticiniz <strong>nakitpilot-uyelik-onay-v0.20.0.sql</strong> dosyasını çalıştırmalıdır.</small>';
+      +'<br><small>SQL kurulumu yapılmadıysa yöneticiniz <strong>nakitpilot-uyelik-onay-v0.21.0.sql</strong> dosyasını çalıştırmalıdır.</small>';
     formEl.hidden=true;
     if(refreshBtn)refreshBtn.hidden=false;
     if(detailsEl)detailsEl.hidden=false;
@@ -6301,7 +6401,7 @@ async function renderJoinRequests(){
   const {data,error}=await sb.rpc(LIST_JOIN_REQUESTS_RPC,{p_company_id:currentCompanyId});
   if(error){
     list.innerHTML='<div class="role-warning">Üyelik talepleri alınamadı: '+escapeHtml(error.message)
-      +'<br><small>Bu özellik için <strong>sql/nakitpilot-uyelik-onay-v0.20.0.sql</strong> dosyasının Supabase\'de çalıştırılmış olması gerekir.</small></div>';
+      +'<br><small>Bu özellik için <strong>sql/nakitpilot-uyelik-onay-v0.21.0.sql</strong> dosyasının Supabase\'de çalıştırılmış olması gerekir.</small></div>';
     return;
   }
   _joinRequestsCache=Array.isArray(data)?data:[];
@@ -6322,6 +6422,7 @@ async function renderJoinRequests(){
     const satir=[r.email,r.phone,r.note].filter(Boolean).map(escapeHtml).join(' · ');
     return '<div class="join-req-card">'
       +'<div class="join-req-head"><strong>'+escapeHtml(r.full_name||r.email||'Kullanıcı')+'</strong>'
+      +(r.from_invitation?'<span class="status-chip ok">✉️ Davet ettiğiniz kişi</span>':'')
       +'<span class="status-chip warn">'+escapeHtml(formatDateTime(r.created_at))+'</span></div>'
       +'<div class="join-req-meta">'+satir+'</div>'
       +'<div class="join-req-meta">İstediği rol: <strong>'+escapeHtml(ROLE_LABELS[r.requested_role]||r.requested_role)+'</strong></div>'
@@ -6395,6 +6496,137 @@ async function mailCurrentInviteLink(){
   const url='mailto:'+encodeURIComponent(mail)+'?subject='+encodeURIComponent(konu)+'&body='+encodeURIComponent(govde);
   window.location.href=url;
   setTeamMessage('Mail programınız açılıyor. Açılmazsa bağlantıyı kopyalayıp elle gönderin.','ok');
+}
+
+/* ──────── v0.21.0 — DAVET BAĞLANTISI İLE KAYIT ────────
+   Davet bağlantısını açan kişi doğrudan Kayıt Ol formuna düşer; davet edilen
+   e-posta kilitli gelir. Kayıt olduktan sonra sistem o firmaya üyelik talebini
+   kendisi açar ve yöneticinin onayına düşer. Başka bir e-posta ile kayıt
+   olunmaya çalışılırsa hem ekran hem sunucu eşleşmediğini söyler. */
+const INVITE_INFO_RPC='np_invite_info';
+const CLAIM_INVITATION_RPC='np_claim_invitation';
+let _inviteInfo=null;
+let _inviteInfoLoading=false;
+function inviteEmail(){return _inviteInfo&&_inviteInfo.is_valid?String(_inviteInfo.invited_email||'').toLowerCase():'';}
+async function loadInviteInfo(){
+  if(!pendingInviteToken||_inviteInfoLoading)return _inviteInfo;
+  const sb=ensureSupabase();
+  if(!sb)return null;
+  _inviteInfoLoading=true;
+  try{
+    const {data,error}=await sb.rpc(INVITE_INFO_RPC,{p_token:pendingInviteToken});
+    if(error)throw error;
+    _inviteInfo=getRpcRow(data)||null;
+  }catch(e){
+    /* SQL kurulmadıysa veya ağ yoksa davet bilgisi okunamaz; akış bozulmasın. */
+    _inviteInfo={is_valid:null,reason:String(e&&e.message||e)};
+  }
+  _inviteInfoLoading=false;
+  updateInviteBanner();
+  applyInviteToSignupForm();
+  return _inviteInfo;
+}
+function applyInviteToSignupForm(){
+  const mail=document.getElementById('signup-email');
+  const kilitNot=document.getElementById('signup-email-note');
+  const davetli=inviteEmail();
+  if(!mail)return;
+  if(davetli){
+    mail.value=davetli;
+    mail.readOnly=true;
+    mail.classList.add('locked');
+    if(kilitNot){
+      kilitNot.hidden=false;
+      kilitNot.textContent='Davet bu adrese gönderildi; bu adresle kayıt olmalısınız.';
+    }
+  }else{
+    mail.readOnly=false;
+    mail.classList.remove('locked');
+    if(kilitNot)kilitNot.hidden=true;
+  }
+}
+function inviteRoleLabel(){
+  const r=_inviteInfo&&_inviteInfo.invited_role;
+  return r?(ROLE_LABELS[r]||r):'';
+}
+function updateInviteBanner(){
+  const el=document.getElementById('auth-invite-banner');
+  if(!el)return;
+  /* Davet geçersizse jeton silinse bile sebep ekranda kalmalı. */
+  const gecersiz=!!(_inviteInfo&&_inviteInfo.is_valid===false);
+  if(!pendingInviteToken&&!gecersiz){el.hidden=true;el.textContent='';el.className='auth-invite-banner';return;}
+  el.hidden=false;
+  if(_inviteInfo&&_inviteInfo.is_valid===true){
+    el.className='auth-invite-banner';
+    el.innerHTML='✉️ <strong>'+htmlEsc(_inviteInfo.company_name||'Firma')+'</strong> ekibine davet edildiniz'
+      +(inviteRoleLabel()?' · rol: <strong>'+htmlEsc(inviteRoleLabel())+'</strong>':'')+'.<br>'
+      +'Davet <strong>'+htmlEsc(_inviteInfo.invited_email||'')+'</strong> adresine gönderildi. '
+      +'Aşağıdaki <strong>Kayıt Ol</strong> formundan şifrenizi belirleyip hesabınızı açın; '
+      +'kaydınız yöneticinin onayına düşecek. Hesabınız zaten varsa <strong>Giriş Yap</strong> deyin.';
+  }else if(_inviteInfo&&_inviteInfo.is_valid===false){
+    const sebep={'Davet bulunamadi':'Davet bulunamadı.','Davet daha once kullanilmis':'Bu davet daha önce kullanılmış.',
+      'Davet iptal edilmis':'Bu davet iptal edilmiş.','Davetin suresi dolmus':'Davetin süresi dolmuş.'}[_inviteInfo.reason]||'Davet geçersiz.';
+    el.className='auth-invite-banner err';
+    el.innerHTML='⛔ '+htmlEsc(sebep)+' Yöneticinizden yeni bir davet bağlantısı isteyin.';
+  }else{
+    el.className='auth-invite-banner';
+    el.innerHTML='✉️ <strong>Firma daveti aldınız.</strong> Hesabınız varsa giriş yapın; yoksa <strong>Kayıt Ol</strong> sekmesinden hesap açın.';
+  }
+}
+/* Davet bağlantısıyla gelindiyse kayıt sekmesi kendiliğinden açılır. */
+async function startInviteFlow(){
+  if(!pendingInviteToken)return;
+  updateInviteBanner();
+  const bilgi=await loadInviteInfo();
+  if(bilgi&&bilgi.is_valid===true&&!currentUser){
+    setAuthMode('signup');
+    applyInviteToSignupForm();
+    setAuthMessage('Davet edilen adres hazır. Ad soyadınızı ve şifrenizi yazıp hesabınızı açın.','');
+  }
+  if(bilgi&&bilgi.is_valid===false){
+    /* Jeton bir daha denenmesin; sebep mesajı ekranda kalır. */
+    forgetInviteToken();
+    pendingInviteToken='';
+    updateInviteBanner();
+    setAuthMessage('Davet bağlantısı geçerli değil. Yöneticinizden yeni bağlantı isteyin.','error');
+  }
+}
+/* Kayıt/giriş sonrası daveti kullanır: üyelik talebi açılır, yönetici onaylar. */
+async function claimInvitationToken(token){
+  const sb=ensureSupabase();
+  if(!sb||!currentUser)return false;
+  const clean=String(token||'').trim();
+  if(!clean)return false;
+  setCloudStatus('☁️ Davet kontrol ediliyor','warn');
+  const {data,error}=await sb.rpc(CLAIM_INVITATION_RPC,{p_token:clean});
+  if(error){
+    const msg=String(error.message||'');
+    if(/eslesmiyor|eşleşmiyor/i.test(msg)){
+      const hedef=(msg.match(/gonderildi\.?\s*$/i)?msg:msg).replace('eslesmiyor','eşleşmiyor').replace('gonderildi','gönderildi');
+      setAuthMessage('Bu hesabın e-postası davet edilen adresle eşleşmiyor. '+hedef
+        +' Davet edilen adresle kayıt olun veya o hesapla giriş yapın.','error');
+    }else if(/suresi dolmus|süresi dolmuş/i.test(msg)){
+      setAuthMessage('Davetin süresi dolmuş. Yöneticinizden yeni davet isteyin.','error');
+      forgetInviteToken();pendingInviteToken='';
+    }else if(/iptal/i.test(msg)){
+      setAuthMessage('Bu davet iptal edilmiş. Yöneticinizden yeni davet isteyin.','error');
+      forgetInviteToken();pendingInviteToken='';
+    }else{
+      setAuthMessage('Davet uygulanamadı: '+msg,'error');
+    }
+    setCloudStatus('☁️ Davet hatası','error');
+    return false;
+  }
+  const row=getRpcRow(data)||{};
+  clearInviteTokenFromUrl();
+  forgetInviteToken();
+  pendingInviteToken='';
+  if(row.claim_status==='member'){
+    setAuthMessage('Davet kabul edildi, firmaya bağlandınız.','ok');
+    return false; /* üyelik zaten var; normal yükleme devam etsin */
+  }
+  setAuthMessage('Kayıt talebiniz '+(row.target_company_name||'firma')+' yöneticisine iletildi. Onaylandığında giriş yapabilirsiniz.','ok');
+  return false;
 }
 async function acceptInvitationToken(token,fromUrl){
   const sb=ensureSupabase();if(!sb||!currentUser)return false;
@@ -17318,6 +17550,7 @@ async function initApp(){
   // Oturum kontrolü TCMB kur çekme işleminden önce yapılır.
   // Böylece sayfa yenilendiğinde kur servisi beklenirken kullanıcı gereksiz yere giriş ekranına düşmez.
   await initSupabaseAuth();
+  startInviteFlow();
 
   fetchTcmbRates(false).then(()=>{
     if(cloudReady) renderDashboard();

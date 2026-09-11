@@ -1,17 +1,18 @@
 -- ============================================================================
--- NakitPilot v0.20.0 — Üyelik talebi / yönetici onayı ve davet düzeltmeleri
--- >>> BU DOSYA ESKİDİR. Yerine nakitpilot-uyelik-davet-v0.21.0.sql dosyasını
--- >>> çalıştırın; o dosya bunun içeriğini de kapsar. Bu dosyayı v0.21'den
--- >>> SONRA çalıştırmayın (fonksiyon imzalarını geriye alır).
+-- NakitPilot v0.21.0 — Üyelik onayı + davet ile kayıt (TEK PARÇA, KÜMÜLATİF)
 -- ----------------------------------------------------------------------------
--- Bu dosya TEK PARÇA çalıştırılır. Supabase > SQL Editor'e yapıştırıp Run deyin.
--- Mevcut veriye dokunmaz; yalnız ekler ve düzeltir. İki kez çalıştırılabilir.
+-- Supabase > SQL Editor'e yapıştırıp Run deyin.
+-- Bu dosya v0.20.0 kurulumunu DA içerir: v0.20 dosyasını daha önce
+-- çalıştırdıysanız da çalıştırmadıysanız da tek başına yeterlidir.
+-- Mevcut veriye dokunmaz; birden çok kez çalıştırılabilir.
 --
--- 1) Rol listesi düzeltmesi: davet ve rol değiştirme fonksiyonları 'engineer'
---    ve 'purchasing' rollerini kabul etmiyordu, sessizce 'viewer' yapıyordu.
--- 2) Yeni: üyelik talebi tablosu (join_requests) ve onay akışı.
---    Kullanıcı giriş ekranından kayıt olur, firmaya katılma talebi gönderir,
---    yönetici Firma & Ekip ekranından onaylar; onaylanınca kullanıcı girebilir.
+-- AKIŞ
+--   Yönetici davet oluşturur → kişi bağlantıyı açar → ekran doğrudan KAYIT OL
+--   formunu açar, davet edilen e-posta kilitli gelir → kişi şifresini belirleyip
+--   kayıt olur → sistem otomatik olarak firmaya üyelik talebi açar →
+--   yönetici Firma & Ekip ekranından onaylar → kişi giriş yapar.
+--   Davet edilmeyen bir e-posta ile kayıt olmaya çalışırsa sistem eşleşmediğini
+--   söyler. Davetsiz kayıt olanlar da talep gönderip onay bekleyebilir.
 --
 -- NOT: sql/ klasöründeki ESKİ kurulum dosyalarını tekrar çalıştırmayın.
 -- ============================================================================
@@ -207,6 +208,7 @@ BEGIN
 END; $$;
 
 -- Yöneticinin gördüğü talep listesi (bekleyenler önce).
+DROP FUNCTION IF EXISTS public.np_list_join_requests(uuid);
 CREATE OR REPLACE FUNCTION public.np_list_join_requests(p_company_id uuid)
 RETURNS TABLE(id uuid, user_id uuid, email text, full_name text, phone text, note text,
               requested_role text, status text, created_at timestamptz,
@@ -228,6 +230,7 @@ BEGIN
 END; $$;
 
 -- Yönetici talebi onaylar: kullanıcı seçilen rolle firmaya üye olur.
+DROP FUNCTION IF EXISTS public.np_approve_join_request(uuid,uuid,text);
 CREATE OR REPLACE FUNCTION public.np_approve_join_request(
   p_company_id uuid, p_request_id uuid, p_role text)
 RETURNS TABLE(request_id uuid, member_user_id uuid, member_email text, member_role text, new_status text)
@@ -312,7 +315,184 @@ GRANT EXECUTE ON FUNCTION public.np_reject_join_request(uuid,uuid,text) TO authe
 GRANT EXECUTE ON FUNCTION public.np_set_join_requests_open(uuid,boolean) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.np_pending_join_count(uuid) TO authenticated;
 
--- ── 6) Kontrol
+-- ── 7) Üyelik talebi hangi davetten geldi
+ALTER TABLE public.join_requests
+  ADD COLUMN IF NOT EXISTS invitation_id uuid
+  REFERENCES public.company_invitations(id) ON DELETE SET NULL;
+
+-- ── 8) Davet bilgisi: bağlantıyı açan kişi henüz giriş yapmamış olabilir.
+--    Jetonun kendisi gizli anahtardır; yalnız o jetona sahip olan görür.
+CREATE OR REPLACE FUNCTION public.np_invite_info(p_token text)
+RETURNS TABLE(company_id uuid, company_name text, invited_email text, invited_role text,
+              expires_at timestamptz, is_valid boolean, reason text)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE v_inv public.company_invitations%rowtype; v_name text;
+BEGIN
+  SELECT * INTO v_inv FROM public.company_invitations ci
+   WHERE ci.token = trim(coalesce(p_token,''));
+  IF NOT FOUND THEN
+    RETURN QUERY SELECT NULL::uuid, NULL::text, NULL::text, NULL::text, NULL::timestamptz,
+                        false, 'Davet bulunamadi'::text;
+    RETURN;
+  END IF;
+  SELECT c.name INTO v_name FROM public.companies c WHERE c.id = v_inv.company_id;
+  IF v_inv.status = 'accepted' THEN
+    RETURN QUERY SELECT v_inv.company_id, v_name, v_inv.email, v_inv.role, v_inv.expires_at,
+                        false, 'Davet daha once kullanilmis'::text;
+  ELSIF v_inv.status <> 'pending' THEN
+    RETURN QUERY SELECT v_inv.company_id, v_name, v_inv.email, v_inv.role, v_inv.expires_at,
+                        false, 'Davet iptal edilmis'::text;
+  ELSIF v_inv.expires_at <= now() THEN
+    RETURN QUERY SELECT v_inv.company_id, v_name, v_inv.email, v_inv.role, v_inv.expires_at,
+                        false, 'Davetin suresi dolmus'::text;
+  ELSE
+    RETURN QUERY SELECT v_inv.company_id, v_name, v_inv.email, v_inv.role, v_inv.expires_at,
+                        true, ''::text;
+  END IF;
+END; $$;
+
+-- ── 9) Davetli kişi kayıt olduktan sonra daveti kullanır: e-posta eşleşiyorsa
+--    firmaya üyelik talebi açılır ve yöneticinin onayına düşer.
+CREATE OR REPLACE FUNCTION public.np_claim_invitation(p_token text)
+RETURNS TABLE(claim_status text, target_company_id uuid, target_company_name text,
+              target_role text, target_request_id uuid)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE v_inv public.company_invitations%rowtype;
+        v_name text; v_email text; v_id uuid; v_existing uuid;
+BEGIN
+  IF auth.uid() IS NULL THEN RAISE EXCEPTION 'Giris gerekli.'; END IF;
+  SELECT * INTO v_inv FROM public.company_invitations ci
+   WHERE ci.token = trim(coalesce(p_token,''));
+  IF NOT FOUND THEN RAISE EXCEPTION 'Davet bulunamadi.'; END IF;
+  IF v_inv.status = 'cancelled' THEN RAISE EXCEPTION 'Bu davet iptal edilmis.'; END IF;
+  IF v_inv.expires_at <= now() THEN RAISE EXCEPTION 'Davetin suresi dolmus. Yoneticinizden yeni davet isteyin.'; END IF;
+
+  SELECT lower(u.email) INTO v_email FROM auth.users u WHERE u.id = auth.uid();
+  v_email := coalesce(v_email, lower(coalesce(auth.jwt()->>'email','')));
+  IF v_email IS NULL OR v_email = '' THEN RAISE EXCEPTION 'Hesabin e-postasi okunamadi.'; END IF;
+  IF v_email <> lower(v_inv.email) THEN
+    RAISE EXCEPTION 'Bu e-posta davet edilen adresle eslesmiyor. Davet % adresine gonderildi.', v_inv.email;
+  END IF;
+
+  SELECT c.name INTO v_name FROM public.companies c WHERE c.id = v_inv.company_id;
+
+  IF EXISTS(SELECT 1 FROM public.company_members cm
+             WHERE cm.company_id = v_inv.company_id AND cm.user_id = auth.uid()) THEN
+    UPDATE public.company_invitations SET status = 'accepted' WHERE id = v_inv.id;
+    RETURN QUERY SELECT 'member'::text, v_inv.company_id, v_name, v_inv.role, NULL::uuid;
+    RETURN;
+  END IF;
+
+  SELECT jr.id INTO v_existing FROM public.join_requests jr
+   WHERE jr.company_id = v_inv.company_id AND jr.user_id = auth.uid() AND jr.status = 'pending';
+  IF v_existing IS NOT NULL THEN
+    UPDATE public.join_requests
+       SET invitation_id = v_inv.id, requested_role = v_inv.role
+     WHERE id = v_existing;
+    RETURN QUERY SELECT 'pending'::text, v_inv.company_id, v_name, v_inv.role, v_existing;
+    RETURN;
+  END IF;
+
+  INSERT INTO public.join_requests(company_id, user_id, email, full_name, phone, note,
+                                   requested_role, invitation_id)
+  VALUES (v_inv.company_id, auth.uid(), v_email,
+          nullif(trim(coalesce(auth.jwt()->'user_metadata'->>'full_name','')),''),
+          nullif(trim(coalesce(auth.jwt()->'user_metadata'->>'phone','')),''),
+          'Davet baglantisi ile kayit oldu', v_inv.role, v_inv.id)
+  RETURNING join_requests.id INTO v_id;
+
+  RETURN QUERY SELECT 'pending'::text, v_inv.company_id, v_name, v_inv.role, v_id;
+END; $$;
+
+-- ── 10) Talep listesi davet bilgisini de göstersin
+-- (çıkış kolonu eklendiği için fonksiyon önce düşürülür)
+DROP FUNCTION IF EXISTS public.np_list_join_requests(uuid);
+CREATE OR REPLACE FUNCTION public.np_list_join_requests(p_company_id uuid)
+RETURNS TABLE(id uuid, user_id uuid, email text, full_name text, phone text, note text,
+              requested_role text, status text, created_at timestamptz,
+              decided_at timestamptz, decided_by_email text, decision_note text,
+              from_invitation boolean)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  IF coalesce(public.np_user_role(p_company_id),'') <> 'admin' THEN
+    RAISE EXCEPTION 'Uyelik talepleri icin yonetici yetkisi gerekir.';
+  END IF;
+  RETURN QUERY
+  SELECT jr.id, jr.user_id, jr.email, jr.full_name, jr.phone, jr.note,
+         jr.requested_role, jr.status, jr.created_at, jr.decided_at,
+         du.email, jr.decision_note, (jr.invitation_id IS NOT NULL)
+  FROM public.join_requests jr
+  LEFT JOIN auth.users du ON du.id = jr.decided_by
+  WHERE jr.company_id = p_company_id
+  ORDER BY (jr.status = 'pending') DESC, jr.created_at DESC
+  LIMIT 200;
+END; $$;
+
+-- ── 11) Onay: talep davetten geldiyse davet de "kullanildi" olarak işaretlenir
+CREATE OR REPLACE FUNCTION public.np_approve_join_request(
+  p_company_id uuid, p_request_id uuid, p_role text)
+RETURNS TABLE(request_id uuid, member_user_id uuid, member_email text, member_role text, new_status text)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE v_req public.join_requests%rowtype; v_role text;
+BEGIN
+  IF coalesce(public.np_user_role(p_company_id),'') <> 'admin' THEN
+    RAISE EXCEPTION 'Onay icin yonetici yetkisi gerekir.';
+  END IF;
+  SELECT * INTO v_req FROM public.join_requests
+   WHERE join_requests.id = p_request_id AND join_requests.company_id = p_company_id;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Talep bulunamadi.'; END IF;
+  IF v_req.status <> 'pending' THEN RAISE EXCEPTION 'Bu talep zaten sonuclandirilmis.'; END IF;
+
+  v_role := public.np_valid_role(coalesce(nullif(trim(coalesce(p_role,'')),''), v_req.requested_role));
+
+  INSERT INTO public.company_members(company_id, user_id, role, status)
+  VALUES (p_company_id, v_req.user_id, v_role, 'active')
+  ON CONFLICT (company_id, user_id)
+  DO UPDATE SET role = excluded.role, status = 'active', updated_at = now();
+
+  UPDATE public.join_requests
+     SET status = 'approved', decided_by = auth.uid(), decided_at = now(),
+         requested_role = v_role
+   WHERE join_requests.id = p_request_id;
+
+  IF v_req.invitation_id IS NOT NULL THEN
+    UPDATE public.company_invitations SET status = 'accepted' WHERE id = v_req.invitation_id;
+  END IF;
+
+  RETURN QUERY SELECT v_req.id, v_req.user_id, v_req.email, v_role, 'approved'::text;
+END; $$;
+
+-- ── 12) Red: davetten gelen talep reddedilirse davet de iptal edilir
+CREATE OR REPLACE FUNCTION public.np_reject_join_request(
+  p_company_id uuid, p_request_id uuid, p_note text)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE v_req public.join_requests%rowtype;
+BEGIN
+  IF coalesce(public.np_user_role(p_company_id),'') <> 'admin' THEN
+    RAISE EXCEPTION 'Red icin yonetici yetkisi gerekir.';
+  END IF;
+  SELECT * INTO v_req FROM public.join_requests jr
+   WHERE jr.id = p_request_id AND jr.company_id = p_company_id;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Talep bulunamadi.'; END IF;
+  IF v_req.status <> 'pending' THEN RAISE EXCEPTION 'Bu talep zaten sonuclandirilmis.'; END IF;
+  UPDATE public.join_requests
+     SET status = 'rejected', decided_by = auth.uid(), decided_at = now(),
+         decision_note = nullif(trim(coalesce(p_note,'')),'')
+   WHERE id = p_request_id;
+  IF v_req.invitation_id IS NOT NULL THEN
+    UPDATE public.company_invitations SET status = 'cancelled' WHERE id = v_req.invitation_id;
+  END IF;
+END; $$;
+
+-- ── 13) Yetkiler — np_invite_info giriş yapmamış kullanıcıya da açıktır
+GRANT EXECUTE ON FUNCTION public.np_invite_info(text) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.np_claim_invitation(text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.np_list_join_requests(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.np_approve_join_request(uuid,uuid,text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.np_reject_join_request(uuid,uuid,text) TO authenticated;
+
+
+-- ── 14) Kontrol
 SELECT 'join_requests tablosu' AS kontrol,
        to_regclass('public.join_requests') IS NOT NULL AS tamam
 UNION ALL
@@ -320,6 +500,15 @@ SELECT 'allow_join_requests kolonu',
        EXISTS(SELECT 1 FROM information_schema.columns
                WHERE table_schema='public' AND table_name='companies'
                  AND column_name='allow_join_requests')
+UNION ALL
+SELECT 'invitation_id kolonu',
+       EXISTS(SELECT 1 FROM information_schema.columns
+               WHERE table_schema='public' AND table_name='join_requests'
+                 AND column_name='invitation_id')
+UNION ALL
+SELECT 'np_invite_info fonksiyonu', to_regprocedure('public.np_invite_info(text)') IS NOT NULL
+UNION ALL
+SELECT 'np_claim_invitation fonksiyonu', to_regprocedure('public.np_claim_invitation(text)') IS NOT NULL
 UNION ALL
 SELECT 'roller (5 rol kabul ediliyor)',
        public.np_valid_role('purchasing') = 'purchasing'

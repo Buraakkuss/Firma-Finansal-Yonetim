@@ -1,0 +1,57 @@
+NakitPilot v0.21.0 — Supabase notu
+
+ÇALIŞTIRILACAK DOSYA (zorunlu, tek parça, kümülatif)
+  sql/nakitpilot-uyelik-davet-v0.21.0.sql
+
+Bu dosya v0.20.0'ın tamamını + v0.21.0 eklerini içerir. Birden çok kez
+çalıştırılabilir; mevcut veriye dokunmaz.
+NOT: v0.20.0 dosyasını bu dosyadan SONRA çalıştırmayın; np_list_join_requests
+ve np_approve_join_request imzalarını eski haline döndürür (ekranda "davetli"
+rozeti kaybolur). v0.20.0 dosyasının başına bu uyarı eklendi.
+
+v0.21.0 İLE GELENLER
+1) join_requests.invitation_id kolonu
+   Üyelik talebinin hangi davetten geldiğini tutar (company_invitations'a FK,
+   davet silinirse NULL olur).
+
+2) np_invite_info(p_token)  —  anon + authenticated
+   Davet bağlantısını açan kişi HENÜZ GİRİŞ YAPMAMIŞ olabilir; bu yüzden bu
+   fonksiyon giriş yapmadan da çağrılabilir. Döndürdüğü: firma id/adı, davet
+   edilen e-posta, rol, son kullanma tarihi, geçerli mi ve geçersizse sebebi.
+   Gizlilik: jetonun kendisi gizli anahtardır. Bilgiyi yalnız bağlantıya sahip
+   olan görebilir; jeton 24 baytlık rastgele değerdir.
+
+3) np_claim_invitation(p_token)  —  authenticated
+   Kayıt/giriş sonrası daveti kullanır:
+     - davet yoksa / iptalse / süresi dolmuşsa hata,
+     - oturumdaki e-posta davet edilen adresle EŞLEŞMİYORSA hata
+       ("Bu e-posta davet edilen adresle eslesmiyor. Davet ... gonderildi."),
+     - kişi zaten üyeyse daveti 'accepted' yapar ve 'member' döner,
+     - değilse o firmaya PENDING üyelik talebi açar (rol davetten gelir,
+       not: "Davet baglantisi ile kayit oldu", invitation_id dolu) ve
+       'pending' döner.
+   Aynı davet iki kez kullanılırsa talep çoğalmaz.
+
+4) np_list_join_requests(p_company_id)  (imza değişti)
+   Ek kolon: from_invitation boolean — talep davetten mi geldi.
+   (Çıkış kolonu eklendiği için dosya önce DROP FUNCTION yapar.)
+
+5) np_approve_join_request(...)  —  onaylanan talep davetten geldiyse ilgili
+   daveti 'accepted' yapar.
+   np_reject_join_request(...)  —  reddedilen talep davetten geldiyse daveti
+   'cancelled' yapar (bağlantı bir daha kullanılamaz).
+
+ŞİFRE SIFIRLAMA / MAİL AYARLARI (SQL değil, panel ayarı)
+"Load failed" hatası isteğin Supabase'e ulaşmadığını gösterir. Uygulama artık
+tekrar deneyip sağlık ucunu yokluyor ve sebebi ekrana yazıyor. Yönetici olarak
+şunları kontrol edin:
+  a) Authentication > URL Configuration > Site URL ve Redirect URLs
+     uygulamanın adresini içermeli.
+  b) Authentication > Emails: yerleşik SMTP saatlik limitlidir; kalıcı çözüm
+     kendi SMTP sunucunuzu tanımlamaktır.
+  c) Project Settings: projenin duraklatılmamış (paused) olması gerekir.
+
+DOKUNULMAYANLAR
+- company_data.data ve banka merkezi tetikleyicisi değişmez.
+- Storage politikaları değişmez.
+- sql/ klasöründeki diğer eski kurulum dosyalarını tekrar çalıştırmayın.

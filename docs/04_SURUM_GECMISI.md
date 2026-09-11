@@ -380,4 +380,35 @@
   (join_requests tablosu, companies.allow_join_requests kolonu, 9 RPC ve rol
   kısıtı düzeltmesi). Dosya iki kez çalıştırılabilir, veriye dokunmaz.
 
-Güncel baz sürüm: **v0.20.0**
+## v0.21.0
+- **Davet bağlantısı artık doğrudan kayıt formunu açıyor.** Bağlantıyı açan
+  kişide ekran kendiliğinden *Kayıt Ol* sekmesine geçer, davet edilen e-posta
+  alana yazılır ve **kilitlenir**; üstteki bantta firma adı, rol ve davet edilen
+  adres görünür.
+- **E-posta eşleşme kontrolü:** davet edilenden farklı bir adresle kayıt olmaya
+  çalışılırsa "bu e-posta davet edilen adresle eşleşmiyor, davet şu adrese
+  gönderildi" uyarısı çıkar ve istek sunucuya gönderilmez. Sunucu tarafında
+  `np_claim_invitation` aynı kontrolü yapar.
+- **Davetli kayıt da yönetici onayından geçiyor.** Kayıt/giriş sonrası sistem
+  davetten üyelik talebini kendisi açar (rol davetten gelir, not olarak "Davet
+  bağlantısı ile kayıt oldu" yazılır) ve kullanıcıya "kayıt talebiniz
+  yöneticiye iletildi" denir. Yönetici onaylayınca kullanıcı üye olur ve davet
+  "kullanıldı" olarak işaretlenir; reddederse davet de iptal edilir.
+- Üyelik Talepleri kartında davetten gelen talepler **✉️ Davet ettiğiniz kişi**
+  rozetiyle işaretlenir.
+- Geçersiz/süresi dolmuş/iptal edilmiş davet bağlantısında sebep ekranda kalır
+  ve jeton tarayıcıdan silinir.
+- **Şifre sıfırlama yeniden yazıldı.** "Load failed" gibi ağ hatalarında istek
+  bir kez daha denenir, sonra Supabase sağlık ucu (`/auth/v1/health`) yoklanarak
+  sorunun ağda mı mail gönderiminde mi olduğu ayırt edilir. Saatlik mail limiti,
+  izin verilmeyen dönüş adresi ve SMTP hataları için ayrı ayrı, ne yapılacağını
+  söyleyen Türkçe mesajlar verilir. İsteklere 25 saniyelik zaman aşımı kondu ve
+  buton işlem boyunca kilitlenip sonunda serbest bırakılır.
+- Giriş ve kayıt da aynı zaman aşımı/ağ hatası mesajlarını kullanıyor; hatalı
+  şifre ve doğrulanmamış e-posta için ayrı mesajlar eklendi.
+- Supabase: `sql/nakitpilot-uyelik-davet-v0.21.0.sql` **tek parça ve kümülatif**
+  (v0.20.0 içeriğini de kapsar). `join_requests.invitation_id`, `np_invite_info`,
+  `np_claim_invitation` eklendi; `np_list_join_requests` davet bilgisini döner;
+  onay/red davet durumunu günceller.
+
+Güncel baz sürüm: **v0.21.0**

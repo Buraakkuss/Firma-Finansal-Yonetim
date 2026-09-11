@@ -1,0 +1,91 @@
+NakitPilot v0.21.0 — Test raporu
+Tarih: 11 Eylül 2026
+
+ÖZET
+  Tarayıcı testleri: 832 test çalıştı, 832 geçti, 0 kaldı.
+  SQL testleri    :  71 test çalıştı,  71 geçti, 0 kaldı.
+  Yeni: e2e-13-davet-kayit (46 test) ve SQL akış testi np-test2 (32 test).
+
+A) SQL — YEREL POSTGRESQL 16, GERÇEK ŞEMA
+Şema sıfırdan kuruldu (auth/storage taklidi + mtpro-finans v0.3.4 + banka
+merkezi v0.6.0 + proje takip v0.5.0 + satın alma rolü v0.10.0), iki firma ve
+dört kullanıcı yüklendi. Sonra:
+  - önce eski v0.20.0 dosyası çalıştırıldı,
+  - ardından kümülatif v0.21.0 dosyası ÜST ÜSTE İKİ KEZ çalıştırıldı,
+  hiçbirinde hata çıkmadı (idempotent ve sırayla uyumlu).
+
+np-test2 (32 test) — davet ile kayıt akışı:
+  Davet bilgisi (6)
+    - Giriş yapmadan (auth.uid NULL) davet bilgisi okunabiliyor.
+    - Davet edilen e-posta, firma adı ve rol doğru dönüyor.
+    - Olmayan jeton "geçersiz" ve sebebi "Davet bulunamadi" dönüyor.
+  Yanlış e-posta (2)
+    - Davet edilmeyen kullanıcı daveti kullanamıyor (hata),
+      ve o kullanıcı adına hiçbir talep oluşmuyor.
+  Doğru e-posta (7)
+    - Davet kullanılınca PENDING üyelik talebi açılıyor,
+    - talep davetteki rolle (engineer) açılıyor ve davete bağlanıyor,
+    - kullanıcı HENÜZ ÜYE OLMUYOR, davet 'pending' kalıyor,
+    - aynı davet ikinci kez kullanılınca talep çoğalmıyor (tek talep).
+  Yönetici onayı (7)
+    - Talep listesinde "davetten geldi" bilgisi ve not görünüyor,
+    - onaylanınca kullanıcı doğru rolle üye oluyor,
+    - davet 'accepted' olarak işaretleniyor,
+    - onaylanan kullanıcı firmayı görüyor,
+    - kullanılmış davet artık geçersiz.
+  Üye olan kişi (4)
+    - Üye olduktan sonra davet tekrar açılırsa 'member' cevabı dönüyor,
+    - zaten üye olan e-postaya yeni davet açılamıyor.
+  Süresi dolmuş davet (2) — geçersiz ve sebebi "Davetin suresi dolmus".
+  Red akışı (4)
+    - Davetten gelen talep reddedilince davet de iptal ediliyor,
+    - reddedilen kişi üye olmuyor ve iptal olan daveti tekrar kullanamıyor.
+np-test.sql (39 test, v0.20.0 akışları) yeniden çalıştırıldı; hepsi geçti.
+
+B) TARAYICI — e2e-13-davet-kayit (46 test)
+Gerçek giriş ekranı sürülür; Supabase çağrıları taklit edilip kaydedilir.
+  1) Davet bağlantısı (10): np_invite_info çağrılıyor, ekran kendiliğinden
+     Kayıt Ol'a geçiyor, giriş formu gizleniyor, davet edilen e-posta yazılıp
+     kilitleniyor, kilit açıklaması çıkıyor, bantta firma adı/rol/adres ve
+     "kayıt ol + onay" anlatımı var.
+  2) Davetli kayıt (3): kayıt davet edilen adresle gidiyor, doğrulama maili
+     uygulamaya dönüyor, ekranda ne yapacağı yazıyor.
+  3) Farklı e-posta (5): uyarı çıkıyor, davet adresi uyarıda yazıyor, istek
+     sunucuya GİTMİYOR, alan tekrar doğru adrese dönüp kilitleniyor.
+  4) Geçersiz davet (4): süresi dolmuş uyarısı ve yeni davet isteme mesajı
+     ekranda kalıyor, jeton tarayıcıdan siliniyor, kayıt sekmesi zorlanmıyor.
+  5) Davet kullanımı (4): np_claim_invitation çağrılıyor, "kayıt talebiniz
+     yöneticisine iletildi" mesajı firma adıyla çıkıyor, jeton temizleniyor.
+  6) Yanlış hesap (3): eşleşmiyor mesajı ve doğru adres gösteriliyor, jeton
+     SİLİNMİYOR (doğru hesapla tekrar denenebilsin).
+  7) Üye olan kişi (1): "firmaya bağlandınız" mesajı.
+  8) Şifre sıfırlama başarılı (5): istek gidiyor, dönüş adresi uygulamanın
+     adresi, mesajda hedef adres ve spam hatırlatması var, buton serbest kalıyor.
+  9) Ağ hatası "Load failed" (4): bir kez daha deneniyor (2 istek), Supabase
+     ayakta ise "mail gönderimi tamamlanamadı" deniyor, teknik ayrıntı yazıyor,
+     buton kilitli kalmıyor.
+ 10) Sunucuya ulaşılamıyor (2): "Sunucuya ulaşılamadı" + VPN/güvenlik duvarı
+     uyarısı.
+ 11) Diğer hatalar (5): saatlik limit mesajı, izin verilmeyen dönüş adresi için
+     "URL Configuration" yönlendirmesi, boş e-postada istek gönderilmiyor.
+  Sayfada JavaScript hatası yok.
+
+C) GERİLEME (786 test — hepsi geçti)
+  ui-test 33 · e2e-1-finans 14 · e2e-2-proje 43 · e2e-3-kenar 39
+  e2e-4-satinalma 50 · e2e-5-butun 28 · e2e-6-yetki 31 · e2e-7-kisi 58
+  e2e-8-kilavuz 28 · e2e-9-muhendislik 36 · e2e-10-kutuphane 80
+  e2e-11-klasor 43 · e2e-12-uyelik 76 · test-v0140 65 · test-v083 7
+  test-v090 25 · test-v092 18 · test-v095 8 · test-v096 20 · test-v0100 26
+  test-v0110 27 · test-v0120 31
+
+D) DOSYA DOĞRULAMASI
+  index.html script blokları ....... 1 blok, 0 hata
+  sw.js ............................ node --check temiz
+  manifest.webmanifest ............. geçerli JSON
+
+E) TESTTE KAPSANMAYAN
+  Gerçek mail gönderimi (Supabase doğrulama ve şifre sıfırlama mailleri) ve
+  gerçek SMTP/limit davranışı canlı ortamda denenmelidir. Şifre sıfırlamadaki
+  "Load failed" hatasının kökeni ağ/SMTP tarafındadır; uygulama artık hangi
+  durumda olduğunuzu ekrana yazar, ancak Supabase panel ayarları (URL
+  Configuration, SMTP, proje durumu) yönetici tarafından kontrol edilmelidir.

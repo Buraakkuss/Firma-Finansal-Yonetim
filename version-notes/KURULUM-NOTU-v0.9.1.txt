@@ -1,0 +1,29 @@
+NakitPilot v0.9.1 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu olduğu için ayrıca dosya yüklemeye gerek yoktur.
+- Uygulamayı ?v=0.9.1 ile açın; görünüm eski kalırsa Ctrl + F5 (Mac: Cmd + Shift + R).
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Teklif hazırlama
+
+1) Proje Takip > Teklif & Maliyet ekranından teklif oluşturun veya düzenleyin.
+2) Teklif penceresinin en üstünden şablonu seçin:
+   - Teknik ve Ticari Teklif (proje): özel makine / sistem projeleri için
+   - Ürün / Yedek Parça Teklifi: tek ürün veya yedek parça satışı için
+3) Müşteri firma, ilgili kişi, telefon, e-posta ve konu alanlarını doldurun.
+   Boş bıraktığınız alanlar belgeye basılmaz.
+4) "Teklif Kalemleri" tablosuna satır ekleyin: açıklama, birim, adet, birim fiyat.
+   Teklif tutarı kalemlerden otomatik hesaplanır.
+   Tek kalemli tekliflerde tabloyu boş bırakıp tutarı elle de girebilirsiniz.
+5) "Teklif Kapsamı" alanına her satıra bir madde yazın; belgede madde işaretli
+   liste olarak yazdırılır.
+6) Proje teklifinde, belgeye dahil edilecek bölümleri alttaki kutucuklardan
+   seçebilirsiniz (firma tanıtımı, hizmet paketleri, garanti, sipariş formu).
+7) "Ön İzle" ile belgeyi görün, tarayıcıdan Yazdır / PDF olarak kaydedin.
+
+Not
+- Garanti süresi varsayılan 12 aydır; teklif penceresinden değiştirilebilir.
+- Ödeme şekli boş bırakılırsa standart %50 / %40 / %10 planı yazdırılır.

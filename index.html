@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.9.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.9.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.9.0">
-  <title>NakitPilot Marmara Teknik — v0.9.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.9.1">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.9.1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.9.1">
+  <title>NakitPilot Marmara Teknik — v0.9.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2527,7 +2527,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.9.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.9.1</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -3892,6 +3892,7 @@
     <input type="hidden" id="quote-id">
     <input type="hidden" id="quote-project-id">
     <div class="pro-grid pro-grid-12">
+      <div class="form-group span-3"><label>Teklif Şablonu</label><select id="quote-template" onchange="onQuoteTemplateChange()"><option value="project">Teknik ve Ticari Teklif (proje)</option><option value="parts">Ürün / Yedek Parça Teklifi</option></select></div>
       <div class="form-group span-3"><label>Teklif Kodu</label><input id="quote-code" placeholder="Otomatik" readonly></div>
       <div class="form-group span-5"><label>Proje</label><input id="quote-project-label" readonly></div>
       <div class="form-group span-4"><label>Maliyet Çalışması</label><select id="quote-cost" onchange="onQuoteCostChange()"></select></div>
@@ -3906,7 +3907,40 @@
       <div class="form-group span-3"><label>Teklifte Gösterilecek Tutar</label><input type="number" id="quote-amount" min="0" step="0.01" placeholder="Boşsa hesaplanan tutar"></div>
       <div class="form-group span-3"><label>Revizyon Notu</label><input id="quote-revision-note" placeholder="Revize teklif nedeni"></div>
 
-      <div class="form-group span-12"><label>Teknik Açıklama / Kapsam</label><textarea id="quote-technical" rows="4" placeholder="Teklifte yer alacak teknik açıklama, kapsam, dahil/hariç bilgiler..."></textarea></div>
+      <div class="form-group span-4"><label>Müşteri Firma</label><input id="quote-customer-name" placeholder="Proje müşterisi"></div>
+      <div class="form-group span-4"><label>İlgili Kişi</label><input id="quote-contact-person" placeholder="Örn. Kerem Bey"></div>
+      <div class="form-group span-4"><label>Konu</label><input id="quote-subject" placeholder="Teklif konusu"></div>
+      <div class="form-group span-4"><label>İlgili Telefon</label><input id="quote-contact-phone" placeholder="+90 ..."></div>
+      <div class="form-group span-4"><label>İlgili E-posta</label><input id="quote-contact-mail" placeholder="ornek@firma.com"></div>
+      <div class="form-group span-4"><label>Talep No <span style="color:var(--text-hint)">(opsiyonel)</span></label><input id="quote-request-no" placeholder="Müşteri talep numarası"></div>
+      <div class="form-group span-4"><label>Hazırlayan</label><input id="quote-prepared-by" placeholder="Ad Soyad"></div>
+      <div class="form-group span-4"><label>Teslim Yeri</label><input id="quote-delivery-place" placeholder="Örn. Müşteri fabrikası, nakliye dahil"></div>
+      <div class="form-group span-4"><label>Garanti (ay)</label><input type="number" id="quote-warranty-months" min="0" step="1" value="12"></div>
+
+      <div class="form-group span-12" id="quote-start-condition-wrap"><label>Proje Başlangıç Şartı</label><input id="quote-start-condition" placeholder="Örn. Avans ödemesinin hesaba geçmesinden sonra +5. gün iş başlangıcı kabul edilir."></div>
+
+      <div class="form-group span-12">
+        <label>Teklif Kalemleri <span style="color:var(--text-hint)">(boş bırakılırsa tek satır olarak yukarıdaki tutar kullanılır)</span></label>
+        <div class="table-wrap"><table class="cost-items-table"><thead><tr>
+          <th style="width:52px">POZ</th><th>Açıklama</th><th style="width:90px">Birim</th><th style="width:70px">Adet</th>
+          <th style="width:115px">Birim Fiyat</th><th style="width:120px">Tutar</th><th style="width:34px"></th>
+        </tr></thead><tbody id="quote-lines-body"></tbody></table></div>
+        <div class="cost-items-bar">
+          <button type="button" class="btn btn-sm" onclick="addQuoteLineRow()">+ Kalem Ekle</button>
+          <span class="cost-items-total" id="quote-lines-total"></span>
+        </div>
+      </div>
+
+      <div class="form-group span-12"><label>Teklif Kapsamı <span style="color:var(--text-hint)">(her satır bir madde olarak yazdırılır)</span></label><textarea id="quote-scope" rows="6" placeholder="ANA ŞASE 304 KALİTE LAZER KESİM BÜKÜM&#10;PVC ASKERLİ TAŞIYICI BANT&#10;TAHRİK SİSTEMİ REDÜKTÖR + ELEKTRİK MOTORU"></textarea></div>
+      <div class="form-group span-12"><label>Teknik Açıklama / Not <span style="color:var(--text-hint)">(kapsam boşsa bu alan kapsam olarak kullanılır)</span></label><textarea id="quote-technical" rows="3" placeholder="Teklifte yer alacak teknik açıklama, dahil/hariç bilgiler..."></textarea></div>
+      <div class="form-group span-12" id="quote-sections-wrap"><label>Belgeye Dahil Edilecek Bölümler</label>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px">
+          <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="quote-inc-intro" checked> Firma tanıtımı</label>
+          <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="quote-inc-services" checked> Hizmet paketleri ve kapsam dışı işler</label>
+          <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="quote-inc-warranty" checked> Garanti koşulları</label>
+          <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="quote-inc-order" checked> Sipariş formu ile kabul</label>
+        </div>
+      </div>
     </div>
     <div class="project-summary-box" id="quote-cost-summary" style="margin-top:12px">Seçilen maliyet çalışmasına göre aktif teklif tutarı burada görünür.</div>
     <div class="modal-footer">
@@ -4100,7 +4134,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.9.0';
+const APP_VERSION='0.9.1';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -9412,9 +9446,88 @@ function openQuoteModal(projectId,quoteId,costId){
   document.getElementById('quote-amount').value=q&&q.amount?Number(q.amount).toFixed(2):((latestCost)?Number(projectCostDisplayOffer(latestCost)).toFixed(2):(p.offerAmount||''));
   document.getElementById('quote-revision-note').value=q&&q.revisionNote?q.revisionNote:'';
   document.getElementById('quote-technical').value=q&&q.technical?q.technical:(p.note||'');
+  const setV=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val;};
+  const setC=(id,val)=>{const el=document.getElementById(id);if(el)el.checked=val!==false;};
+  setV('quote-template',(q&&q.template)||'project');
+  setV('quote-customer-name',(q&&q.customerName)||p.customer||'');
+  setV('quote-contact-person',(q&&q.contactPerson)||'');
+  setV('quote-contact-phone',(q&&q.contactPhone)||'');
+  setV('quote-contact-mail',(q&&q.contactMail)||'');
+  setV('quote-request-no',(q&&q.requestNo)||'');
+  setV('quote-subject',(q&&q.subject)||p.title||'');
+  setV('quote-prepared-by',(q&&q.preparedBy)||p.owner||'');
+  setV('quote-delivery-place',(q&&q.deliveryPlace)||'');
+  setV('quote-start-condition',(q&&q.startCondition)||'Avans ödemesinin banka hesabına geçmesinden sonra +5. gün iş başlangıç tarihi kabul edilir.');
+  setV('quote-warranty-months',(q&&n(q.warrantyMonths))||12);
+  setV('quote-scope',(q&&q.scopeText)||'');
+  setC('quote-inc-intro',q?q.includeIntro:true);
+  setC('quote-inc-services',q?q.includeServices:true);
+  setC('quote-inc-warranty',q?q.includeWarranty:true);
+  setC('quote-inc-order',q?q.includeOrderClause:true);
+  _quoteLines=(q&&Array.isArray(q.lines))?q.lines.map(l=>Object.assign({},l)):[];
+  renderQuoteLines();
+  onQuoteTemplateChange();
   onQuoteCostChange(!!q);
   initQuoteDirtyTracking(!!q);
   openModal('modal-project-quote');
+}
+/* v0.9.1 — Teklif kalemleri (satış satırları). Maliyet kalemlerinden ayrıdır:
+   bunlar müşteriye gösterilen POZ satırlarıdır. */
+let _quoteLines=[];
+function quoteLinesDraftTotal(){return _quoteLines.reduce((s,l)=>s+n(l.qty)*n(l.unitPrice),0);}
+function addQuoteLineRow(){
+  _quoteLines.push({id:makeId('ql'),desc:'',unit:'ADET',qty:1,unitPrice:0});
+  renderQuoteLines();markQuoteDirty();
+}
+function removeQuoteLine(id){
+  _quoteLines=_quoteLines.filter(x=>String(x.id)!==String(id));
+  renderQuoteLines();syncQuoteAmountFromLines();markQuoteDirty();
+}
+function onQuoteLineChange(id,field,value){
+  const l=_quoteLines.find(x=>String(x.id)===String(id));if(!l)return;
+  l[field]=['qty','unitPrice'].includes(field)?(parseDecimalInput(value)||0):value;
+  const cur=(document.getElementById('quote-currency')||{}).value||'TRY';
+  const el=document.getElementById('ql-amt-'+id);
+  if(el)el.textContent=fmtCurrency(n(l.qty)*n(l.unitPrice),cur);
+  updateQuoteLinesTotalLabel();syncQuoteAmountFromLines();markQuoteDirty();
+}
+function syncQuoteAmountFromLines(){
+  if(!_quoteLines.length)return;
+  const amt=document.getElementById('quote-amount');
+  if(amt)amt.value=Number(quoteLinesDraftTotal()).toFixed(2);
+}
+function updateQuoteLinesTotalLabel(){
+  const el=document.getElementById('quote-lines-total');if(!el)return;
+  const cur=(document.getElementById('quote-currency')||{}).value||'TRY';
+  el.textContent=_quoteLines.length?(_quoteLines.length+' kalem · Toplam '+fmtCurrency(quoteLinesDraftTotal(),cur)):'';
+}
+function renderQuoteLines(){
+  const body=document.getElementById('quote-lines-body');if(!body)return;
+  const cur=(document.getElementById('quote-currency')||{}).value||'TRY';
+  if(!_quoteLines.length){
+    body.innerHTML='<tr><td colspan="7" style="padding:10px;color:var(--text-muted);font-size:12px">Kalem yok. Teklif tek satır olarak yazdırılır.</td></tr>';
+    updateQuoteLinesTotalLabel();return;
+  }
+  body.innerHTML=_quoteLines.map((l,i)=>{
+    const id=htmlEsc(String(l.id));
+    return '<tr><td>Poz.'+(i+1)+'</td>'
+      +'<td><input value="'+htmlEsc(l.desc||'')+'" placeholder="Ürün / hizmet açıklaması" oninput="onQuoteLineChange(&quot;'+id+'&quot;,&quot;desc&quot;,this.value)"></td>'
+      +'<td><input value="'+htmlEsc(l.unit||'')+'" placeholder="ADET" oninput="onQuoteLineChange(&quot;'+id+'&quot;,&quot;unit&quot;,this.value)"></td>'
+      +'<td><input type="number" min="0" step="0.01" value="'+htmlEsc(String(l.qty==null?1:l.qty))+'" oninput="onQuoteLineChange(&quot;'+id+'&quot;,&quot;qty&quot;,this.value)"></td>'
+      +'<td><input type="number" min="0" step="0.01" value="'+htmlEsc(String(l.unitPrice==null?0:l.unitPrice))+'" oninput="onQuoteLineChange(&quot;'+id+'&quot;,&quot;unitPrice&quot;,this.value)"></td>'
+      +'<td class="ci-amount" id="ql-amt-'+id+'">'+fmtCurrency(n(l.qty)*n(l.unitPrice),cur)+'</td>'
+      +'<td><button type="button" class="btn btn-sm btn-del" title="Kalemi sil" onclick="removeQuoteLine(&quot;'+id+'&quot;)">✕</button></td></tr>';
+  }).join('');
+  updateQuoteLinesTotalLabel();
+}
+function onQuoteTemplateChange(){
+  const tpl=(document.getElementById('quote-template')||{}).value||'project';
+  const isProject=tpl==='project';
+  const secWrap=document.getElementById('quote-sections-wrap');
+  const startWrap=document.getElementById('quote-start-condition-wrap');
+  if(secWrap)secWrap.style.display=isProject?'':'none';
+  if(startWrap)startWrap.style.display=isProject?'':'none';
+  markQuoteDirty();
 }
 function collectQuoteFromModal(forceNew){
   const projectId=document.getElementById('quote-project-id').value;
@@ -9425,13 +9538,33 @@ function collectQuoteFromModal(forceNew){
   const cost=mtpro().costs.find(x=>String(x.id)===String(costId));
   const calculated=cost?projectCostComputedOffer(cost):0;
   const rawAmount=parseDecimalInput(document.getElementById('quote-amount').value);
-  const amount=(Number.isFinite(rawAmount)&&rawAmount>0)?rawAmount:(cost?projectCostDisplayOffer(cost):0);
+  const linesTotal=quoteLinesDraftTotal();
+  // Kalem girilmişse teklif tutarı kalemlerden gelir; elle girilen tutar yok sayılır.
+  const amount=linesTotal>0?linesTotal:((Number.isFinite(rawAmount)&&rawAmount>0)?rawAmount:(cost?projectCostDisplayOffer(cost):0));
   if(!costId){alert('Teklif için bir maliyet çalışması seçin.');return null;}
   if(amount<=0){alert('Teklifte gösterilecek tutarı girin veya maliyet çalışmasını tamamlayın.');return null;}
   const isNew=!!forceNew||!existing;
   const code=isNew?nextQuoteCode(projectId):(existing.code||document.getElementById('quote-code').value||nextQuoteCode(projectId));
   const revision=isNew?(quotesForProject(projectId).length+1):(existing.revision||1);
-  return {id:isNew?makeId('quote'):existing.id,projectId,costId,code,revision,sourceQuoteId:(isNew&&existing)?existing.id:(existing&&existing.sourceQuoteId?existing.sourceQuoteId:''),date:document.getElementById('quote-date').value||todayYmd(),validUntil:document.getElementById('quote-valid-until').value||'',deliveryTime:document.getElementById('quote-delivery-time').value.trim(),deliveryType:document.getElementById('quote-delivery-type').value.trim(),paymentTerms:document.getElementById('quote-payment-terms').value.trim(),currency:document.getElementById('quote-currency').value||'TRY',amount,calculatedAmount:calculated,manualAmount:(Math.abs(amount-calculated)>0.009?amount:null),revisionNote:document.getElementById('quote-revision-note').value.trim(),technical:document.getElementById('quote-technical').value.trim(),createdAt:isNew?new Date().toISOString():existing.createdAt,updatedAt:new Date().toISOString()};
+  return {id:isNew?makeId('quote'):existing.id,projectId,costId,code,revision,sourceQuoteId:(isNew&&existing)?existing.id:(existing&&existing.sourceQuoteId?existing.sourceQuoteId:''),date:document.getElementById('quote-date').value||todayYmd(),validUntil:document.getElementById('quote-valid-until').value||'',deliveryTime:document.getElementById('quote-delivery-time').value.trim(),deliveryType:document.getElementById('quote-delivery-type').value.trim(),paymentTerms:document.getElementById('quote-payment-terms').value.trim(),currency:document.getElementById('quote-currency').value||'TRY',amount,calculatedAmount:calculated,manualAmount:(Math.abs(amount-calculated)>0.009?amount:null),revisionNote:document.getElementById('quote-revision-note').value.trim(),technical:document.getElementById('quote-technical').value.trim(),
+    template:(document.getElementById('quote-template')||{}).value||'project',
+    customerName:(document.getElementById('quote-customer-name')||{}).value.trim(),
+    contactPerson:(document.getElementById('quote-contact-person')||{}).value.trim(),
+    contactPhone:(document.getElementById('quote-contact-phone')||{}).value.trim(),
+    contactMail:(document.getElementById('quote-contact-mail')||{}).value.trim(),
+    requestNo:(document.getElementById('quote-request-no')||{}).value.trim(),
+    subject:(document.getElementById('quote-subject')||{}).value.trim(),
+    preparedBy:(document.getElementById('quote-prepared-by')||{}).value.trim(),
+    deliveryPlace:(document.getElementById('quote-delivery-place')||{}).value.trim(),
+    startCondition:(document.getElementById('quote-start-condition')||{}).value.trim(),
+    warrantyMonths:parseDecimalInput((document.getElementById('quote-warranty-months')||{}).value)||12,
+    scopeText:(document.getElementById('quote-scope')||{}).value.trim(),
+    lines:_quoteLines.map(l=>Object.assign({},l)),
+    includeIntro:!!(document.getElementById('quote-inc-intro')||{}).checked,
+    includeServices:!!(document.getElementById('quote-inc-services')||{}).checked,
+    includeWarranty:!!(document.getElementById('quote-inc-warranty')||{}).checked,
+    includeOrderClause:!!(document.getElementById('quote-inc-order')||{}).checked,
+    createdAt:isNew?new Date().toISOString():existing.createdAt,updatedAt:new Date().toISOString()};
 }
 function saveProjectQuote(forceNew){
   if(!projectCanEdit())return denyAction('Teklif kaydetme yetkisi gerekir.');
@@ -9560,62 +9693,254 @@ function renderProjectQuoteHistory(){
   }).join('');
 }
 
+/* ──────── v0.9.1 — KURUMSAL TEKLİF BELGESİ ────────
+   İki şablon: 'project' (tam teknik ve ticari teklif) ve 'parts' (ürün / yedek
+   parça teklifi). Değişmeyen kurumsal metinler burada sabit tutulur; teklife
+   özel alanlar teklif kaydından gelir. */
+const MT_COMPANY={
+  name:'MARMARA TEKNİK',
+  legal:'Marmara Teknik Hid. Pnö. Mak. Met. San. ve Tic. Ltd. Şti.',
+  tagline:'Endüstriyel Mühendislik Çözümleri',
+  city:'Gebze / Kocaeli',
+  phone:'+90 549 693 58 58',
+  mail:'tburak.kus@marmarateknikmakine.com.tr',
+  web:'marmarateknikmakine.com.tr'
+};
+const MT_INTRO_PARAGRAPH='Marmara Teknik, 2008 yılında Gebze’de kurulmuş ve endüstriyel mühendislik çözümleri sunan bir firma olarak sektördeki yolculuğuna başlamıştır. Kuruluşumuzdan itibaren, müşterilerimizin üretim süreçlerine değer katmak ve operasyonel verimliliklerini artırmak amacıyla özelleştirilmiş mühendislik hizmetleri sağlamaktayız. Türkiye’nin birçok farklı sanayi koluna hizmet veren Marmara Teknik, geniş teknik bilgi birikimi ve sektörel tecrübesiyle müşterilerinin güvenilir iş ortağı olarak faaliyet göstermektedir.';
+const MT_SERVICES=[
+  ['Endüstriyel Alüminyum Profiller ve Bağlantı Elemanları','Modüler ve dayanıklı çözümler ile üretim süreçlerinizi destekliyoruz.'],
+  ['Konveyör ve Transfer Üniteleri','Üretim hatlarında verimliliği artırmak için özel olarak tasarlanmış sistemler sağlıyoruz.'],
+  ['Doğrusal Hareket Sistemleri','Yüksek hassasiyet ve güvenilirlik sunan lineer hareket çözümleri geliştiriyoruz.'],
+  ['Montaj Hatları ve Çalışma İstasyonları','Süreçleri optimize eden hatlar ve ergonomik istasyonlar tasarlıyoruz.'],
+  ['Otomasyon Sistemleri','İleri otomasyon teknolojileri ile süreçlerinizi dijitalleştiriyoruz.'],
+  ['Planlı Bakım ve Onarım Hizmetleri','Operasyonel aksaklıkları en aza indiren bakım hizmetleri sunuyoruz.'],
+  ['Özel Makine Tasarımı ve İmalatı','Özgün ihtiyaçlara özel makine tasarım ve üretim çözümleri sunuyoruz.']
+];
+const MT_TEAM_PARAGRAPH='Marmara Teknik, uzman mühendis ve tasarımcı kadrosuyla her projenin en ince ayrıntısına kadar titizlikle çalışmaktadır. Müşteri ihtiyaçlarına en uygun çözümleri geliştirmek için ileri mühendislik teknikleri ve modern tasarım yöntemleri kullanılarak projeler şekillendirilir. Firmamız bünyesindeki tam donanımlı imalat atölyesi, projelerin hızlı ve eksiksiz ilerlemesini sağlarken üretim süreçlerinde yüksek kalite standartlarını korumaktadır.';
+const MT_WHY_PARAGRAPH='Marmara Teknik, inovasyon ve kaliteyi temel alan yaklaşımı ile sektördeki yenilikleri takip ederek güncel çözümler sunmaktadır. Sektörün hızla değişen dinamiklerine ayak uydurmak, müşterilerimizin ihtiyaçlarına en uygun mühendislik çözümlerini sağlamak ve müşteri memnuniyetini en üst düzeyde tutmak için çalışmaktayız.';
+const MT_SUPERVISION_TEXT='Projenin imalatı ile ekipmanların mekanik ve elektrik-otomasyon montaj işleri Marmara Teknik teknisyenleri tarafından yapılacak ise ALICI, 1 (bir) yardımcı mekanik ve 1 (bir) yardımcı elektrik teknisyeni sağlayacaktır.';
+const MT_TRAINING_TEXT='Projenin mekanik ve elektriksel kullanımı ile bakımı için devreye alma sırasında tayin edeceğiniz personelinize eğitim verilecektir.';
+const MT_DOCUMENTATION=['Kullanım talimatı tablosu','Yedek parça listesi','Elektrik devre şeması'];
+const MT_EXCLUSIONS=[
+  'Verilecek genel yerleşim projesine göre tesisin kurulacağı yerin hazırlanması ve tüm inşaat işlerinin yapılması.',
+  'Makine ve ekipmanların Marmara Teknik Kocaeli fabrikasından Alıcı tesisine nakliyesi ve sigorta masrafları.',
+  'Mevcut sistemde gerekebilecek elektriksel ve otomasyonel tadilat ile taşıma işlemlerinin yapılması.',
+  'Mevcut sistemle otomasyonel haberleşme için gereken dijital sinyallerin Marmara Teknik panosuna verilmesi; Marmara Teknik tarafından verilecek sinyallerin mevcut otomasyon sistemine işlenmesi.',
+  'Start-stop sinyalleri ve diğer haberleşme işleri için gerekebilecek enkoder ve sensörlerin temin ve montajı.',
+  'Vinç, forklift ve manlift gibi kaldırma aletlerinden ücretsiz faydalandırılması ve temini.',
+  'Süpervizörlerin gidiş-dönüş ulaşımı, konaklama ve lokal ulaşımları ile çalışma saatleri içinde yemek ihtiyaçlarının karşılanması. Araçla transfer yapılabilen şehirler için toplam km bedeli 8 TL/km üzerinden fatura edilecektir.',
+  'Elektrik panosuna elektrik enerjisinin getirilmesi.',
+  'Projede belirtilecek bölümlere 6 bar basınçlı hava hattının getirilmesi.',
+  'Test için gerekli üretimin sürekli sağlanması.',
+  'Anlaşılan proje kapsamı dışında talep edilen ek mekanik, elektriksel veya yazılım revizyonları ayrı bir hizmet olarak değerlendirilir ve mutabık kalınan teklif doğrultusunda ücretlendirilir.',
+  'Testler sırasında Marmara Teknik fabrikasına numune ürün ve sarf malzemelerinin gönderilmesi ile geri iade nakliyesi.'
+];
+const MT_PAYMENT_DEFAULT=[
+  '%50 avans ödemesi, sipariş tarihinden itibaren en geç 1 hafta içerisinde peşin banka havalesi.',
+  '%40 sevk öncesi SATICI tesislerinde ALICI ürünleri ile yapılacak fonksiyon testlerine mukabil imzalanacak Geçici Kabul Tutanağı ve sevk evraklarının bankaya sunulduğu tarihte peşin banka havalesi.',
+  '%10 ALICI tesisinde devreye alma sonrası imzalanacak kesin kabul protokolünün bankaya ibrazı tarihinde, sevk tarihinden sonra en geç 15 gün içerisinde peşin banka havalesi.'
+];
+const MT_PAYMENT_LEGAL=[
+  'Türk Parasının Kıymetini Koruma Hakkında 32 Sayılı Karar’a ilişkin 2022-32/66 No’lu tebliğ gereğince, sözleşme kapsamında döviz olarak düzenlenen faturanın karşılığı ödeme, ödeme günündeki TCMB Döviz Satış Kuru üzerinden TL olarak yapılacaktır. Fatura kuru ile ödeme kuru arasındaki fark için kur farkı faturası düzenlenecektir.',
+  'İşbu Teknik ve Ticari Teklif taraflarca imzalandığı anda sözleşme niteliği taşır.',
+  'Tarihinde ödenmeyen faturalara aylık %6 vade farkı uygulanacaktır.'
+];
+const MT_WARRANTY=[
+  ['Madde 1: Garanti Süresi ve Kapsamı',['Proje teslim ve devreye alma tarihi itibarıyla ürün veya hizmet {AY} ay süreyle garanti altındadır.','Garanti yalnızca imalat, montaj ve tasarım hatalarını kapsar. Kullanıcı hatalarından kaynaklanan arızalar ile doğal aşınma sonucu yıpranan veya değişimi gereken sarf yedek parçalar garanti kapsamı dışındadır.']],
+  ['Madde 2: Kullanıcı Yükümlülükleri ve Garanti Geçerliliği',['Kullanıcı, ürün veya hizmeti kullanım kılavuzuna ve proje gerekliliklerine uygun kullanmakla yükümlüdür.','Garanti süresi boyunca mekanik veya elektriksel revizyon işlemleri yalnızca Marmara Teknik tarafından gerçekleştirilmelidir.','Marmara Teknik haricindeki kişi veya kuruluşlarca yapılan müdahaleler, revizyonlar veya değişiklikler garantiyi derhal geçersiz kılar.','Garanti süresince talep edilen revizyonlar anlaşılan kapsam dışında ise ayrıca faturalandırılır; işleme başlamadan önce yazılı mutabakat sağlanır.']],
+  ['Madde 3: Garanti Kapsamı Dışında Kalan Durumlar',['Kullanıcı kaynaklı yanlış kullanım, ihmal veya kazalar.','Ürünün yangın, su baskını, doğal afet gibi dış etkenlere maruz kalması.','Düzenli kullanım sonucu oluşan doğal aşınma ve yıpranma.','Filtre, conta, kayış gibi sarf malzemelerinin değişim ihtiyacı.']],
+  ['Madde 4: Garanti Hizmeti Süreci',['Garanti kapsamında bir arıza meydana gelmesi durumunda kullanıcı durumu Marmara Teknik’e yazılı olarak bildirmekle yükümlüdür.','Marmara Teknik garanti kapsamındaki arızaları ücretsiz gidermekle yükümlüdür. Arızanın garanti kapsamı dışında olduğunun tespiti halinde tamir ve bakım hizmetleri ücretlendirilir.']],
+  ['Madde 5: Uyuşmazlık Durumu',['İşbu garanti koşulları Türkiye Cumhuriyeti kanunlarına tabidir.','Uyuşmazlık durumunda Marmara Teknik’in bulunduğu yer mahkemeleri ve icra daireleri yetkilidir.']]
+];
+const MT_ORDER_CLAUSE=[
+  'Taraflar, işbu sözleşmenin alıcı tarafından ayrıca imzalanmamış olsa dahi, alıcı tarafından satıcıya iletilen ve işbu sözleşmeye konu mal veya hizmete ilişkin hükümleri içeren satın alma sipariş formunun, sözleşmenin tüm hüküm ve koşullarının okunup anlaşıldığı ve kabul edildiği anlamına geleceğini peşinen kabul eder.',
+  'Alıcı tarafından iletilen sipariş formu sözleşmenin ayrılmaz bir parçası olup, bu formun iletilmesiyle sözleşme hükümleri yürürlüğe girmiş sayılır. Sözleşme, yalnızca yazılı imza ile değil, sipariş formunun iletilmesi suretiyle de hukuki geçerlilik ve bağlayıcılık kazanır.',
+  'Taraflar, bu yöntemin sözleşmenin kurulması, kabulü ve yürürlüğe girmesi açısından geçerli bir irade beyanı oluşturduğunu kabul, beyan ve taahhüt ederler.'
+];
+const MT_PARTS_WARRANTY=[
+  'Teslim edilen ürünler, imalat ve malzeme hatalarına karşı teslim tarihinden itibaren {AY} ay garantilidir.',
+  'Kullanıcı hatası, yanlış montaj, aşırı yükleme ve doğal aşınma garanti kapsamı dışındadır.',
+  'Sarf malzemeleri (conta, kayış, filtre, rulman vb.) garanti kapsamı dışındadır.'
+];
+
+function quoteLines(q){
+  const rows=Array.isArray(q&&q.lines)?q.lines.filter(l=>l&&(String(l.desc||'').trim()||n(l.unitPrice)>0)):[];
+  return rows;
+}
+function quoteLineAmount(l){return n(l&&l.qty)*n(l&&l.unitPrice);}
+function quoteLinesTotal(q){return quoteLines(q).reduce((s,l)=>s+quoteLineAmount(l),0);}
+function quoteDocAmount(q){
+  const t=quoteLinesTotal(q);
+  return t>0?t:n(q&&q.amount);
+}
+function quoteTemplateOf(q){return (q&&q.template==='parts')?'parts':'project';}
+function quoteTemplateLabel(t){return t==='parts'?'Ürün / Yedek Parça Teklifi':'Teknik ve Ticari Teklif';}
+function mtList(items){return '<ul class="mt-list">'+items.map(x=>'<li>'+htmlEsc(x)+'</li>').join('')+'</ul>';}
+function mtTextToList(text){
+  return String(text||'').split(/\r?\n/).map(x=>x.replace(/^[-•*\s]+/,'').trim()).filter(Boolean);
+}
+
 function quoteHtml(q){
   const p=mtpro().projects.find(x=>String(x.id)===String(q.projectId))||{};
-  const c=mtpro().costs.find(x=>String(x.id)===String(q.costId))||{};
-  return `<!doctype html><html><head><meta charset="utf-8"><title>${htmlEsc(q.code)}</title><style>body{font-family:Arial,sans-serif;background:#f4f7f6;margin:0;padding:24px;color:#17212b}.doc{max-width:900px;margin:auto;background:#fff;border:1px solid #d8e5e2;border-radius:14px;padding:30px}.top{display:flex;justify-content:space-between;gap:20px;border-bottom:3px solid #0f766e;padding-bottom:16px}.brand{font-weight:900;font-size:22px;color:#0f766e}.code{font-size:20px;font-weight:900}.muted{color:#5f6f79}.box{background:#eef6f4;border:1px solid #d8e5e2;border-radius:10px;padding:12px;margin:12px 0}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid #d8e5e2;padding:10px;text-align:left}th{background:#eef6f4}.total{font-size:22px;color:#0f766e;font-weight:900}@media print{body{background:#fff;padding:0}.doc{border:none}}
-  /* v0.8.2 — Banka görünüm düzeltmeleri */
-  .bank-metric-grid{margin-bottom:0}
-  .bank-metric{display:flex;flex-direction:column;justify-content:space-between;border-radius:16px;box-shadow:0 8px 18px rgba(15,23,42,.04)}
-  .bank-metric-main{background:linear-gradient(135deg,rgba(15,118,110,.10),rgba(21,101,160,.04));border-color:rgba(15,118,110,.18)}
-  .bank-metric .metric-sub{line-height:1.45}
-  .bank-tile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:16px}
-  .bank-tile{appearance:none;border:1px solid var(--border);border-radius:18px;padding:16px;background:var(--bg-card);text-align:left;color:inherit;cursor:pointer;box-shadow:0 4px 12px rgba(15,23,42,.04);transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
-  .bank-tile:hover{transform:translateY(-2px);border-color:rgba(15,118,110,.35);box-shadow:0 10px 20px rgba(15,118,110,.08)}
-  .bank-tile-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}
-  .bank-tile-id{display:flex;gap:10px;align-items:flex-start;min-width:0}
-  .bank-tile-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(15,118,110,.10);font-size:18px;flex:0 0 auto}
-  .bank-tile-name{font-size:15px;font-weight:800;color:var(--text);line-height:1.2}
-  .bank-tile-sub{font-size:11px;color:var(--text-muted);margin-top:3px;line-height:1.4}
-  .bank-tile-status{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;font-size:10px;font-weight:800;border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-muted)}
-  .bank-tile-status.active{background:rgba(46,125,82,.10);color:var(--income);border-color:rgba(46,125,82,.18)}
-  .bank-tile-highlight{border:1px solid var(--border);border-radius:14px;padding:12px;background:linear-gradient(180deg,rgba(15,118,110,.04),rgba(15,118,110,.01));margin-bottom:10px}
-  .bank-tile-highlight .label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);font-weight:700}
-  .bank-tile-highlight .value{font-size:24px;font-weight:900;line-height:1.15;margin-top:5px}
-  .bank-tile-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-  .bank-tile-tags span{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:var(--bg-secondary);border:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text-muted)}
-  .bank-tile-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .bank-mini-box{border:1px solid var(--border);border-radius:12px;padding:9px 10px;background:var(--bg-secondary);display:flex;flex-direction:column;gap:4px}
-  .bank-mini-box b{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);font-weight:700}
-  .bank-mini-box strong{font-size:12px;color:var(--text);line-height:1.35}
-  .bank-tile-footer{margin-top:10px;font-size:11px;color:var(--primary);font-weight:700;text-align:right}
-  .bank-section-card{border:1px solid var(--border);border-radius:18px;background:var(--bg-card);padding:16px;margin-bottom:14px;box-shadow:0 4px 12px rgba(15,23,42,.04)}
-  .bank-section-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--border)}
-  .bank-section-title{font-size:16px;font-weight:900;color:var(--text)}
-  .bank-section-sub{font-size:11px;color:var(--text-muted);margin-top:4px}
-  .bank-section-total-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
-  .bank-section-total{font-size:22px;font-weight:900;color:var(--primary);line-height:1.1}
-  .bank-section-total-sub{font-size:10px;color:var(--text-hint)}
-  .bank-account-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
-  .bank-account-card2{border:1px solid var(--border);border-radius:16px;padding:14px;background:linear-gradient(180deg,var(--bg-card),rgba(15,118,110,.015))}
-  .bank-account-card2-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-  .bank-account-card2-title{font-size:14px;font-weight:800;color:var(--text)}
-  .bank-account-card2-sub{font-size:11px;color:var(--text-muted);margin-top:3px;line-height:1.4}
-  .bank-account-card2-balance{font-size:24px;font-weight:900;line-height:1.1;margin:12px 0}
-  .bank-account-stats2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .bank-account-stats2 div{border:1px solid var(--border);border-radius:12px;background:var(--bg-secondary);padding:9px}
-  .bank-account-stats2 span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:4px}
-  .bank-account-stats2 strong{font-size:12px;color:var(--text)}
-  .bank-dashboard-shell{box-shadow:0 4px 12px rgba(15,23,42,.04)}
-  .bank-dashboard-metric-grid{margin-bottom:12px}
-  .dashboard-bank-mini-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-  .dashboard-bank-mini{border:1px solid var(--border);border-radius:14px;padding:12px;background:var(--bg-secondary)}
-  .dashboard-bank-mini-top{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text)}
-  .dashboard-bank-mini-value{font-size:18px;font-weight:900;color:var(--primary);margin-top:8px}
-  .dashboard-bank-mini-sub{font-size:10px;color:var(--text-muted);margin-top:4px}
-  @media(max-width:900px){.bank-section-head{flex-direction:column}.bank-section-total-wrap{align-items:flex-start;text-align:left}}
-  @media(max-width:680px){.bank-tile-mini-grid,.bank-account-stats2,.dashboard-bank-mini-grid{grid-template-columns:1fr}.bank-tile-highlight .value,.bank-account-card2-balance{font-size:22px}}
-</style></head><body><div class="doc"><div class="top"><div><div class="brand">MARMARA TEKNİK MAKİNE</div><div class="muted">Proje fiyat teklifi</div></div><div><div class="code">${htmlEsc(q.code)}</div><div class="muted">Tarih: ${dmy(q.date)}</div></div></div><div class="box"><strong>Müşteri:</strong> ${htmlEsc(p.customer||'')}<br><strong>Proje:</strong> ${htmlEsc(p.code||'')} · ${htmlEsc(p.title||'')}<br><strong>Geçerlilik:</strong> ${htmlEsc(q.validUntil?dmy(q.validUntil):'-')}</div><h2>Teknik Kapsam</h2><p>${htmlEsc(q.technical||p.note||'').replace(/\n/g,'<br>')}</p><h2>Ticari Şartlar</h2><table><tr><th>Teslim süresi</th><td>${htmlEsc(q.deliveryTime||'-')}</td></tr><tr><th>Teslim şekli</th><td>${htmlEsc(q.deliveryType||'-')}</td></tr><tr><th>Ödeme şartı</th><td>${htmlEsc(q.paymentTerms||'-')}</td></tr><tr><th>Maliyet çalışması</th><td>${htmlEsc(c.title||'-')}</td></tr><tr><th>Teklif tutarı</th><td class="total">${projectMoney(q.amount,q.currency)}</td></tr></table><p class="muted">${q.calculatedAmount&&Math.abs(n(q.amount)-n(q.calculatedAmount))>0.009?'Hesaplanan nihai tutar: '+projectMoney(q.calculatedAmount,q.currency)+' · Teklifte gösterilecek tutar manuel belirlenmiştir.':'Teklif tutarı seçilen maliyet çalışmasından alınmıştır.'}</p><p class="muted">Bu ön izleme tarayıcıdan Yazdır / PDF olarak kaydet ile PDF'e dönüştürülebilir.</p></div><script>setTimeout(()=>{document.title=${JSON.stringify(q.code)};},50);<\/script></body></html>`;
+  const tpl=quoteTemplateOf(q);
+  const isProject=tpl==='project';
+  const cur=q.currency||'TRY';
+  const lines=quoteLines(q);
+  const total=quoteDocAmount(q);
+  const warrantyMonths=n(q.warrantyMonths)>0?n(q.warrantyMonths):12;
+  const scope=mtTextToList(q.scopeText||q.technical||'');
+  const exclusions=q.exclusionsText?mtTextToList(q.exclusionsText):MT_EXCLUSIONS;
+  const paymentList=q.paymentTerms?mtTextToList(q.paymentTerms):MT_PAYMENT_DEFAULT;
+  const dmy=(v)=>{if(!v)return '';const d=new Date(String(v)+'T00:00:00');return isNaN(d)?String(v):d.toLocaleDateString('tr-TR');};
+  const money=(v)=>fmtCurrency(v,cur);
+  const sec=(cls)=>'<section class="mt-page '+(cls||'')+'">';
+
+  const infoRows=[
+    ['Teklif Tarihi',dmy(q.date)||dmy(todayYmd())],
+    ['Teklif No',q.code||''],
+    ['Proje No',p.code||'']
+  ].filter(r=>String(r[1]||'').trim());
+  // Boş alanlar belgeye basılmaz; iki sütunlu bilgi tablosu buna göre kurulur.
+  const leftPairs=[
+    ['Firma',q.customerName||p.customer||''],
+    ['İlgili Kişi',q.contactPerson||''],
+    ['Telefon',q.contactPhone||''],
+    ['E-posta',q.contactMail||'']
+  ].filter(r=>String(r[1]||'').trim());
+  const rightPairs=[
+    ['Hazırlayan',q.preparedBy||p.owner||''],
+    ['İletişim',q.preparedByPhone||MT_COMPANY.phone],
+    ['E-posta',q.preparedByMail||MT_COMPANY.mail],
+    ['Talep No',q.requestNo||'']
+  ].filter(r=>String(r[1]||'').trim());
+  const pairCount=Math.max(leftPairs.length,rightPairs.length);
+  const partyRows=[];
+  for(let i=0;i<pairCount;i++){
+    const L=leftPairs[i]||['',''], R=rightPairs[i]||['',''];
+    partyRows.push([L[0],L[1],R[0],R[1]]);
+  }
+  const subject=q.subject||p.title||'';
+
+  let body='';
+
+  /* ── Kapak ── */
+  body+=sec('mt-cover')
+    +'<div class="mt-brand"><div class="mt-brand-mark">MT</div><div><div class="mt-brand-name">'+htmlEsc(MT_COMPANY.name)+'</div><div class="mt-brand-sub">'+htmlEsc(MT_COMPANY.tagline)+'</div></div></div>'
+    +'<h1 class="mt-doc-title">'+htmlEsc(quoteTemplateLabel(tpl).toUpperCase())+'</h1>'
+    +'<table class="mt-info"><tbody>'+infoRows.map(r=>'<tr><th>'+htmlEsc(r[0])+'</th><td>'+htmlEsc(r[1])+'</td></tr>').join('')+'</tbody></table>'
+    +'<table class="mt-party"><tbody>'
+      +partyRows.map(r=>'<tr><th>'+htmlEsc(r[0])+'</th><td>'+htmlEsc(r[1])+'</td><th class="'+(r[2]?'':'mt-blank')+'">'+htmlEsc(r[2])+'</th><td>'+htmlEsc(r[3])+'</td></tr>').join('')
+      +(subject?('<tr><th>Konu</th><td colspan="3"><strong>'+htmlEsc(subject)+'</strong></td></tr>'):'')
+      +'</tbody></table>'
+    +'<div class="mt-cover-foot">'+htmlEsc(MT_COMPANY.legal)+' · '+htmlEsc(MT_COMPANY.city)+' · '+htmlEsc(MT_COMPANY.phone)+' · '+htmlEsc(MT_COMPANY.web)+'</div>'
+    +'</section>';
+
+  /* ── Firma tanıtımı (yalnız proje teklifi) ── */
+  if(isProject && q.includeIntro!==false){
+    body+=sec()
+      +'<p class="mt-salute">Sayın İlgili,</p>'
+      +'<p>'+htmlEsc(MT_INTRO_PARAGRAPH)+'</p>'
+      +'<h2>Hizmetlerimiz</h2><ul class="mt-list">'
+      +MT_SERVICES.map(x=>'<li><strong>'+htmlEsc(x[0])+':</strong> '+htmlEsc(x[1])+'</li>').join('')
+      +'</ul><h2>Teknik Kadro ve Ekipman</h2><p>'+htmlEsc(MT_TEAM_PARAGRAPH)+'</p>'
+      +'<h2>Neden Marmara Teknik?</h2><p>'+htmlEsc(MT_WHY_PARAGRAPH)+'</p>'
+      +'</section>';
+  }
+
+  /* ── Kapsam ── */
+  if(scope.length){
+    body+=sec()
+      +'<h2>'+(isProject?'Teklif Kapsamında Yapılacak İşler':'Teklif Kapsamı')+'</h2>'
+      +mtList(scope)
+      +(q.scopeNote?'<p class="mt-note">'+htmlEsc(q.scopeNote)+'</p>':'')
+      +'</section>';
+  }
+
+  /* ── Hizmet paketleri ve kapsam dışı (yalnız proje teklifi) ── */
+  if(isProject && q.includeServices!==false){
+    body+=sec()
+      +'<h2>Mekanik ve Elektrik-Otomasyon Montaj Süpervizörlüğü</h2><p>'+htmlEsc(MT_SUPERVISION_TEXT)+'</p>'
+      +'<h2>Eğitim Paketi</h2><p>'+htmlEsc(MT_TRAINING_TEXT)+'</p>'
+      +'<h2>Dokümantasyon Paketi</h2><p>Kapsamlı projelerde, proje teslimi ile birlikte verilecek dokümanlar:</p>'+mtList(MT_DOCUMENTATION)
+      +'<h2>Teklif Kapsamı Dışında Kalan İşler ve Alıcı Sorumlulukları</h2>'+mtList(exclusions)
+      +'</section>';
+  }
+
+  /* ── Fiyat tablosu + ticari şartlar ── */
+  const priceRows=lines.length?lines:[{desc:(q.subject||p.title||p.code||''),unit:'1 ADET',qty:1,unitPrice:total}];
+  body+=sec()
+    +'<h2>Teklif Fiyatı</h2>'
+    +'<table class="mt-price"><thead><tr><th style="width:60px">POZ</th><th>AÇIKLAMA</th><th style="width:90px">BİRİM</th><th style="width:70px">ADET</th><th style="width:120px">BİRİM FİYAT</th><th style="width:130px">TOPLAM</th></tr></thead><tbody>'
+    +priceRows.map((l,i)=>'<tr><td>Poz.'+(i+1)+'</td><td>'+htmlEsc(l.desc||'')+'</td><td>'+htmlEsc(l.unit||'ADET')+'</td><td class="num">'+(n(l.qty)||1)+'</td><td class="num">'+money(n(l.unitPrice))+'</td><td class="num strong">'+money(lines.length?quoteLineAmount(l):total)+'</td></tr>').join('')
+    +'</tbody><tfoot><tr><td colspan="5" class="num strong">TOPLAM (KDV Hariç)</td><td class="num strong">'+money(total)+'</td></tr></tfoot></table>'
+    +'<p class="mt-note">Fiyatlarımıza KDV dahil değildir.</p>'
+    +'<h2>Ödeme Şekli</h2>'+mtList(paymentList)
+    +(isProject?mtList(MT_PAYMENT_LEGAL):'')
+    +(q.startCondition?('<h2>Proje Başlangıç Tarihi</h2><p>'+htmlEsc(q.startCondition)+'</p>'):'')
+    +'<h2>Teslim Süresi</h2><p>'+htmlEsc(q.deliveryTime||'Sipariş tarihinde netleşecektir.')+'</p>'
+    +'<h2>Teslim Yeri / Şekli</h2><p>'+htmlEsc(q.deliveryPlace||q.deliveryType||'—')+'</p>'
+    +(q.validUntil?('<h2>Teklif Geçerlilik Tarihi</h2><p>'+htmlEsc(dmy(q.validUntil))+'</p>'):'')
+    +'</section>';
+
+  /* ── Garanti ── */
+  if(q.includeWarranty!==false){
+    if(isProject){
+      body+=sec()+'<h2>Garanti Koşulları</h2>'
+        +MT_WARRANTY.map(g=>'<h3>'+htmlEsc(g[0])+'</h3>'+mtList(g[1].map(x=>x.replace('{AY}',String(warrantyMonths)))))
+          .join('')
+        +'</section>';
+      if(q.includeOrderClause!==false){
+        body+=sec()+'<h2>Sipariş Formu ile Sözleşmenin Kabulü</h2>'+mtList(MT_ORDER_CLAUSE)+'</section>';
+      }
+    }else{
+      body+=sec('mt-compact')+'<h2>Garanti Koşulları</h2>'
+        +mtList(MT_PARTS_WARRANTY.map(x=>x.replace('{AY}',String(warrantyMonths))))
+        +'</section>';
+    }
+  }
+
+  /* ── İmza ── */
+  body+='<section class="mt-page mt-sign-page"><div class="mt-sign"><div class="mt-sign-box"><div class="mt-sign-title">DÜZENLEYEN</div><div class="mt-sign-sub">KAŞE / İMZA</div><div class="mt-sign-name">'+htmlEsc(q.preparedBy||p.owner||'')+'</div></div><div class="mt-sign-box"><div class="mt-sign-title">ONAYLAYAN</div><div class="mt-sign-sub">KAŞE / İMZA</div><div class="mt-sign-name">'+htmlEsc(q.customerName||p.customer||'')+'</div></div></div></section>';
+
+  return '<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>'+htmlEsc(q.code||'Teklif')+'</title><style>'
+    +'@page{size:A4;margin:18mm 16mm 20mm}'
+    +'*{box-sizing:border-box}'
+    +'body{font-family:"Segoe UI",Arial,Helvetica,sans-serif;color:#1b2430;margin:0;background:#eef2f5;font-size:12px;line-height:1.6}'
+    +'.mt-doc{max-width:210mm;margin:0 auto;background:#fff}'
+    +'.mt-page{padding:26px 30px;border-bottom:1px solid #e6ecf1;position:relative}'
+    +'.mt-page:last-child{border-bottom:none}'
+    +'.mt-brand{display:flex;align-items:center;gap:14px;margin-bottom:26px}'
+    +'.mt-brand-mark{width:52px;height:52px;border-radius:13px;background:linear-gradient(135deg,#2DD4BF,#2563EB);color:#fff;font-weight:800;font-size:19px;display:flex;align-items:center;justify-content:center;letter-spacing:.5px}'
+    +'.mt-brand-name{font-size:20px;font-weight:800;letter-spacing:.06em}'
+    +'.mt-brand-sub{font-size:11px;color:#5b6b7a;letter-spacing:.04em}'
+    +'.mt-doc-title{font-size:17px;text-align:center;letter-spacing:.14em;font-weight:700;margin:0 0 24px;padding:11px 0;border-top:2px solid #0F766E;border-bottom:2px solid #0F766E;color:#0F766E}'
+    +'.mt-info,.mt-party{width:100%;border-collapse:collapse;margin-bottom:16px}'
+    +'.mt-info th,.mt-info td,.mt-party th,.mt-party td{border:1px solid #d7e0e7;padding:7px 10px;text-align:left;vertical-align:top}'
+    +'.mt-info th,.mt-party th{background:#f4f8f9;font-weight:600;width:130px;color:#41525f;font-size:11px;text-transform:uppercase;letter-spacing:.03em}'
+    +'.mt-party th.mt-blank{background:#fff;border-left-color:#fff}'
+    +'.mt-cover-foot{margin-top:30px;padding-top:12px;border-top:1px solid #e6ecf1;font-size:10.5px;color:#6b7a88;text-align:center}'
+    +'.mt-salute{font-weight:600;margin-bottom:12px}'
+    +'h2{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:#0F766E;margin:22px 0 9px;padding-bottom:5px;border-bottom:1px solid #d7e0e7}'
+    +'.mt-page>h2:first-child{margin-top:0}'
+    +'h3{font-size:12px;margin:14px 0 5px;color:#1b2430}'
+    +'p{margin:0 0 10px;text-align:justify}'
+    +'.mt-list{margin:0 0 10px;padding-left:19px}'
+    +'.mt-list li{margin-bottom:5px;text-align:justify}'
+    +'.mt-note{font-size:11px;color:#5b6b7a;font-style:italic}'
+    +'.mt-price{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:11.5px}'
+    +'.mt-price th{background:#0F766E;color:#fff;padding:9px 8px;text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}'
+    +'.mt-price td{border:1px solid #d7e0e7;padding:8px}'
+    +'.mt-price .num{text-align:right;white-space:nowrap}'
+    +'.mt-price .strong{font-weight:700}'
+    +'.mt-price tfoot td{background:#f4f8f9;border-top:2px solid #0F766E}'
+    +'.mt-sign-page{padding-top:60px}'
+    +'.mt-sign{display:flex;gap:40px;justify-content:space-around;margin-top:30px}'
+    +'.mt-sign-box{flex:1;text-align:center;border-top:1px solid #1b2430;padding-top:10px;max-width:260px}'
+    +'.mt-sign-title{font-weight:700;letter-spacing:.09em;font-size:11.5px}'
+    +'.mt-sign-sub{font-size:10.5px;color:#6b7a88;margin-top:4px}'
+    +'.mt-sign-name{margin-top:34px;font-size:11px;color:#41525f}'
+    +'@media print{body{background:#fff}.mt-doc{max-width:none}.mt-page{padding:0;border:none;page-break-after:always}.mt-page:last-child{page-break-after:auto}h2{page-break-after:avoid}.mt-price{page-break-inside:avoid}}'
+    +'</style></head><body><div class="mt-doc">'+body+'</div></body></html>';
 }
 function previewQuoteObject(q){
   if(!q)return;

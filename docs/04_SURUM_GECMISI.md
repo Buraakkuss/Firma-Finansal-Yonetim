@@ -85,4 +85,14 @@
 - Proje hareket geçmişi eklendi: durum, maliyet ve teklif değişiklikleri tarih ve
   kullanıcı bilgisiyle saklanıyor.
 
-Güncel baz sürüm: **v0.9.0**
+## v0.9.1
+- Teklif çıktısı kurumsal belge olarak baştan yazıldı: markalı kapak, bölümlenmiş
+  sayfalar ve A4 yazdırma düzeni.
+- İki şablon eklendi: "Teknik ve Ticari Teklif (proje)" ve "Ürün / Yedek Parça Teklifi".
+- Teklife çok satırlı POZ fiyat tablosu eklendi; tutar kalemlerden hesaplanıyor.
+- Müşteri iletişim bilgileri, konu, talep no, hazırlayan, teslim yeri, proje
+  başlangıç şartı ve garanti süresi alanları eklendi.
+- Kurumsal metinler (firma tanıtımı, kapsam dışı işler, garanti maddeleri,
+  sipariş formu ile kabul) koda gömüldü; belgeye dahil edilmesi seçimlik.
+
+Güncel baz sürüm: **v0.9.1**

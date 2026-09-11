@@ -1,0 +1,35 @@
+NakitPilot v0.9.1 — Kurumsal teklif belgesi ve iki teklif şablonu
+
+Yeni: kurumsal teklif çıktısı
+- Teklif ön izleme / yazdırma çıktısı baştan yazıldı.
+- Marmara Teknik kurumsal düzeni: markalı kapak, bilgi tablosu, bölümlenmiş
+  sayfalar, kurumsal renk düzeni ve A4 yazdırma ayarları.
+- Değişmeyen kurumsal metinler (firma tanıtımı, hizmetler, teknik kadro,
+  eğitim ve dökümantasyon paketi, kapsam dışı işler, garanti maddeleri,
+  sipariş formu ile kabul) koda gömüldü; her teklifte tekrar yazılmaz.
+
+Yeni: iki teklif şablonu
+- "Teknik ve Ticari Teklif (proje)": tam kapsamlı proje teklifi.
+  Kapak, firma tanıtımı, kapsam, hizmet paketleri, kapsam dışı işler,
+  fiyat tablosu, ödeme şekli, teslim bilgileri, garanti koşulları,
+  sipariş formu ile kabul ve imza bölümü.
+- "Ürün / Yedek Parça Teklifi": tek ürün veya yedek parça satışı için
+  kısa şablon. Kapak, kapsam, çok satırlı fiyat tablosu, ödeme ve teslim
+  bilgileri, kısa garanti ve imza bölümü.
+
+Yeni: teklif kalemleri (POZ satırları)
+- Teklife çok satırlı fiyat tablosu eklendi: POZ, açıklama, birim, adet,
+  birim fiyat ve tutar.
+- Kalem girildiğinde teklif tutarı kalemlerden otomatik hesaplanır.
+- Kalem girilmezse teklif eskisi gibi tek satır olarak yazdırılır.
+
+Yeni: teklif bilgi alanları
+- Müşteri firma, ilgili kişi, telefon, e-posta, talep no, konu, hazırlayan,
+  teslim yeri, proje başlangıç şartı ve garanti süresi (ay) alanları eklendi.
+- Teklif kapsamı artık satır satır girilir ve belgede madde olarak yazdırılır.
+- Proje teklifinde firma tanıtımı, hizmet paketleri, garanti ve sipariş formu
+  bölümleri isteğe bağlı olarak belgeye dahil edilir veya çıkarılır.
+- Boş bırakılan bilgi alanları belgeye basılmaz.
+
+Supabase
+- Şema değişikliği gerekmez.

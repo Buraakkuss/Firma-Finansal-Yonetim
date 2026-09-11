@@ -1,0 +1,11 @@
+NakitPilot v0.9.1 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Teklif kayıtlarına eklenen yeni alanlar (şablon, müşteri iletişim bilgileri,
+teklif kalemleri, kapsam metni, garanti süresi, bölüm seçimleri)
+public.company_data.data JSONB alanı içinde tutulur ve Banka Merkezi'nin
+normalize tablo senkronizasyonuna dahil değildir.
+
+Eski teklif kayıtları uyumludur: şablon alanı boş olan kayıtlar proje teklifi
+olarak, kalem listesi boş olan kayıtlar tek satırlı teklif olarak yazdırılır.

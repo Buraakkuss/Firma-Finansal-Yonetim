@@ -1,0 +1,50 @@
+NakitPilot v0.9.2 — Fatura, tahsilat ve vade takibi; teklife proje görseli
+
+Yeni: fatura kaydı
+- Proje Finans Durumu ekranına fatura kartı eklendi.
+- Alanlar: fatura no, fatura tarihi, tutar, para birimi, kayıt kuru, KDV oranı,
+  vade tarihi ve açıklama.
+- Bir projede birden fazla fatura olabilir (kısmi faturalama desteklenir).
+- Döviz faturada kayıt kuru zorunludur; TL karşılığı bu kurla hesaplanır.
+- Proje "Teslim Edildi" durumundayken ilk fatura kaydedilince durum otomatik
+  olarak "Faturalandırıldı" olur.
+
+Yeni: tahsilat kaydı
+- Her tahsilat bir faturaya bağlanır. Kısmi tahsilat yapılabilir.
+- Fatura bazında tahsil edilen ve kalan alacak otomatik hesaplanır.
+- Projenin tüm faturaları tamamen tahsil edildiğinde durum otomatik olarak
+  "Tahsilat Tamamlandı" olur ve bu hareket geçmişe yazılır.
+- Tahsilatı olan bir fatura silinemez; önce tahsilatların silinmesi gerekir.
+
+Yeni: vade takibi ve uyarılar
+- Her fatura için vade durumu hesaplanır: tahsil edildi, gecikmiş,
+  vadesi yaklaşıyor (7 gün), açık.
+- Özet Paneli'ne "Tahsilat Vade Uyarıları" kartı eklendi: vadesi geçen toplam
+  tutar, 7 gün içinde vadesi dolacak tutar ve en acil faturaların listesi.
+- Proje Finans Durumu ekranında da aynı uyarı tablosu gösterilir.
+- Gecikmiş faturalar kırmızı, vadesi yaklaşanlar turuncu gösterilir.
+
+Yeni: statü geçiş kuralları
+- "Faturalandırıldı" durumuna geçmek için en az bir fatura kaydı zorunlu.
+- "Tahsilat Tamamlandı" durumuna kalan alacak sıfırlanmadan geçilemez.
+
+Yeni: teklif belgesine örnek proje görseli
+- Teklif penceresinden, projeye yüklenmiş görsellerden biri seçilebilir.
+- Görsel teklif belgesinde ayrı bölüm olarak, ortalanmış ve alt yazılı basılır.
+- Sayfa düzenini bozmaması için görsel en fazla sayfa genişliği ve 170 mm
+  yüksekliğe sığdırılır; sayfa ortasından bölünmez.
+- Görsel JSON verisine gömülmez; Supabase Storage'daki dosya referans edilir ve
+  yalnız yazdırma/ön izleme anında belgeye gömülür. Böylece kaydedilen PDF
+  kendi kendine yeter ve veritabanı şişmez.
+
+Yeni: kurumsal logo desteği
+- Teklif belgesinin kapağına Marmara Teknik logosu basılabilir.
+- Logo tanımlı değilse MT harfli marka kutusu kullanılmaya devam eder.
+
+Değişen: proje listesi finans sütunu
+- Projede fatura kaydı varsa beklenen/tahsil edilen/kalan değerleri artık gerçek
+  fatura ve tahsilat kayıtlarından gelir. Fatura yoksa eski ödeme planı mantığı
+  aynen korunur.
+
+Supabase
+- Şema değişikliği gerekmez.

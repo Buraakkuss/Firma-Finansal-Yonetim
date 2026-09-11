@@ -1,0 +1,30 @@
+NakitPilot v0.9.2 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu olduğu için dosya yüklemeye gerek yoktur.
+- Uygulamayı ?v=0.9.2 ile açın; görünüm eski kalırsa Ctrl + F5 (Mac: Cmd + Shift + R).
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Fatura ve tahsilat kullanımı
+
+1) Proje Takip > Proje Finans Durumu ekranını açın ve üstten projeyi seçin.
+2) "Fatura Kaydı" kartından faturayı girin: fatura no, tarih, tutar, para birimi,
+   KDV oranı ve VADE TARİHİ. Vade tarihi girilmezse gecikme takibi yapılamaz.
+3) Ödeme geldiğinde "Tahsilat Kaydı" kartından faturayı seçip tutarı girin.
+   Tutarın tamamı gelmediyse kısmi girebilirsiniz; kalan alacak otomatik düşer.
+4) Faturanın tamamı tahsil edildiğinde satır yeşile döner.
+   Projenin tüm faturaları kapandığında durum otomatik "Tahsilat Tamamlandı" olur.
+
+Vade uyarıları
+- Özet Paneli'nde "Tahsilat Vade Uyarıları" kartı, vadesi geçen ve 7 gün içinde
+  vadesi dolacak faturaları gösterir. Uyarı yoksa kart görünmez.
+
+Teklife örnek proje görseli
+1) Önce görseli Proje Takip > Proje Dosyaları ekranından ilgili projeye yükleyin
+   (png, jpg, jpeg, webp veya gif).
+2) Teklif penceresindeki "Örnek Proje Görseli" listesinden görseli seçin,
+   isterseniz alt yazı yazın.
+3) Ön İzle veya Yazdır dediğinizde görsel belgeye gömülür; kaydettiğiniz PDF
+   görseli içinde taşır.

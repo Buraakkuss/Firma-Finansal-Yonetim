@@ -95,4 +95,18 @@
 - Kurumsal metinler (firma tanıtımı, kapsam dışı işler, garanti maddeleri,
   sipariş formu ile kabul) koda gömüldü; belgeye dahil edilmesi seçimlik.
 
-Güncel baz sürüm: **v0.9.1**
+## v0.9.2
+- Fatura kaydı eklendi: no, tarih, tutar, para birimi, kur, KDV, vade.
+- Tahsilat kaydı eklendi: faturaya bağlı, kısmi tahsilat destekli, kalan alacak
+  otomatik hesaplanır.
+- Vade takibi: gecikmiş / vadesi yaklaşan faturalar için Özet Paneli ve Proje
+  Finans Durumu ekranında uyarı kartı.
+- Otomatik durum geçişleri: ilk fatura ile "Faturalandırıldı", alacak sıfırlanınca
+  "Tahsilat Tamamlandı".
+- Geçiş kuralları: fatura olmadan faturalandırılamaz, alacak kapanmadan tahsilat
+  tamamlanamaz.
+- Teklif belgesine örnek proje görseli eklenebiliyor; görsel Storage'da kalır,
+  yalnız yazdırma anında belgeye gömülür ve sayfa düzenini bozmaz.
+- Teklif kapağı için kurumsal logo desteği.
+
+Güncel baz sürüm: **v0.9.2**

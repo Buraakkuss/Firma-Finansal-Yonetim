@@ -1,0 +1,15 @@
+NakitPilot v0.9.2 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Fatura ve tahsilat kayıtları projeye bağlı olarak public.company_data.data
+JSONB alanı içinde tutulur (projects[].invoices ve projects[].collections) ve
+Banka Merkezi'nin normalize tablo senkronizasyonuna dahil değildir.
+
+Teklif görselleri veriye gömülmez. Görseller mevcut project-files Storage
+bucket'ında durur; teklif kaydı yalnız dosya kimliğini tutar. Görsel, ön izleme
+veya yazdırma anında imzalı bağlantı üzerinden okunup belgeye gömülür.
+Bu nedenle company_data boyutu görsellerden etkilenmez.
+
+Uyarı
+- sql/ klasöründeki eski kurulum ve migration dosyalarını yeniden çalıştırmayın.

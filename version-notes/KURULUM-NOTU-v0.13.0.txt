@@ -1,0 +1,36 @@
+NakitPilot v0.13.0 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu; dosya yüklemeye gerek yoktur.
+- ?v=0.13.0 ile açın, görünüm eski kalırsa Ctrl + F5.
+- Telefonda eski görünüm kalırsa uygulamayı kapatıp yeniden açın.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Menü
+- Sol menüdeki başlığa basınca o modülün ekranları açılır.
+- Aynı anda tek başlık açık kalır; bu normaldir.
+
+Acil / projesiz sipariş akışı
+1) Satın Alma > Satın Alma Siparişleri.
+2) Proje alanını "Genel Satın Alma (projesiz)" bırakın.
+3) Kaydedin. Sisteme GEN26-SAP1 gibi kalıcı bir SAP No verilir.
+4) "🖨 Form" ile sipariş formunu alıp tedarikçiye gönderin.
+   Tedarikçi faturayı bu SAP No'ya keser.
+5) Proje belli olunca aynı siparişi "Düzenle" ile açın ve Proje alanını seçin.
+   - SAP No DEĞİŞMEZ.
+   - O siparişe kesilmiş faturalar projenin gerçek maliyetine taşınır.
+   - Kaydedince kaç faturanın taşındığı ekranda yazar.
+
+Fatura girişi
+- Fatura ekranında önce SİPARİŞ (SAP No) seçin; tedarikçi, proje, para birimi
+  ve kur otomatik dolar.
+- Fatura projesiz kalsa bile, bağlı olduğu siparişin projesi kullanılır.
+
+Önemli
+- SAP No bilerek değiştirilemez yapılmıştır. Yanlış numara ile açılmış bir
+  siparişi düzeltmenin yolu, siparişi silip yenisini açmaktır; bu da yalnız
+  faturası kesilmemiş siparişlerde mümkündür.
+- Bir siparişi başka bir projeye taşırken, faturaya elle farklı bir proje
+  yazılmışsa o fatura taşınmaz. Bu bilinçli bir korumadır.

@@ -1,7 +1,7 @@
 /* NakitPilot service worker.
    Cache adı 'nakitpilot' içermek zorundadır: index.html içindeki
    clearOldPwaCachesForVersion() eski sürüm cache'lerini bu ada göre temizler. */
-const APP_VERSION = '0.12.0';
+const APP_VERSION = '0.13.0';
 const CACHE_NAME = 'nakitpilot-shell-v' + APP_VERSION;
 const APP_SHELL = [
   './',

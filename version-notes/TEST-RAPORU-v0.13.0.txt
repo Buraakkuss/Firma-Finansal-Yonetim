@@ -1,0 +1,48 @@
+NakitPilot v0.13.0 Test Notu
+
+- index.html satır içi JavaScript sözdizimi doğrulandı: 1 blok, 0 hata.
+- sw.js sözdizimi ve manifest.webmanifest JSON geçerliliği doğrulandı.
+- Uygulama Chromium'da gerçek dosya üzerinden açıldı; masaüstü ve telefon
+  (390x844) görünümünde ayrı ayrı çalıştırıldı. Her ikisinde de JS hatası yok.
+
+Tarayıcı testleri — 32 senaryo, 32 başarılı:
+
+Menü grupları
+  * 7 grup başlığı (Finans, Proje Takip, Satın Alma, Cari, Raporlar,
+    Ayarlar, Yönetim) ve alt grupları yerinde
+  * Açılışta tüm gruplar kapalı
+  * Bir grup açılınca diğeri kapanıyor (akordiyon)
+  * Sayfaya gidilince o sayfanın grubu otomatik açılıyor
+  * Özet Paneli dışındaki her sayfa bir gruba bağlı (eksik sayfa yok)
+  * Alt butonları yetkisizlikten gizlenen grup başlığı da gizleniyor,
+    yetki gelince geri geliyor
+
+SAP No
+  * Genel ilk kod GEN26-SAP1, ikinci kod GEN26-SAP2
+  * Projeye bağlı ilk kod MTP26-1-SAP1, ikinci kod MTP26-1-SAP2
+  * Proje sayacı ile genel sayaç birbirinden bağımsız ilerliyor
+  * Sipariş sonradan projeye bağlandığında SAP No DEĞİŞMEDİ
+  * Bağlama sonrası 1 fatura taşındı, projenin gerçek maliyeti 0 → 1.500 TL
+  * Faturanın ve gelecekteki gider kaydının projesi güncellendi
+  * Faturada proje boşken siparişin projesi devralınıyor
+    (iki fatura toplamı 6.500 TL doğru hesaplandı)
+
+Sipariş formu
+  * Form gövdesi üretildi, SAP No ve proje kodu form içinde yer alıyor
+  * Projesiz siparişin formunda "Genel Satın Alma" yazıyor
+  * Örnek form görsel olarak kontrol edildi; toplam 19.760,00 TL doğru
+    (20x150 + 12x980 + 4x1250)
+
+Mobil (390x844)
+  * ☰ butonu görünür, çekmece başlangıçta ekran dışında
+  * ☰ ile çekmece açılıyor, arka plan perdesi çıkıyor
+  * Sayfa seçilince çekmece kendiliğinden kapanıyor
+  * 10 ana sayfada (özet, günlük kayıt, siparişler, faturalar, alacaklar,
+    borçlar, yönetici paneli, projeler, banka merkezi, raporlar)
+    yatay taşma yok
+
+Gerileme testleri (kaynaktan okunan fonksiyonlarla)
+  * v0.8.3: 7/7, v0.9.0: 25/25, v0.9.2: 18/18, v0.9.5: 8/8,
+    v0.9.6: 20/20, v0.10.0: 26/26, v0.11.0: 27/27, v0.12.0: 31/31
+
+Toplam 194 senaryo başarılı.

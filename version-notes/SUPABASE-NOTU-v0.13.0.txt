@@ -1,0 +1,17 @@
+NakitPilot v0.13.0 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+SAP No, satın alma siparişinin mevcut "code" alanıdır; yalnız üretim biçimi
+değişmiştir (proje kodundan veya genel koddan türetilir). Eski sürümde
+SA26-1 biçiminde açılmış siparişlerin kodları olduğu gibi korunur ve
+değiştirilmez; yeni siparişler yeni biçimi alır.
+
+Sipariş sonradan bir projeye bağlandığında:
+- data.purchasing.orders[].projectId güncellenir,
+- o siparişe bağlı data.purchasing.invoices[].projectId taşınır,
+- ilgili data.fixed (gelecekteki kesin gider) ve data.expense (ödeme) kayıtları
+  syncPurchaseInvoiceFixed / syncPurchasePaymentExpense ile yeniden yazılır.
+
+Bu alanların hiçbiri Banka Merkezi'nin normalize tablo senkronizasyonuna dahil
+değildir; trg_company_data_banking_sync tetikleyicisi etkilenmez.

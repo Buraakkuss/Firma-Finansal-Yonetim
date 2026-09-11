@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.12.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.12.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.12.0">
-  <title>NakitPilot Marmara Teknik — v0.12.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.13.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.13.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.13.0">
+  <title>NakitPilot Marmara Teknik — v0.13.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -105,6 +105,9 @@
   .nav-btn svg { width:16px; height:16px; opacity:0.8; flex-shrink:0; }
   .nav-btn.active svg { opacity:1; }
   .sidebar-footer { padding:14px 16px; border-top:1px solid rgba(255,255,255,0.08); font-size:11px; color:var(--nav-muted); }
+  .nav-toggle { display:none; align-items:center; justify-content:center; width:40px; height:40px; flex:0 0 40px; border-radius:11px; border:1px solid var(--border-strong); background:var(--bg-card); color:var(--text); cursor:pointer; padding:0; }
+  .nav-toggle svg { width:20px; height:20px; }
+  .nav-backdrop { display:none; position:fixed; inset:0; background:rgba(8,18,30,.5); z-index:99; }
   .main { margin-left:220px; flex:1; }
   .topbar { background:var(--topbar-bg); border-bottom:1px solid var(--border); padding:14px 28px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; box-shadow:0 2px 12px var(--shadow); }
   .topbar-title { font-size:16px; font-weight:600; color:var(--topbar-text); }
@@ -454,62 +457,52 @@
   @media (max-width:1100px){ .two-col{grid-template-columns:1fr;} .filter-bar{grid-template-columns:1fr 1fr;} .filter-bar label{margin-top:4px;} }
 
 
-  @media (max-width:768px) {
+  /* v0.13.0 — Mobil: sol menü çekmece (drawer) olur, yatay şerit değil. */
+  @media (max-width:900px) {
     body { overflow-x:hidden; }
+    .nav-toggle { display:inline-flex; }
     .app-shell { flex-direction:column; min-width:0; overflow-x:hidden; }
     .sidebar {
-      width:100%;
-      max-width:100%;
-      height:auto;
-      position:sticky;
-      top:0;
-      left:auto;
-      flex-direction:row;
-      overflow-x:auto;
-      overflow-y:hidden;
+      width:82vw;
+      max-width:300px;
+      height:100vh;
+      position:fixed;
+      top:0; left:0;
+      flex-direction:column;
+      overflow-y:auto;
       -webkit-overflow-scrolling:touch;
-      z-index:95;
+      z-index:100;
+      transform:translateX(-102%);
+      transition:transform .22s ease;
+      box-shadow:0 0 40px rgba(0,0,0,.35);
     }
-    .sidebar-logo { display:none; }
-    .sidebar-nav {
-      display:flex;
-      width:max-content;
-      min-width:100%;
-      padding:8px;
-      gap:4px;
-      overflow-x:auto;
-      overflow-y:hidden;
-      -webkit-overflow-scrolling:touch;
-      scrollbar-width:none;
-    }
-    .sidebar-nav::-webkit-scrollbar { display:none; }
-    .nav-section { display:none; }
-    .nav-btn {
-      flex:0 0 auto;
-      white-space:nowrap;
-      padding:10px 12px;
-      border-left:none;
-      border-bottom:2px solid transparent;
-      font-size:12px;
-      border-radius:10px;
-    }
-    .nav-btn.active { border-left-color:transparent; border-bottom-color:var(--gold); }
-    .sidebar-footer { display:none; }
-    .main { margin-left:0; width:100%; min-width:0; }
+    body.nav-open .sidebar { transform:translateX(0); }
+    body.nav-open .nav-backdrop { display:block; }
+    body.nav-open { overflow:hidden; }
+    .sidebar-logo { display:block; padding:18px 18px 14px; }
+    .sidebar-nav { display:block; width:100%; padding:10px 0; }
+    .nav-btn { font-size:14px; padding:12px 18px; min-height:44px; }
+    .nav-sub-group .nav-btn { padding-left:40px; font-size:13.5px; }
+    .sidebar-footer { display:block; }
+    .main { margin-left:0; width:100%; min-width:0; max-width:100%; }
     .topbar {
-      padding:14px 16px;
-      gap:12px;
+      padding:12px 14px;
+      gap:10px;
       flex-wrap:wrap;
-      align-items:stretch;
+      align-items:center;
     }
     .topbar-title {
-      width:100%;
+      flex:1 1 auto;
+      min-width:0;
       font-size:15px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
     .topbar-actions {
       width:100%;
       display:grid;
-      grid-template-columns:1fr;
+      grid-template-columns:repeat(2,minmax(0,1fr));
       gap:8px;
       align-items:stretch;
     }
@@ -547,6 +540,19 @@
     .theme-toggle { padding:6px 10px; font-size:11px; }
     .auth-screen { padding:16px; }
     .auth-card { padding:22px 18px; border-radius:18px; }
+    /* v0.13.0 — mobilde tüm form ızgaraları tek sütun, tablolar kaydırmalı */
+    .pro-grid, .pro-grid.pro-grid-12 { grid-template-columns:1fr !important; }
+    .pro-grid [class*="span-"] { grid-column:1 / -1 !important; }
+    .form-action .btn, .form-action button { width:100%; }
+    .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .table-wrap table { min-width:640px; }
+    .cost-items-table { min-width:620px; }
+    .project-action-row { flex-wrap:wrap; gap:6px; }
+    .project-action-row .btn { min-height:38px; }
+    .btn, .btn-sm { min-height:38px; }
+    .project-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .modal { width:94vw; max-width:94vw; max-height:88vh; overflow-y:auto; }
+    input, select, textarea { font-size:16px; }
   }
   @media (max-width:480px) {
     .content { padding:12px; }
@@ -621,21 +627,29 @@
       position:relative !important;
       width:100% !important;
       max-width:100% !important;
-      padding:14px 12px !important;
-      display:block !important;
+      padding:12px !important;
+      display:flex !important;
+      flex-wrap:wrap !important;
+      align-items:center !important;
+      gap:10px !important;
       overflow:hidden !important;
     }
     .topbar-title {
-      width:100% !important;
-      margin-bottom:12px !important;
-      overflow-wrap:anywhere !important;
+      flex:1 1 auto !important;
+      min-width:0 !important;
+      width:auto !important;
+      margin-bottom:0 !important;
+      white-space:nowrap !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
     }
     .topbar-actions {
       width:100% !important;
       display:grid !important;
-      grid-template-columns:1fr !important;
+      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
       gap:8px !important;
     }
+    .topbar-date { display:none !important; }
     .cloud-user,
     .topbar-date {
       grid-column:1 / -1 !important;
@@ -658,25 +672,26 @@
       text-align:center !important;
     }
     .sidebar {
-      position:sticky !important;
+      position:fixed !important;
       top:0 !important;
       left:0 !important;
-      width:100% !important;
-      max-width:100% !important;
-      height:auto !important;
-      overflow-x:auto !important;
-      overflow-y:hidden !important;
+      width:82vw !important;
+      max-width:300px !important;
+      height:100vh !important;
+      overflow-x:hidden !important;
+      overflow-y:auto !important;
+      display:flex !important;
+      flex-direction:column !important;
     }
     .sidebar-nav {
       width:100% !important;
       max-width:100% !important;
-      display:flex !important;
-      overflow-x:auto !important;
-      overflow-y:hidden !important;
+      display:block !important;
+      overflow-x:hidden !important;
     }
     .nav-btn {
-      flex:0 0 auto !important;
-      max-width:220px !important;
+      width:100% !important;
+      max-width:100% !important;
     }
     .card,
     .metric,
@@ -700,6 +715,7 @@
     .topbar-actions {
       grid-template-columns:1fr !important;
     }
+    .sidebar { width:88vw !important; }
     .content {
       padding-left:10px !important;
       padding-right:10px !important;
@@ -2524,37 +2540,30 @@
   </div>
 </div>
 <div class="app-shell">
+  <div class="nav-backdrop" id="nav-backdrop" hidden onclick="closeMobileNav()"></div>
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.12.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.13.0</p>
     </div>
     <nav class="sidebar-nav">
-      <div class="nav-section">Ana</div>
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Özet Paneli
       </button>
-      <button class="nav-btn" id="nav-ai" onclick="showPage('ai',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l1.7 4.2L18 9l-4.3 1.8L12 15l-1.7-4.2L6 9l4.3-1.8L12 3z"/><path d="M5 14l.9 2.1L8 17l-2.1.9L5 20l-.9-2.1L2 17l2.1-.9L5 14z"/><path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14z"/></svg>AI Finans Asistanı
+      <button class="nav-btn nav-parent" id="nav-parent-finance" data-navgroup="finance" onclick="toggleNavGroup('finance')" type="button">
+        <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10h18"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8"/><path d="M2 20h20"/><path d="M12 3l9 5H3l9-5z"/></svg>Finans</span><span class="chev">›</span>
       </button>
-      <div class="nav-section">Veri Girişi</div>
-      <button class="nav-btn" onclick="showPage('daily',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Tamamlanmış Gelir/Gider Kayıt
-      </button>
-      <button class="nav-btn" onclick="showPage('fixed',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gelecekteki Kesin Gelir/Gider
-      </button>
-      <button class="nav-btn" onclick="showPage('forecast',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Tahmini Gelir/Gider
-      </button>
-      <button class="nav-btn" onclick="showPage('banking',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10h18"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8"/><path d="M2 20h20"/><path d="M12 3l9 5H3l9-5z"/></svg>Banka Merkezi
-      </button>
-      <div class="nav-section nav-project-section">Proje Takip</div>
-      <button class="nav-btn nav-parent" id="nav-project-parent" onclick="toggleProjectMenu()" type="button">
+      <div class="nav-sub-group" id="navgroup-finance">
+        <button class="nav-btn" id="nav-ai" onclick="showPage('ai',this)">AI Finans Asistanı</button>
+        <button class="nav-btn" onclick="showPage('daily',this)">Tamamlanmış Gelir/Gider</button>
+        <button class="nav-btn" onclick="showPage('fixed',this)">Gelecekteki Kesin Gelir/Gider</button>
+        <button class="nav-btn" onclick="showPage('forecast',this)">Tahmini Gelir/Gider</button>
+        <button class="nav-btn" onclick="showPage('banking',this)">Banka Merkezi</button>
+      </div>
+      <button class="nav-btn nav-parent" id="nav-parent-project" data-navgroup="project" onclick="toggleNavGroup('project')" type="button">
         <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h5l2 2h11v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/><path d="M3 7V5a2 2 0 0 1 2-2h3l2 2h4"/></svg>Proje Takip</span><span class="chev">›</span>
       </button>
-      <div class="nav-sub-group" id="project-subnav">
+      <div class="nav-sub-group" id="navgroup-project">
         <button class="nav-btn" onclick="showPage('projectMeetings',this)">Müşteri Görüşmeleri</button>
         <button class="nav-btn" onclick="showPage('projects',this)">Projeler</button>
         <button class="nav-btn" onclick="showPage('projectCosts',this)">Teklif & Maliyet</button>
@@ -2562,63 +2571,55 @@
         <button class="nav-btn" onclick="showPage('projectFiles',this)">Proje Dosyaları</button>
         <button class="nav-btn" onclick="showPage('projectFinance',this)">Proje Finans Durumu</button>
       </div>
-      <div class="nav-section">Satın Alma</div>
-      <button class="nav-btn" onclick="showPage('suppliers',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h18M6 7v13h12V7M9 11h6"/></svg>Tedarikçiler
+      <button class="nav-btn nav-parent" id="nav-parent-purchase" data-navgroup="purchase" onclick="toggleNavGroup('purchase')" type="button">
+        <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h6M9 16h6"/></svg>Satın Alma</span><span class="chev">›</span>
       </button>
-      <button class="nav-btn" onclick="showPage('purchaseOrders',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h6M9 16h6"/></svg>Satın Alma Siparişleri
+      <div class="nav-sub-group" id="navgroup-purchase">
+        <button class="nav-btn" onclick="showPage('suppliers',this)">Tedarikçiler</button>
+        <button class="nav-btn" onclick="showPage('purchaseOrders',this)">Satın Alma Siparişleri</button>
+        <button class="nav-btn" onclick="showPage('supplierInvoices',this)">Faturalar &amp; Ödemeler</button>
+      </div>
+      <button class="nav-btn nav-parent" id="nav-parent-current" data-navgroup="current" onclick="toggleNavGroup('current')" type="button">
+        <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="7" cy="6" r="1.6" fill="currentColor"/><circle cx="13" cy="12" r="1.6" fill="currentColor"/><circle cx="9" cy="18" r="1.6" fill="currentColor"/></svg>Cari Hesaplar</span><span class="chev">›</span>
       </button>
-      <button class="nav-btn" onclick="showPage('supplierInvoices',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 3h16v18l-3-2-3 2-3-2-3 2-3-2z"/><path d="M8 8h8M8 12h8"/></svg>Faturalar &amp; Ödemeler
+      <div class="nav-sub-group" id="navgroup-current">
+        <button class="nav-btn" onclick="showPage('receivables',this)">Alacaklar</button>
+        <button class="nav-btn" onclick="showPage('payables',this)">Borçlar</button>
+      </div>
+      <button class="nav-btn nav-parent" id="nav-parent-report" data-navgroup="report" onclick="toggleNavGroup('report')" type="button">
+        <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Raporlar</span><span class="chev">›</span>
       </button>
-      <div class="nav-section">Cari Hesaplar</div>
-      <button class="nav-btn" onclick="showPage('receivables',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M12 3v18"/></svg>Alacaklar
+      <div class="nav-sub-group" id="navgroup-report">
+        <button class="nav-btn" onclick="showPage('execDashboard',this)">Yönetici Paneli</button>
+        <button class="nav-btn" onclick="showPage('reports',this)">Raporlar</button>
+        <button class="nav-btn" onclick="showPage('plan5',this)">5 Yıllık Plan</button>
+      </div>
+      <button class="nav-btn nav-parent" id="nav-parent-system" data-navgroup="system" onclick="toggleNavGroup('system')" type="button">
+        <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 2l.05.05a2 2 0 1 1-2.83 2.83l-.05-.05a1.8 1.8 0 0 0-2-.36 1.8 1.8 0 0 0-1.08 1.65V21a2 2 0 1 1-4 0v-.08A1.8 1.8 0 0 0 8.8 19.3a1.8 1.8 0 0 0-2 .36l-.05.05a2 2 0 1 1-2.83-2.83l.05-.05a1.8 1.8 0 0 0 .36-2A1.8 1.8 0 0 0 2.68 14H2.6a2 2 0 1 1 0-4h.08A1.8 1.8 0 0 0 4.3 8.8a1.8 1.8 0 0 0-.36-2l-.05-.05A2 2 0 1 1 6.72 3.9l.05.05a1.8 1.8 0 0 0 2 .36A1.8 1.8 0 0 0 9.85 2.7V2.6a2 2 0 1 1 4 0v.08a1.8 1.8 0 0 0 1.08 1.65 1.8 1.8 0 0 0 2-.36l.05-.05a2 2 0 1 1 2.83 2.83l-.05.05a1.8 1.8 0 0 0-.36 2A1.8 1.8 0 0 0 21.02 10h.08a2 2 0 1 1 0 4h-.08A1.8 1.8 0 0 0 19.4 15z"/></svg>Ayarlar</span><span class="chev">›</span>
       </button>
-      <button class="nav-btn" onclick="showPage('payables',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18"/></svg>Borçlar
+      <div class="nav-sub-group" id="navgroup-system">
+        <button class="nav-btn" onclick="showPage('categories',this)">Kategori Yönetimi</button>
+        <button class="nav-btn" onclick="showPage('team',this)">Firma & Ekip</button>
+        <button class="nav-btn" style="display:none" onclick="showPage('billing',this)">Paket & Abonelik</button>
+        <button class="nav-btn" onclick="showPage('legal',this)">Yasal & Hesap</button>
+        <button class="nav-btn" onclick="showPage('settings',this)">Ayarlar</button>
+        <button class="nav-btn" onclick="showPage('contact',this)">İletişim / Destek</button>
+      </div>
+      <button class="nav-btn nav-parent" id="nav-parent-admin" data-navgroup="admin" onclick="toggleNavGroup('admin')" type="button">
+        <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4v5c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>Yönetim</span><span class="chev">›</span>
       </button>
-      <div class="nav-section">Yönetim Raporu</div>
-      <button class="nav-btn" onclick="showPage('execDashboard',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Yönetici Paneli
-      </button>
-      <div class="nav-section">Analiz</div>
-      <button class="nav-btn" onclick="showPage('reports',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Raporlar
-      </button>
-      <button class="nav-btn" onclick="showPage('plan5',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><polyline points="12 12 15 15"/></svg>5 Yıllık Plan
-      </button>
-      <div class="nav-section">Araçlar</div>
-      <button class="nav-btn" onclick="showPage('categories',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h6"/></svg>Kategori Yönetimi
-      </button>
-      <button class="nav-btn" onclick="showPage('team',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Firma & Ekip
-      </button>
-      <button class="nav-btn" onclick="showPage('billing',this)" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M7 15h4"/></svg>Paket & Abonelik
-      </button>
-      <button class="nav-btn" onclick="showPage('legal',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h6"/></svg>Yasal & Hesap
-      </button>
-      <button class="nav-btn" onclick="showPage('settings',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 2l.05.05a2 2 0 1 1-2.83 2.83l-.05-.05a1.8 1.8 0 0 0-2-.36 1.8 1.8 0 0 0-1.08 1.65V21a2 2 0 1 1-4 0v-.08A1.8 1.8 0 0 0 8.8 19.3a1.8 1.8 0 0 0-2 .36l-.05.05a2 2 0 1 1-2.83-2.83l.05-.05a1.8 1.8 0 0 0 .36-2A1.8 1.8 0 0 0 2.68 14H2.6a2 2 0 1 1 0-4h.08A1.8 1.8 0 0 0 4.3 8.8a1.8 1.8 0 0 0-.36-2l-.05-.05A2 2 0 1 1 6.72 3.9l.05.05a1.8 1.8 0 0 0 2 .36A1.8 1.8 0 0 0 9.85 2.7V2.6a2 2 0 1 1 4 0v.08a1.8 1.8 0 0 0 1.08 1.65 1.8 1.8 0 0 0 2-.36l.05-.05a2 2 0 1 1 2.83 2.83l-.05.05a1.8 1.8 0 0 0-.36 2A1.8 1.8 0 0 0 21.02 10h.08a2 2 0 1 1 0 4h-.08A1.8 1.8 0 0 0 19.4 15z"/></svg>Ayarlar
-      </button>
-      <button class="nav-btn" onclick="showPage('contact',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>İletişim / Destek
-      </button>
-      <div class="nav-section">Yönetim</div>
-      <button class="nav-btn" id="nav-admin" onclick="showPage('admin',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4v5c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>Admin Paneli
-      </button>
+      <div class="nav-sub-group" id="navgroup-admin">
+        <button class="nav-btn" id="nav-admin" onclick="showPage('admin',this)">Admin Paneli</button>
+      </div>
     </nav>
     <div class="sidebar-footer">☁️ Veriler Supabase bulutta saklanır</div>
   </aside>
 
   <div class="main">
     <div class="topbar">
+      <button class="nav-toggle" id="nav-toggle" type="button" onclick="toggleMobileNav()" aria-label="Menü">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <div class="topbar-title" id="topbar-title">Özet Paneli</div>
       <div class="topbar-actions">
         <div class="topbar-company-switcher" id="topbar-company-switcher" aria-hidden="true">
@@ -3480,11 +3481,12 @@
       <div id="page-purchaseOrders" class="page form-page-clean pro-layout-page">
         <div class="card">
           <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Satın Alma Siparişi</div>
-          <div class="section-sub">Siparişi bir projeye bağlarsanız, kesilen tedarikçi faturası o projenin gerçek maliyetine yazılır. Sipariş kodu otomatik verilir (SA26-1 gibi).</div>
+          <div class="section-sub">Her siparişe kalıcı bir <strong>SAP No</strong> verilir ve bu numara bir daha değişmez; tedarikçi faturayı bu numaraya keser. Projeye bağlı sipariş proje kodundan (MTP26-1-SAP1), projesiz sipariş genel koddan (GEN26-SAP1) numara alır. Sipariş sonradan bir projeye bağlanabilir — SAP No aynı kalır, siparişe kesilen faturalar yeni projenin gerçek maliyetine taşınır.</div>
           <input type="hidden" id="po-edit-id">
           <div class="pro-grid pro-grid-12">
+            <div class="form-group span-3"><label>SAP No</label><input id="po-code" readonly style="font-weight:700;opacity:.8" placeholder="Kayıtta verilir"></div>
             <div class="form-group span-4"><label>Tedarikçi</label><select id="po-supplier"></select></div>
-            <div class="form-group span-4"><label>Proje</label><select id="po-project"></select></div>
+            <div class="form-group span-5"><label>Proje</label><select id="po-project" onchange="updatePOCodePreview()"></select></div>
             <div class="form-group span-2"><label>Sipariş Tarihi</label><input type="date" id="po-date"></div>
             <div class="form-group span-2"><label>Beklenen Teslim</label><input type="date" id="po-expected"></div>
             <div class="form-group span-2"><label>Para Birimi</label><select id="po-currency" onchange="renderPOLines()"><option value="TRY">TL</option><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
@@ -3518,7 +3520,7 @@
           <input type="hidden" id="pinv-edit-id">
           <div class="pro-grid pro-grid-12">
             <div class="form-group span-4"><label>Tedarikçi</label><select id="pinv-supplier"></select></div>
-            <div class="form-group span-4"><label>Sipariş</label><select id="pinv-order"></select></div>
+            <div class="form-group span-4"><label>Sipariş (SAP No)</label><select id="pinv-order" onchange="onPurInvoiceOrderChange()"></select></div>
             <div class="form-group span-4"><label>Proje</label><select id="pinv-project"></select></div>
             <div class="form-group span-3"><label>Fatura No</label><input id="pinv-no" placeholder="Tedarikçi fatura numarası"></div>
             <div class="form-group span-2"><label>Fatura Tarihi</label><input type="date" id="pinv-date"></div>
@@ -4324,7 +4326,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.12.0';
+const APP_VERSION='0.13.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -4636,26 +4638,69 @@ function setRolePill(role){
 function findNavButton(id){
   return Array.from(document.querySelectorAll('.nav-btn')).find(btn=>(btn.getAttribute('onclick')||'').includes("showPage('"+id+"'"));
 }
-/* Altındaki tüm butonlar gizliyse menü başlığını da gizler. */
-function hideEmptyNavSections(){
-  const nav=document.querySelector('.sidebar-nav');if(!nav)return;
-  const kids=Array.from(nav.children);
-  const visible=(el)=>{
-    if(!el||!el.style||el.style.display==='none')return false;
-    if(el.classList&&el.classList.contains('nav-sub-group'))
-      return Array.from(el.querySelectorAll('.nav-btn')).some(b=>b.style.display!=='none');
-    return true;
-  };
-  kids.forEach((el,i)=>{
-    if(!el.classList||!el.classList.contains('nav-section'))return;
-    let any=false;
-    for(let j=i+1;j<kids.length;j++){
-      const k=kids[j];
-      if(k.classList&&k.classList.contains('nav-section'))break;
-      if(visible(k)){any=true;break;}
-    }
-    el.style.display=any?'':'none';
+/* ──────── v0.13.0 — GRUPLANMIŞ SOL MENÜ ────────
+   Her modül tek bir başlık altında toplanır. Başlığa basınca açılır,
+   başka bir başlık açılınca önceki kapanır (akordiyon). Altındaki tüm
+   butonlar yetki nedeniyle gizliyse başlık da gizlenir. */
+const NAV_GROUPS={
+  finance:['ai','daily','fixed','forecast','banking','creditCards'],
+  project:['projectMeetings','projects','projectCosts','projectProduction','projectFiles','projectFinance'],
+  purchase:['suppliers','purchaseOrders','supplierInvoices'],
+  current:['receivables','payables'],
+  report:['execDashboard','reports','plan5','export'],
+  system:['categories','team','billing','legal','settings','contact'],
+  admin:['admin']
+};
+function navGroupOf(pageId){
+  return Object.keys(NAV_GROUPS).find(k=>NAV_GROUPS[k].includes(pageId))||null;
+}
+function toggleNavGroup(key,force){
+  const sub=document.getElementById('navgroup-'+key);
+  const parent=document.getElementById('nav-parent-'+key);
+  if(!sub||!parent)return;
+  const open=force===undefined?!sub.classList.contains('open'):!!force;
+  if(open){
+    Object.keys(NAV_GROUPS).forEach(k=>{
+      if(k===key)return;
+      const s2=document.getElementById('navgroup-'+k);
+      const p2=document.getElementById('nav-parent-'+k);
+      if(s2)s2.classList.remove('open');
+      if(p2)p2.classList.remove('open');
+    });
+  }
+  sub.classList.toggle('open',open);
+  parent.classList.toggle('open',open);
+}
+function openNavGroupFor(pageId){
+  const key=navGroupOf(pageId);
+  if(key)toggleNavGroup(key,true);
+}
+/* Altındaki tüm butonlar gizliyse grup başlığını da gizler. */
+function updateNavGroups(){
+  Object.keys(NAV_GROUPS).forEach(key=>{
+    const sub=document.getElementById('navgroup-'+key);
+    const parent=document.getElementById('nav-parent-'+key);
+    if(!sub||!parent)return;
+    const any=Array.from(sub.querySelectorAll('.nav-btn')).some(b=>b.style.display!=='none');
+    parent.style.display=any?'flex':'none';
+    if(!any){sub.classList.remove('open');sub.style.display='none';}
+    else sub.style.display='';
   });
+}
+function hideEmptyNavSections(){updateNavGroups();}
+
+/* ── Mobil menü çekmecesi (v0.13.0) ── */
+function isMobileLayout(){return window.matchMedia('(max-width:900px)').matches;}
+function openMobileNav(){
+  document.body.classList.add('nav-open');
+  const bd=document.getElementById('nav-backdrop');if(bd)bd.hidden=false;
+}
+function closeMobileNav(){
+  document.body.classList.remove('nav-open');
+  const bd=document.getElementById('nav-backdrop');if(bd)bd.hidden=true;
+}
+function toggleMobileNav(){
+  if(document.body.classList.contains('nav-open'))closeMobileNav();else openMobileNav();
 }
 function applyRoleUI(){
   setRolePill(getUserRole());
@@ -7258,7 +7303,8 @@ function showPage(id,btn){
   if(!page)return;
   page.classList.add('active');
   if(btn)btn.classList.add('active');
-  if(PROJECT_PAGES.includes(id))toggleProjectMenu(true);
+  openNavGroupFor(id);
+  closeMobileNav();
   document.getElementById('topbar-title').textContent=PAGE_TITLES[id]||'';
   populateCatSelects();
   const renders={receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
@@ -8915,24 +8961,8 @@ const PROJECT_STAGE_KEYS=['design','supply','production','assembly','test','deli
 const PROJECT_STAGE_LABELS={design:'Tasarım',supply:'Malzeme Tedarik',production:'Üretim',assembly:'Montaj',test:'Test / Kontrol',delivery:'Teslim'};
 const PROJECT_PAGES=['projectMeetings','projects','projectCosts','projectProduction','projectFiles','projectFinance'];
 let _quoteCtx={};
-function toggleProjectMenu(force){
-  const sub=document.getElementById('project-subnav');
-  const parent=document.getElementById('nav-project-parent');
-  if(!sub||!parent)return;
-  const open=force===undefined?!sub.classList.contains('open'):!!force;
-  sub.classList.toggle('open',open);
-  parent.classList.toggle('open',open);
-}
-function updateProjectParentVisibility(){
-  const allowed=allowedPages();
-  const show=PROJECT_PAGES.some(p=>allowed.includes(p));
-  const parent=document.getElementById('nav-project-parent');
-  const section=document.querySelector('.nav-project-section');
-  const sub=document.getElementById('project-subnav');
-  if(parent)parent.style.display=show?'flex':'none';
-  if(section)section.style.display=show?'block':'none';
-  if(sub){ if(show){sub.style.display='';} else {sub.classList.remove('open');sub.style.display='none';} }
-}
+function toggleProjectMenu(force){toggleNavGroup('project',force);}
+function updateProjectParentVisibility(){updateNavGroups();}
 function mtpro(){
   if(!data.mtpro||typeof data.mtpro!=='object')data.mtpro={meetings:[],projects:[],costs:[],quotes:[],files:[],activity:[]};
   ['meetings','projects','costs','quotes','files','activity'].forEach(k=>{if(!Array.isArray(data.mtpro[k]))data.mtpro[k]=[];});
@@ -10904,13 +10934,49 @@ function supplierOptions(selected,includeEmpty){
   return head.concat(rows.map(x=>'<option value="'+htmlEsc(x.id)+'"'+(String(x.id)===String(selected)?' selected':'')+'>'+htmlEsc(x.name||'')+'</option>')).join('');
 }
 
-/* ── Sipariş kodu: SA26-1 ── */
-function nextPurchaseOrderCode(){
-  const yy=String(new Date().getFullYear()).slice(-2);
-  const prefix='SA'+yy+'-';
+/* ──────── v0.13.0 — SAP NO (SİPARİŞ KODU) ────────
+   Kural: SAP no bir kere verilir ve BİR DAHA ASLA DEĞİŞMEZ. Tedarikçi
+   faturayı bu koda keser; kod değişirse eşleşme bozulur.
+   - Projeye bağlı açılan sipariş : MTP26-1-SAP1
+   - Projesiz (genel) satın alma  : GEN26-SAP1
+   Sipariş sonradan bir projeye bağlanırsa SAP no aynı kalır; sipariş ve ona
+   kesilen faturalar projenin gerçek maliyetine taşınır. Böylece hem SAP no
+   hem proje kodu üzerinden takip edilebilir. */
+function purchaseCodePrefix(projectId){
+  const p=projectId?mtpro().projects.find(x=>String(x.id)===String(projectId)):null;
+  const code=p&&p.code?String(p.code).trim():'';
+  if(code)return code+'-SAP';
+  return 'GEN'+String(new Date().getFullYear()).slice(-2)+'-SAP';
+}
+function escapeRe(t){return String(t).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function nextPurchaseOrderCode(projectId){
+  const prefix=purchaseCodePrefix(projectId);
+  const re=new RegExp('^'+escapeRe(prefix)+'(\\d+)$');
   let max=0;
-  purchasing().orders.forEach(o=>{const m=String(o.code||'').match(new RegExp('^'+prefix+'(\\d+)$'));if(m)max=Math.max(max,parseInt(m[1],10)||0);});
+  purchasing().orders.forEach(o=>{const m=String(o.code||'').match(re);if(m)max=Math.max(max,parseInt(m[1],10)||0);});
   return prefix+(max+1);
+}
+/* Siparişin projesi sonradan değişirse, o siparişe kesilmiş faturalar da
+   yeni projeye taşınır; gelecekteki gider ve ödeme kayıtları yenilenir.
+   Faturaya elle BAŞKA bir proje yazılmışsa ona dokunulmaz. */
+function relinkOrderInvoices(order,oldProjectId){
+  let moved=0;
+  purchasing().invoices.forEach(inv=>{
+    if(String(inv.orderId||'')!==String(order.id))return;
+    const cur=String(inv.projectId||'');
+    if(cur===String(order.projectId||''))return;
+    if(cur!==String(oldProjectId||''))return;
+    inv.projectId=order.projectId||'';
+    syncPurchaseInvoiceFixed(inv);
+    purchasing().payments.filter(pm=>String(pm.invoiceId)===String(inv.id))
+      .forEach(pm=>syncPurchasePaymentExpense(pm,inv));
+    moved++;
+  });
+  return moved;
+}
+function poProjectLabel(o){
+  const p=mtpro().projects.find(x=>String(x.id)===String(o&&o.projectId));
+  return p?(p.code||'Proje'):'Genel Satın Alma';
 }
 
 /* ── Sipariş hesapları ── */
@@ -10953,13 +11019,20 @@ function purOverdueAlerts(){
     .sort((a,b)=>(daysUntil(a.invoice.dueDate)??9999)-(daysUntil(b.invoice.dueDate)??9999));
 }
 
-/* ── Projenin GERÇEK maliyeti: projeye bağlı tedarikçi faturaları ── */
+/* ── Projenin GERÇEK maliyeti: projeye bağlı tedarikçi faturaları ──
+   Faturada proje boşsa, bağlı olduğu siparişin projesi kullanılır. Böylece
+   önce projesiz açılıp sonra projeye bağlanan bir SAP siparişinin faturaları
+   da projenin gerçek maliyetine yansır. */
+function invoiceProjectId(inv){
+  if(inv&&inv.projectId)return String(inv.projectId);
+  const o=(inv&&inv.orderId)?purchasing().orders.find(x=>String(x.id)===String(inv.orderId)):null;
+  return (o&&o.projectId)?String(o.projectId):'';
+}
 function projectActualCost(projectId){
-  return purchasing().invoices.filter(i=>String(i.projectId||'')===String(projectId))
-    .reduce((s,i)=>s+purInvoiceTL(i),0);
+  return projectActualCostRows(projectId).reduce((s,i)=>s+purInvoiceTL(i),0);
 }
 function projectActualCostRows(projectId){
-  return purchasing().invoices.filter(i=>String(i.projectId||'')===String(projectId));
+  return purchasing().invoices.filter(i=>invoiceProjectId(i)===String(projectId));
 }
 
 /* ── Fatura → Gelecekteki Kesin Gider ── */
@@ -10976,7 +11049,7 @@ function syncPurchaseInvoiceFixed(inv){
     category: 'SATIN ALMA',
     fixedType: 'expense', period: 'oneoff', budgetType: 'oneoff',
     startDate: inv.dueDate||inv.date||todayYmd(), endDate: null,
-    purchaseInvoiceId: inv.id, supplierId: inv.supplierId||'', projectId: inv.projectId||'',
+    purchaseInvoiceId: inv.id, supplierId: inv.supplierId||'', projectId: invoiceProjectId(inv),
     updatedAt: new Date().toISOString()
   };
   if(idx>=0){rec.createdAt=data.fixed[idx].createdAt;data.fixed[idx]=rec;}
@@ -11007,7 +11080,7 @@ function syncPurchasePaymentExpense(pm,inv){
     paymentAccount: method,
     paymentAllocations: [{id:makeId('alloc'),method:method,amount:amt,currency:safeCurrency(pm.currency||'TRY'),rate:1,accountAmount:amt}],
     purchasePaymentId: pm.id, purchaseInvoiceId: inv?inv.id:'', supplierId: inv?inv.supplierId:'',
-    projectId: inv?(inv.projectId||''):'',
+    projectId: inv?invoiceProjectId(inv):'',
     createdBy: (currentUser&&currentUser.email)||'',
     createdAt: idx>=0 ? (data.expense[idx].createdAt||new Date().toISOString()) : new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -11134,6 +11207,23 @@ function clearPurchaseOrderForm(){
   const d=document.getElementById('po-date');if(d)d.value=todayYmd();
   const x=document.getElementById('po-expected');if(x)x.value='';
   const st=document.getElementById('po-status');if(st)st.value='Talep';
+  const pr=document.getElementById('po-project');if(pr)pr.value='';
+  updatePOCodePreview();
+}
+/* SAP no önizleme: yeni kayıtta hangi numaranın verileceğini gösterir,
+   düzenlemede mevcut (değişmeyen) numarayı yazar. */
+function updatePOCodePreview(){
+  const el=document.getElementById('po-code');if(!el)return;
+  const editId=(document.getElementById('po-edit-id')||{}).value||'';
+  if(editId){
+    const o=purchasing().orders.find(x=>String(x.id)===String(editId));
+    el.value=o?(o.code||''):'';
+    el.title='SAP No değişmez.';
+    return;
+  }
+  const prj=(document.getElementById('po-project')||{}).value||'';
+  el.value=nextPurchaseOrderCode(prj);
+  el.title='Kayıtta bu numara verilecek ve bir daha değişmeyecek.';
 }
 function savePurchaseOrder(){
   if(!purCanEdit())return purDeny();
@@ -11147,10 +11237,13 @@ function savePurchaseOrder(){
   if(cur!=='TRY'&&rate<=1){alert(CURRENCY_LABELS[cur]+' siparişte kayıt kuru zorunludur.');return;}
   const arr=purchasing().orders;
   const i=arr.findIndex(x=>String(x.id)===String(editId));
+  const projectId=(document.getElementById('po-project')||{}).value||'';
+  const oldProjectId=i>=0?(arr[i].projectId||''):'';
   const rec={
     id: editId||makeId('po'),
-    code: i>=0 ? arr[i].code : nextPurchaseOrderCode(),
-    supplierId, projectId:(document.getElementById('po-project')||{}).value||'',
+    /* SAP no yalnız ilk kayıtta üretilir; düzenlemede asla değişmez. */
+    code: i>=0 ? arr[i].code : nextPurchaseOrderCode(projectId),
+    supplierId, projectId:projectId,
     date:(document.getElementById('po-date')||{}).value||todayYmd(),
     expectedDate:(document.getElementById('po-expected')||{}).value||'',
     currency:cur, rate:rate,
@@ -11160,8 +11253,19 @@ function savePurchaseOrder(){
     updatedAt:new Date().toISOString(), updatedBy:(currentUser&&currentUser.email)||''
   };
   if(i>=0)arr[i]=Object.assign({},arr[i],rec); else {rec.createdAt=new Date().toISOString();arr.push(rec);}
-  if(rec.projectId)logProjectActivity(rec.projectId,'purchase',(editId?'Satın alma siparişi güncellendi: ':'Satın alma siparişi oluşturuldu: ')+rec.code+' · '+supplierName(supplierId)+' · '+fmtCurrency(poLinesTotal(),cur),{orderId:rec.id});
-  saveData(data);clearPurchaseOrderForm();renderPurchaseOrders();renderProjectActivity();
+  let moved=0;
+  if(i>=0&&String(oldProjectId)!==String(rec.projectId)){
+    moved=relinkOrderInvoices(rec,oldProjectId);
+    if(oldProjectId)logProjectActivity(oldProjectId,'purchase','Sipariş bu projeden ayrıldı: '+rec.code+(rec.projectId?(' → '+poProjectLabel(rec)):' → Genel Satın Alma'),{orderId:rec.id});
+    if(rec.projectId)logProjectActivity(rec.projectId,'purchase','Sipariş bu projeye bağlandı: '+rec.code+(moved?(' · '+moved+' fatura gerçek maliyete taşındı'):''),{orderId:rec.id});
+  }
+  if(rec.projectId&&String(oldProjectId)===String(rec.projectId))logProjectActivity(rec.projectId,'purchase',(editId?'Satın alma siparişi güncellendi: ':'Satın alma siparişi oluşturuldu: ')+rec.code+' · '+supplierName(supplierId)+' · '+fmtCurrency(poLinesTotal(),cur),{orderId:rec.id});
+  else if(rec.projectId&&!editId)logProjectActivity(rec.projectId,'purchase','Satın alma siparişi oluşturuldu: '+rec.code+' · '+supplierName(supplierId)+' · '+fmtCurrency(poLinesTotal(),cur),{orderId:rec.id});
+  saveData(data);
+  const savedId=rec.id;
+  clearPurchaseOrderForm();renderPurchaseOrders();renderProjectActivity();
+  alert('Sipariş kaydedildi.\nSAP No: '+rec.code+'\nProje: '+poProjectLabel(rec)+(moved?('\n'+moved+' fatura yeni projenin gerçek maliyetine taşındı.'):'')+'\n\nSipariş formunu yazdırmak için listedeki "Form" butonunu kullanın.');
+  return savedId;
 }
 function editPurchaseOrder(id){
   const o=purchasing().orders.find(x=>String(x.id)===String(id));if(!o)return;
@@ -11173,6 +11277,7 @@ function editPurchaseOrder(id){
   set('po-currency',o.currency||'TRY');set('po-rate',o.rate||1);
   set('po-status',o.status||'Talep');set('po-note',o.note||'');
   _poLines=poLines(o).map(l=>Object.assign({},l));renderPOLines();
+  updatePOCodePreview();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function deletePurchaseOrder(id){
@@ -11204,35 +11309,37 @@ function syncPurchaseSelects(){
   const isup=document.getElementById('pinv-supplier');
   if(isup)isup.innerHTML=supplierOptions(isup.value||'',true);
   const prj=document.getElementById('po-project');
-  if(prj)prj.innerHTML='<option value="">Projeye bağlama (opsiyonel)</option>'+projectSelectOptions(prj.value||'',false).replace('<option value="">Proje seçin</option>','');
+  if(prj)prj.innerHTML='<option value="">🏭 Genel Satın Alma (projesiz)</option>'+projectSelectOptions(prj.value||'',false).replace('<option value="">Proje seçin</option>','');
   const iprj=document.getElementById('pinv-project');
-  if(iprj)iprj.innerHTML='<option value="">Projeye bağlama (opsiyonel)</option>'+projectSelectOptions(iprj.value||'',false).replace('<option value="">Proje seçin</option>','');
+  if(iprj)iprj.innerHTML='<option value="">🏭 Genel Satın Alma (projesiz)</option>'+projectSelectOptions(iprj.value||'',false).replace('<option value="">Proje seçin</option>','');
   const ord=document.getElementById('pinv-order');
   if(ord){
     const keep=ord.value||'';
     ord.innerHTML='<option value="">Siparişe bağlama (opsiyonel)</option>'
-      +purchasing().orders.slice().reverse().map(o=>'<option value="'+htmlEsc(o.id)+'"'+(String(o.id)===String(keep)?' selected':'')+'>'+htmlEsc(o.code||'')+' · '+htmlEsc(supplierName(o.supplierId))+' · '+fmtCurrency(poTotal(o),o.currency)+'</option>').join('');
+      +purchasing().orders.slice().reverse().map(o=>'<option value="'+htmlEsc(o.id)+'"'+(String(o.id)===String(keep)?' selected':'')+'>'+htmlEsc(o.code||'')+' · '+htmlEsc(supplierName(o.supplierId))+' · '+htmlEsc(poProjectLabel(o))+' · '+fmtCurrency(poTotal(o),o.currency)+'</option>').join('');
   }
 }
 function renderPurchaseOrders(){
   syncPurchaseSelects();
+  updatePOCodePreview();
   const el=document.getElementById('po-table');if(!el)return;
   const rows=purchasing().orders.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
   if(!rows.length){el.innerHTML='<div class="empty">Henüz satın alma siparişi yok.</div>';return;}
-  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Kod</th><th>Tedarikçi</th><th>Proje</th><th>Tarih</th><th>Beklenen</th><th style="text-align:right">Tutar</th><th>Durum</th><th>Teslim</th><th></th></tr></thead><tbody>'
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>SAP No</th><th>Tedarikçi</th><th>Proje</th><th>Tarih</th><th>Beklenen</th><th style="text-align:right">Tutar</th><th>Durum</th><th>Teslim</th><th></th></tr></thead><tbody>'
     +rows.map(o=>{
       const prj=mtpro().projects.find(x=>String(x.id)===String(o.projectId));
       const ratio=Math.round(poReceivedRatio(o)*100);
       const late=o.expectedDate&&daysUntil(o.expectedDate)<0&&ratio<100;
       return '<tr><td><strong>'+htmlEsc(o.code||'')+'</strong></td>'
         +'<td>'+htmlEsc(supplierName(o.supplierId))+'</td>'
-        +'<td>'+(prj?('<strong>'+htmlEsc(prj.code||'')+'</strong>'):'<span style="color:var(--text-muted)">—</span>')+'</td>'
+        +'<td>'+(prj?('<strong>'+htmlEsc(prj.code||'')+'</strong>'):'<span class="project-badge gray">Genel</span>')+'</td>'
         +'<td>'+htmlEsc(dmy(o.date))+'</td>'
         +'<td'+(late?' style="color:var(--expense);font-weight:600"':'')+'>'+htmlEsc(dmy(o.expectedDate))+(late?' ⚠':'')+'</td>'
         +'<td style="text-align:right">'+fmtCurrency(poTotal(o),o.currency)+(o.currency!=='TRY'?('<div style="font-size:11px;color:var(--text-muted)">'+fmtTL(poTotalTL(o))+'</div>'):'')+'</td>'
         +'<td><span class="project-badge '+poStatusClass(o.status)+'">'+htmlEsc(o.status||'')+'</span></td>'
         +'<td>%'+ratio+'</td>'
         +'<td><div class="project-action-row">'
+          +'<button class="btn btn-sm" onclick="printPurchaseOrder(&quot;'+htmlEsc(o.id)+'&quot;)">🖨 Form</button>'
           +(purCanEdit()?'<button class="btn btn-sm" onclick="editPurchaseOrder(&quot;'+htmlEsc(o.id)+'&quot;)">Düzenle</button>':'')
           +(purCanEdit()&&ratio<100?'<button class="btn btn-sm btn-primary" onclick="receiveAllGoods(&quot;'+htmlEsc(o.id)+'&quot;)">Mal Kabul</button>':'')
           +(purCanEdit()?'<button class="btn btn-sm btn-del" onclick="deletePurchaseOrder(&quot;'+htmlEsc(o.id)+'&quot;)">🗑</button>':'')
@@ -11240,7 +11347,99 @@ function renderPurchaseOrders(){
     }).join('')+'</tbody></table></div>';
 }
 
+/* ──────── v0.13.0 — SATIN ALMA SİPARİŞ FORMU (A4 / PDF) ────────
+   Sipariş kaydedildikten sonra tedarikçiye gönderilecek kurumsal form.
+   Üstte SAP no ve proje kodu birlikte yazar; tedarikçi faturayı SAP no'ya
+   keser, biz maliyeti proje kodundan takip ederiz. */
+function purchaseOrderDocHtml(o){
+  const sup=supplierById(o.supplierId)||{};
+  const prj=mtpro().projects.find(x=>String(x.id)===String(o.projectId))||null;
+  const cur=o.currency||'TRY';
+  const lines=poLines(o);
+  const total=poTotal(o);
+  const infoRow=(a,b,c,d)=>'<tr><th>'+a+'</th><td>'+b+'</td><th>'+c+'</th><td>'+d+'</td></tr>';
+  const logo=MT_LOGO_DATA?('<img class="po-logo" src="'+MT_LOGO_DATA+'" alt="'+htmlEsc(MT_COMPANY.name)+'">')
+    :('<div class="po-mark">MT</div><div><div class="po-name">'+htmlEsc(MT_COMPANY.name)+'</div><div class="po-sub">'+htmlEsc(MT_COMPANY.tagline)+'</div></div>');
+  return '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+htmlEsc(o.code||'Sipariş')+'</title><style>'
+    +'@page{size:A4;margin:16mm 14mm 18mm}'
+    +'*{box-sizing:border-box}'
+    +'body{font-family:"Segoe UI",Arial,Helvetica,sans-serif;color:#1b2430;margin:0;background:#eef2f5;font-size:12px;line-height:1.55}'
+    +'.po-doc{max-width:210mm;margin:0 auto;background:#fff;padding:26px 30px}'
+    +'.po-brand{display:flex;align-items:center;gap:14px;margin-bottom:20px}'
+    +'.po-logo{max-width:260px;max-height:120px;object-fit:contain}'
+    +'.po-mark{width:52px;height:52px;border-radius:13px;background:linear-gradient(135deg,#4D6E8A,#142D48);color:#fff;font-weight:800;font-size:19px;display:flex;align-items:center;justify-content:center}'
+    +'.po-name{font-size:20px;font-weight:800;letter-spacing:.06em}'
+    +'.po-sub{font-size:11px;color:#5b6b7a}'
+    +'.po-title{font-size:16px;text-align:center;letter-spacing:.14em;font-weight:700;margin:0 0 18px;padding:10px 0;border-top:2px solid #2E4F6E;border-bottom:2px solid #2E4F6E;color:#2E4F6E}'
+    +'table{width:100%;border-collapse:collapse;margin-bottom:14px}'
+    +'th,td{border:1px solid #d7e0e7;padding:7px 10px;text-align:left;vertical-align:top}'
+    +'th{background:#f3f7fa;font-weight:600;color:#3c4c5c;white-space:nowrap}'
+    +'.po-lines th{background:#2E4F6E;color:#fff;border-color:#2E4F6E}'
+    +'.num{text-align:right;white-space:nowrap}'
+    +'.po-total{background:#f3f7fa;font-weight:700}'
+    +'.po-note{border:1px solid #d7e0e7;padding:10px;margin-bottom:14px;min-height:46px}'
+    +'.po-note b{display:block;margin-bottom:4px;color:#3c4c5c}'
+    +'.po-sign{display:flex;gap:14px;margin-top:22px}'
+    +'.po-sign div{flex:1;border:1px solid #d7e0e7;padding:10px;height:82px;font-size:11px;color:#5b6b7a}'
+    +'.po-foot{margin-top:20px;padding-top:10px;border-top:1px solid #e6ecf1;font-size:10.5px;color:#5b6b7a;text-align:center}'
+    +'.po-badge{display:inline-block;background:#eef4f9;border:1px solid #cfe0ee;color:#2E4F6E;border-radius:6px;padding:2px 8px;font-weight:700}'
+    +'.print-btn{position:fixed;top:12px;right:12px;padding:10px 16px;border-radius:10px;border:none;background:#2E4F6E;color:#fff;font-weight:600;cursor:pointer;font-family:inherit}'
+    +'@media print{.print-btn{display:none}body{background:#fff}.po-doc{padding:0}}'
+    +'</style></head><body>'
+    +'<button class="print-btn" onclick="window.print()">Yazdır / PDF</button>'
+    +'<div class="po-doc">'
+    +'<div class="po-brand">'+logo+'</div>'
+    +'<div class="po-title">SATIN ALMA SİPARİŞ FORMU</div>'
+    +'<table>'
+    +infoRow('SAP No','<span class="po-badge">'+htmlEsc(o.code||'')+'</span>','Sipariş Tarihi',htmlEsc(dmy(o.date)))
+    +infoRow('Proje',(prj?('<strong>'+htmlEsc(prj.code||'')+'</strong>'+(prj.title?(' · '+htmlEsc(prj.title)):'')):'Genel Satın Alma (projesiz)'),'Beklenen Teslim',htmlEsc(dmy(o.expectedDate))||'—')
+    +infoRow('Durum',htmlEsc(o.status||''),'Para Birimi',htmlEsc(CURRENCY_LABELS[cur]||cur)+(cur!=='TRY'?(' · Kur '+formatNumberTr(n(o.rate)||1,4)):''))
+    +'</table>'
+    +'<table>'
+    +'<tr><th style="width:120px">Tedarikçi</th><td colspan="3"><strong>'+htmlEsc(sup.name||'')+'</strong></td></tr>'
+    +infoRow('Yetkili',htmlEsc(sup.contact||'—'),'Telefon',htmlEsc(sup.phone||'—'))
+    +infoRow('E-posta',htmlEsc(sup.mail||'—'),'Vergi No',htmlEsc(sup.taxNo||'—'))
+    +(sup.address?('<tr><th>Adres</th><td colspan="3">'+htmlEsc(sup.address)+'</td></tr>'):'')
+    +'</table>'
+    +'<table class="po-lines"><thead><tr><th style="width:34px">#</th><th>Malzeme / Hizmet</th>'
+    +'<th style="width:70px" class="num">Miktar</th><th style="width:70px">Birim</th>'
+    +'<th style="width:100px" class="num">Birim Fiyat</th><th style="width:110px" class="num">Tutar</th></tr></thead><tbody>'
+    +(lines.length?lines.map((l,i)=>'<tr><td>'+(i+1)+'</td><td>'+htmlEsc(l.desc||'')+'</td>'
+      +'<td class="num">'+formatNumberTr(n(l.qty),2)+'</td><td>'+htmlEsc(l.unit||'')+'</td>'
+      +'<td class="num">'+fmtCurrency(n(l.unitPrice),cur)+'</td>'
+      +'<td class="num">'+fmtCurrency(poLineAmount(l),cur)+'</td></tr>').join('')
+      :'<tr><td colspan="6">Kalem girilmemiş.</td></tr>')
+    +'<tr class="po-total"><td colspan="5" class="num">TOPLAM</td><td class="num">'+fmtCurrency(total,cur)+'</td></tr>'
+    +(cur!=='TRY'?('<tr class="po-total"><td colspan="5" class="num">TL KARŞILIĞI</td><td class="num">'+fmtTL(poTotalTL(o))+'</td></tr>'):'')
+    +'</tbody></table>'
+    +'<div class="po-note"><b>Not / Teslim Şartı</b>'+htmlEsc(o.note||'—')+'</div>'
+    +'<div class="po-note" style="min-height:0"><b>Faturalandırma</b>Lütfen faturayı <strong>'+htmlEsc(o.code||'')+'</strong> sipariş numarası ile düzenleyiniz.</div>'
+    +'<div class="po-sign"><div>Sipariş Veren<br><br>'+htmlEsc(o.updatedBy||(currentUser&&currentUser.email)||'')+'</div><div>Onaylayan</div><div>Tedarikçi Kaşe / İmza</div></div>'
+    +'<div class="po-foot">'+htmlEsc(MT_COMPANY.legal)+' · '+htmlEsc(MT_COMPANY.city)+' · '+htmlEsc(MT_COMPANY.phone)+' · '+htmlEsc(MT_COMPANY.mail)+' · '+htmlEsc(MT_COMPANY.web)+'</div>'
+    +'</div></body></html>';
+}
+function printPurchaseOrder(id){
+  const o=purchasing().orders.find(x=>String(x.id)===String(id));
+  if(!o)return;
+  const w=window.open('','_blank');
+  if(!w){alert('Form penceresi açılamadı. Tarayıcı açılır pencere iznini kontrol edin.');return;}
+  w.document.open();w.document.write(purchaseOrderDocHtml(o));w.document.close();
+}
+
 /* ──────── SATIN ALMA: TEDARİKÇİ FATURASI VE ÖDEME ──────── */
+/* Fatura bir SAP siparişine bağlanınca tedarikçi ve proje otomatik dolar. */
+function onPurInvoiceOrderChange(){
+  const oid=(document.getElementById('pinv-order')||{}).value||'';
+  if(!oid)return;
+  const o=purchasing().orders.find(x=>String(x.id)===String(oid));if(!o)return;
+  const sup=document.getElementById('pinv-supplier');
+  if(sup&&o.supplierId)sup.value=o.supplierId;
+  const prj=document.getElementById('pinv-project');
+  if(prj)prj.value=o.projectId||'';
+  const cur=document.getElementById('pinv-currency');
+  if(cur&&o.currency){cur.value=o.currency;onPurInvoiceCurrencyChange();
+    const r=document.getElementById('pinv-rate');if(r&&o.currency!=='TRY')r.value=o.rate||'';}
+}
 function onPurInvoiceCurrencyChange(){
   const c=(document.getElementById('pinv-currency')||{}).value||'TRY';
   const r=document.getElementById('pinv-rate');if(!r)return;

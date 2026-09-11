@@ -166,4 +166,23 @@
   (projeye bağlı tedarikçi faturaları) yan yana; gerçek kâr ve marj hesaplanır.
 - Her iki modül salt okunurdur; veri kaynağı proje ve satın alma kayıtlarıdır.
 
-Güncel baz sürüm: **v0.12.0**
+## v0.13.0
+- Sol menü modül başlıkları altında gruplandı (akordiyon); 30 buton yerine
+  8 başlık. Aktif sayfanın grubu otomatik açılır, yetkisiz grup gizlenir.
+- Satın alma siparişlerine kalıcı **SAP No**: projeye bağlıysa proje kodundan
+  (MTP26-1-SAP1), projesizse genel koddan (GEN26-SAP1) üretilir.
+- SAP No bir kez verilir ve düzenlemede asla değişmez (tedarikçi faturası bu
+  numaraya kesilir).
+- "Genel Satın Alma (projesiz)" seçeneği: proje bilinmeden acil sipariş açılır,
+  sonradan düzenlenerek projeye bağlanır.
+- Sonradan projeye bağlanan siparişin faturaları yeni projenin gerçek
+  maliyetine taşınır; gelecekteki gider ve ödeme kayıtları yenilenir.
+- Faturada proje boşsa bağlı olduğu siparişin projesi devralınır.
+- A4 / PDF **Satın Alma Sipariş Formu** (logo, SAP No, proje kodu, tedarikçi,
+  kalem tablosu, imza alanları).
+- Fatura girişinde sipariş seçilince tedarikçi, proje, para birimi ve kur
+  otomatik dolar.
+- Mobil: sol menü çekmece oldu (☰), formlar tek sütuna iner, tablolar kendi
+  içinde kaydırılır, sayfalarda yatay taşma yok.
+
+Güncel baz sürüm: **v0.13.0**

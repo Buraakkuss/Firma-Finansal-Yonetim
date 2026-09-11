@@ -1,0 +1,28 @@
+NakitPilot v0.10.0 Kurulum Notu
+
+Uygulama
+- Otomatik yayın kurulu olduğu için dosya yüklemeye gerek yoktur.
+- Uygulamayı ?v=0.10.0 ile açın; görünüm eski kalırsa Ctrl + F5.
+
+Supabase (isteğe bağlı)
+- Ekip rollerinde "Satın Alma" seçeneğinin çıkması için:
+  Supabase > SQL Editor > sql/nakitpilot-satinalma-rolu-v0.10.0.sql dosyasının
+  tamamını yapıştırıp bir kez Run deyin.
+- Bu SQL yalnız rol listesini genişletir; hiçbir veri silinmez veya değişmez.
+- Çalıştırmazsanız sistem yine çalışır; Satın Alma yetkisini mevcut bir role
+  sahip kullanıcıya Modül Yetkileri ekranından verebilirsiniz.
+
+Yetki verme
+1. Firma & Ekip sayfasını açın (yalnız yönetici görebilir).
+2. "Modül Yetkileri" kartında her kullanıcı için satır vardır.
+3. İlgili modülün hücresinden seviyeyi seçin:
+   - Rol varsayılanı: kullanıcının rolüne göre otomatik
+   - Erişim yok / Görüntüleme / Düzenleme
+4. "Yetkileri Kaydet" butonuna basın.
+5. Kullanıcı sayfayı yenilediğinde yeni yetkiler geçerli olur.
+
+Örnek kullanım
+- Satın almacıya proje maliyetlerini göstermek ama değiştirtmemek için:
+  Proje Yönetimi = Görüntüleme
+- Mühendise ödeme durumlarını göstermek için:
+  Finans = Görüntüleme (varsayılanı "Erişim yok"tur)

@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.9.6">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.9.6" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.9.6">
-  <title>NakitPilot Marmara Teknik — v0.9.6</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.10.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.10.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.10.0">
+  <title>NakitPilot Marmara Teknik — v0.10.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2527,7 +2527,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.9.6</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.10.0</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -3617,6 +3617,11 @@
           </div>
           <div id="team-list"></div>
         </div>
+        <div class="card" id="module-permission-card">
+          <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Modül Yetkileri</div>
+          <div class="section-sub">Her kullanıcının hangi modülü görebileceğini ve düzenleyebileceğini buradan belirleyin. Boş bırakılan hücrede kullanıcının rolüne ait varsayılan geçerli olur. Muhasebe parayı girer; satın alma ve proje ekibi aynı veriyi izleyebilir ama değiştiremez.</div>
+          <div id="module-permission-body"></div>
+        </div>
       </div>
 
       <!-- BILLING -->
@@ -4178,7 +4183,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.9.6';
+const APP_VERSION='0.10.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -4262,6 +4267,55 @@ let settingsRequests=[];
 let settingsRequestsLoadedFor='';
 
 const ROLE_LABELS={admin:'Yönetici',accounting:'Muhasebe',engineer:'Mühendis / Proje',viewer:'Rapor Kullanıcısı'};
+/* ──────── v0.10.0 — MODÜL VE İZİN ALTYAPISI ────────
+   Sistem modüllere bölündü. Her kullanıcının her modülde üç seviyeden biri
+   olabilir: none (göremez), view (görür, değiştiremez), edit (tam yetki).
+   Seviye önce kullanıcıya özel izinden, yoksa rolün varsayılanından gelir.
+   Böylece muhasebe parayı girer, satın alma ve proje aynı veriyi izleyebilir. */
+const APP_MODULES=[
+  {key:'finance',   label:'Finans',            pages:['dashboard','ai','daily','fixed','forecast','banking','creditCards','reports','plan5','categories']},
+  {key:'project',   label:'Proje Yönetimi',    pages:['projectMeetings','projects','projectCosts','projectProduction','projectFiles','projectFinance']},
+  {key:'purchase',  label:'Satın Alma',        pages:['suppliers','purchaseOrders','goodsReceipt','supplierInvoices']},
+  {key:'current',   label:'Cari Hesaplar',     pages:['receivables','payables']},
+  {key:'management',label:'Yönetim Raporları', pages:['execDashboard']},
+  {key:'system',    label:'Sistem',            pages:['settings','contact']}
+];
+const MODULE_LEVELS={none:0,view:1,edit:2};
+const MODULE_LEVEL_LABELS={none:'Erişim yok',view:'Görüntüleme',edit:'Düzenleme'};
+const ROLE_MODULE_DEFAULTS={
+  admin:      {finance:'edit',project:'edit',purchase:'edit',current:'edit',management:'edit',system:'edit'},
+  accounting: {finance:'edit',project:'view',purchase:'view',current:'edit',management:'view',system:'view'},
+  engineer:   {finance:'none',project:'edit',purchase:'view',current:'view',management:'none',system:'view'},
+  purchasing: {finance:'view',project:'view',purchase:'edit',current:'view',management:'none',system:'view'},
+  viewer:     {finance:'view',project:'view',purchase:'view',current:'view',management:'view',system:'view'}
+};
+const ROLE_LABELS_TR={admin:'Yönetici',accounting:'Muhasebe',engineer:'Mühendis / Proje',purchasing:'Satın Alma',viewer:'Rapor Kullanıcısı'};
+function modulePermissionStore(){
+  if(!data._modulePermissions||typeof data._modulePermissions!=='object')data._modulePermissions={};
+  return data._modulePermissions;
+}
+function moduleOverridesFor(email){
+  const key=normalizeEmail(email||'');
+  if(!key)return {};
+  const st=(data&&data._modulePermissions)||{};
+  return st[key]||{};
+}
+/* Kullanıcının bir modüldeki etkin seviyesi. */
+function moduleLevel(moduleKey,email,role){
+  const mail=normalizeEmail(email||(currentUser&&currentUser.email)||'');
+  const r=role||getUserRole();
+  const ov=moduleOverridesFor(mail);
+  if(ov && Object.prototype.hasOwnProperty.call(ov,moduleKey) && MODULE_LEVELS[ov[moduleKey]]!==undefined)
+    return ov[moduleKey];
+  const def=ROLE_MODULE_DEFAULTS[r]||ROLE_MODULE_DEFAULTS.viewer;
+  return def[moduleKey]||'none';
+}
+function canModuleView(k){return MODULE_LEVELS[moduleLevel(k)]>=1;}
+function canModuleEdit(k){return MODULE_LEVELS[moduleLevel(k)]>=2;}
+function moduleOfPage(pageId){
+  const m=APP_MODULES.find(x=>x.pages.includes(String(pageId)));
+  return m?m.key:'system';
+}
 const ROLE_PAGE_ACCESS={
   admin:['dashboard','ai','daily','fixed','forecast','banking','creditCards','projectMeetings','projects','projectCosts','projectProduction','projectFiles','projectFinance','reports','plan5','categories','team','legal','settings','contact'],
   accounting:['dashboard','ai','daily','banking','creditCards','projectFinance','projects','reports','legal','settings','contact'],
@@ -4395,15 +4449,25 @@ function isAdmin(){return getUserRole()==='admin';}
 function isAccounting(){return getUserRole()==='accounting';}
 function isAppAdmin(){return !!appAdminRole&&['super_admin','admin','support','read_only'].includes(appAdminRole);}
 function canManageAppAdmin(){return ['super_admin','admin','support'].includes(appAdminRole);}
-function canDailyAdd(){return isAdmin()||isAccounting();}
+function canDailyAdd(){return canModuleEdit('finance');}
 function isEngineer(){return getUserRole()==='engineer';}
 function canFullEdit(){return isAdmin();}
-function canProjectEdit(){return isAdmin()||isEngineer();}
-function canProjectFinanceEdit(){return isAdmin()||isAccounting();}
-function canCloudDataWrite(){return isAdmin()||isAccounting()||isEngineer();}
-function canExportReports(){return isAdmin()||isAccounting()||getUserRole()==='viewer';}
-function allowedPages(){return ROLE_PAGE_ACCESS[getUserRole()]||ROLE_PAGE_ACCESS.viewer;}
-function isPageAllowed(id){if(BILLING_DISABLED&&id==='billing')return false;if(id==='banking'&&typeof bankingCanView==='function'&&!bankingCanView())return false;return id==='admin'?isAppAdmin():allowedPages().includes(id);}
+function canProjectEdit(){return canModuleEdit('project');}
+function canProjectFinanceEdit(){return canModuleEdit('finance');}
+function canCloudDataWrite(){return canModuleEdit('finance')||canModuleEdit('project')||canModuleEdit('purchase');}
+function canExportReports(){return canModuleView('finance')||canModuleView('management');}
+function allowedPages(){
+  // v0.10.0 — Sayfa erişimi artık modül izinlerinden türer.
+  const out=[];
+  APP_MODULES.forEach(m=>{if(canModuleView(m.key))out.push.apply(out,m.pages);});
+  return out;
+}
+function isPageAllowed(id){
+  if(BILLING_DISABLED&&id==='billing')return false;
+  // v0.10.0 — Hassas sayfalar modül iznine değil, doğrudan role bağlıdır.
+  if(id==='team')return isAdmin();
+  if(id==='legal')return isAdmin()||canModuleEdit('finance');
+  if(id==='billing')return isAdmin();if(id==='banking'&&typeof bankingCanView==='function'&&!bankingCanView())return false;return id==='admin'?isAppAdmin():allowedPages().includes(id);}
 function defaultPageForRole(){return allowedPages()[0]||'dashboard';}
 function denyAction(message){
   if(isBillingWriteMessage(message)){
@@ -4431,13 +4495,35 @@ function setRolePill(role){
 function findNavButton(id){
   return Array.from(document.querySelectorAll('.nav-btn')).find(btn=>(btn.getAttribute('onclick')||'').includes("showPage('"+id+"'"));
 }
+/* Altındaki tüm butonlar gizliyse menü başlığını da gizler. */
+function hideEmptyNavSections(){
+  const nav=document.querySelector('.sidebar-nav');if(!nav)return;
+  const kids=Array.from(nav.children);
+  const visible=(el)=>{
+    if(!el||!el.style||el.style.display==='none')return false;
+    if(el.classList&&el.classList.contains('nav-sub-group'))
+      return Array.from(el.querySelectorAll('.nav-btn')).some(b=>b.style.display!=='none');
+    return true;
+  };
+  kids.forEach((el,i)=>{
+    if(!el.classList||!el.classList.contains('nav-section'))return;
+    let any=false;
+    for(let j=i+1;j<kids.length;j++){
+      const k=kids[j];
+      if(k.classList&&k.classList.contains('nav-section'))break;
+      if(visible(k)){any=true;break;}
+    }
+    el.style.display=any?'':'none';
+  });
+}
 function applyRoleUI(){
   setRolePill(getUserRole());
-  const allowed=allowedPages();
   document.querySelectorAll('.nav-btn').forEach(btn=>{
     const m=(btn.getAttribute('onclick')||'').match(/showPage\('([^']+)'/);
-    if(m) btn.style.display=(m[1]==='admin'?isAppAdmin():(allowed.includes(m[1])&&(m[1]!=='banking'||bankingCanView())))?'flex':'none';
+    // v0.10.0 — Menü görünürlüğü sayfa erişim kuralının aynısını kullanır.
+    if(m) btn.style.display=isPageAllowed(m[1])?'flex':'none';
   });
+  hideEmptyNavSections();
   const backup=document.getElementById('backup-btn');if(backup)backup.style.display=isAdmin()?'inline-flex':'none';
   const adminSettings=document.getElementById('settings-admin-panel');if(adminSettings)adminSettings.style.display=isAdmin()?'block':'none';
   updateProjectParentVisibility();
@@ -5400,6 +5486,77 @@ async function acceptInvitationToken(token,fromUrl){
 async function refreshTeamList(){
   await renderTeam();
 }
+/* ──────── v0.10.0 — MODÜL YETKİ MATRİSİ ──────── */
+let _teamMembersCache=[];
+function moduleMatrixOptions(moduleKey,email,role){
+  const ov=moduleOverridesFor(email);
+  const has=Object.prototype.hasOwnProperty.call(ov,moduleKey);
+  const cur=has?ov[moduleKey]:'';
+  const def=moduleLevel(moduleKey,email,role);
+  const opts=['<option value=""'+(cur===''?' selected':'')+'>Rol varsayılanı ('+htmlEsc(MODULE_LEVEL_LABELS[def]||def)+')</option>'];
+  ['none','view','edit'].forEach(lv=>{
+    opts.push('<option value="'+lv+'"'+(cur===lv?' selected':'')+'>'+htmlEsc(MODULE_LEVEL_LABELS[lv])+'</option>');
+  });
+  return opts.join('');
+}
+function renderModulePermissionMatrix(members){
+  const el=document.getElementById('module-permission-body');
+  const card=document.getElementById('module-permission-card');
+  if(!el||!card)return;
+  if(!isAdmin()){card.style.display='none';return;}
+  card.style.display='';
+  const rows=Array.isArray(members)?members:_teamMembersCache;
+  _teamMembersCache=rows;
+  if(!rows.length){el.innerHTML='<div class="empty">Ekip üyesi bulunamadı.</div>';return;}
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th style="min-width:200px">Kullanıcı</th><th>Rol</th>'
+    +APP_MODULES.map(m=>'<th>'+htmlEsc(m.label)+'</th>').join('')+'</tr></thead><tbody>'
+    +rows.map(r=>{
+      const mail=normalizeEmail(r.email||'');
+      return '<tr><td><strong>'+htmlEsc(r.email||'')+'</strong></td>'
+        +'<td><span class="status-chip">'+htmlEsc(ROLE_LABELS_TR[r.role]||r.role||'')+'</span></td>'
+        +APP_MODULES.map(m=>'<td><select data-perm-email="'+htmlEsc(mail)+'" data-perm-module="'+htmlEsc(m.key)+'" onchange="onModulePermissionChange(this)">'
+            +moduleMatrixOptions(m.key,mail,r.role)+'</select></td>').join('')
+        +'</tr>';
+    }).join('')
+    +'</tbody></table></div>'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">'
+    +'<button class="btn btn-primary" onclick="saveModulePermissions()">💾 Yetkileri Kaydet</button>'
+    +'<button class="btn" onclick="resetModulePermissions()">Tümünü Rol Varsayılanına Döndür</button>'
+    +'</div>'
+    +'<div id="module-permission-msg" style="margin-top:8px;font-size:12px;color:var(--text-muted)"></div>';
+}
+let _modulePermDraft=null;
+function onModulePermissionChange(sel){
+  if(!_modulePermDraft)_modulePermDraft=JSON.parse(JSON.stringify(modulePermissionStore()));
+  const mail=sel.getAttribute('data-perm-email')||'';
+  const mod=sel.getAttribute('data-perm-module')||'';
+  if(!mail||!mod)return;
+  if(!_modulePermDraft[mail])_modulePermDraft[mail]={};
+  if(sel.value==='')delete _modulePermDraft[mail][mod];
+  else _modulePermDraft[mail][mod]=sel.value;
+  if(!Object.keys(_modulePermDraft[mail]).length)delete _modulePermDraft[mail];
+  const msg=document.getElementById('module-permission-msg');
+  if(msg)msg.textContent='Kaydedilmemiş değişiklik var.';
+}
+function saveModulePermissions(){
+  if(!isAdmin())return denyAction('Modül yetkilerini yalnızca yönetici değiştirebilir.');
+  if(_modulePermDraft)data._modulePermissions=_modulePermDraft;
+  _modulePermDraft=null;
+  saveData(data);
+  applyRoleUI();
+  const msg=document.getElementById('module-permission-msg');
+  if(msg)msg.textContent='Modül yetkileri kaydedildi. Kullanıcılar sayfayı yenilediğinde geçerli olur.';
+  logClientActivity('settings.module_permissions','Modül yetkileri güncellendi','settings','',{});
+}
+function resetModulePermissions(){
+  if(!isAdmin())return denyAction('Modül yetkilerini yalnızca yönetici değiştirebilir.');
+  if(!confirm('Tüm kullanıcı bazlı modül yetkileri silinsin ve herkes rol varsayılanına dönsün mü?'))return;
+  data._modulePermissions={};
+  _modulePermDraft=null;
+  saveData(data);
+  renderModulePermissionMatrix(_teamMembersCache);
+  applyRoleUI();
+}
 async function renderTeam(){
   renderTeamSummary();
   const list=document.getElementById('team-list');if(!list)return;
@@ -5417,6 +5574,7 @@ async function renderTeam(){
   }
   const rows=Array.isArray(teamData)?teamData:[];
   if(!rows.length){list.innerHTML='<div class="empty">Ekip kaydı bulunamadı.</div>';return;}
+  renderModulePermissionMatrix(rows.filter(r=>r.row_type==='member'));
   const memberRows=rows.filter(r=>r.row_type==='member').map(r=>{
     const locked=!!(r.is_owner||r.is_current_user);
     const safeUserId=escapeHtml(r.user_id);

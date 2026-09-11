@@ -1,0 +1,38 @@
+NakitPilot v0.10.0 Test Notu
+
+- index.html satır içi JavaScript sözdizimi doğrulandı: hata yok.
+- İzin motoru kaynağın kendisinden okunarak Node üzerinde çalıştırıldı.
+  26 senaryo, 26 başarılı:
+
+Rol varsayılanları
+  * Yönetici tüm modüllerde düzenleyebiliyor
+  * Muhasebe finansı düzenliyor, projeyi ve satın almayı yalnız görüyor
+  * Mühendis projeyi düzenliyor, finansı göremiyor
+  * Satın alma rolü satın almayı düzenliyor, finansı yalnız görüyor
+
+Sayfa erişimi
+  * Mühendis proje sayfalarını görüyor, Banka Merkezi'ni görmüyor
+  * Muhasebe Banka Merkezi'ni görüyor
+  * Yönetici satın alma sayfalarını görüyor
+
+Kullanıcıya özel izin
+  * Kullanıcıya verilen izin rol varsayılanını eziyor
+  * Dokunulmayan modül rol varsayılanında kalıyor
+  * Başka kullanıcılar etkilenmiyor
+
+Düzenleme yetkileri
+  * Muhasebe gelir/gider girebiliyor, mühendis ve satın alma giremiyor
+  * Mühendis proje düzenleyebiliyor, muhasebe düzenleyemiyor
+
+SQL testi (yerel PostgreSQL 16, gerçek şema)
+  * Rol kısıtı 'purchasing' içerecek şekilde genişledi
+  * 'purchasing' rolüyle ekip üyesi eklenebildi
+  * Geçersiz rol ('hacker') kısıt tarafından reddedildi
+  * Mevcut roller etkilenmedi
+
+Gerileme testleri
+  * v0.8.3: 7/7, v0.9.0: 25/25, v0.9.2: 18/18,
+    v0.9.5: 8/8, v0.9.6: 20/20
+  * Teklif belgesi üretimi doğrulandı
+
+Toplam 104 senaryo başarılı.

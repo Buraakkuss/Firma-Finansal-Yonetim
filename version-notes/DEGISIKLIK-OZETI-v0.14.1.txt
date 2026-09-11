@@ -1,0 +1,37 @@
+NakitPilot v0.14.1 — Cari vadesi düzeltmesi
+
+SORUN
+Tedarikçi kartına ödeme vadesi girilmiş olmasına rağmen TEKLİF TALEP FORMUNDA
+vade görünmüyor, formda sabit olarak "Teklifinizde belirtiniz" yazıyordu.
+Ayrıca sipariş ekranındaki "Ödeme Vadesi (gün)" alanı boş geldiği için vadeyi
+her seferinde elle girmek gerekiyormuş gibi duruyordu.
+
+DÜZELTME
+
+1) Teklif talep formu artık cari vadesini yazıyor
+- Cari kartında 30 gün varsa:  "Fatura tarihinden 30 gün (teklifinizde teyit ediniz)"
+- Cari kartında 0 gün varsa:   "Peşin (teklifinizde teyit ediniz)"
+- Cari kartında vade yoksa:    "Teklifinizde belirtiniz" (eski davranış)
+- Para birimi de artık seçtiğiniz para biriminden gelir:
+  "TL (farklı para biriminde teklif verecekseniz belirtiniz)"
+
+2) Vade alanı cariden VARSAYILAN olarak doluyor
+- Sipariş ekranında tedarikçiyi seçtiğiniz anda "Ödeme Vadesi (gün)" alanına
+  cari kartındaki vade otomatik yazılır. Elle girmenize gerek yoktur.
+- Alana farklı bir gün yazarsanız yalnız o sipariş için geçerli olur ve
+  tedarikçiyi değiştirseniz bile üzerine yazılmaz.
+- Vadesi tanımsız caride alan boş kalır ve altta uyarı çıkar.
+
+3) Cari kartı değişince varsayılanla açılmış siparişler de güncellenir
+- Vade cari kartındakiyle aynıysa siparişe ayrıca kaydedilmez.
+  Böylece tedarikçinin vadesini 30'dan 45'e çekerseniz, varsayılanla açılmış
+  tüm siparişler otomatik 45 gün olur.
+- Elle farklı vade girdiğiniz siparişler bundan etkilenmez; kendi vadesini
+  korur.
+
+4) Form üstündeki açıklama satırı artık vadenin nereden geldiğini söyler
+- "Ödeme vadesi: fatura tarihinden 30 gün (cari kartından geldi)."
+- "Ödeme vadesi: fatura tarihinden 90 gün (bu siparişe özel; cari vadesi 30 gün)."
+
+Supabase
+- Şema değişikliği gerekmez.

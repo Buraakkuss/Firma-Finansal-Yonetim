@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.14.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.14.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.14.0">
-  <title>NakitPilot Marmara Teknik — v0.14.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.14.1">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.14.1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.14.1">
+  <title>NakitPilot Marmara Teknik — v0.14.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2544,7 +2544,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.14.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.14.1</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -3494,7 +3494,7 @@
             <div class="form-group span-2"><label>Para Birimi</label><select id="po-currency" onchange="renderPOLines()"><option value="TRY">TL</option><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
             <div class="form-group span-2"><label>Kur</label><input type="number" id="po-rate" min="0" step="0.0001" value="1"></div>
             <div class="form-group span-3"><label>Durum</label><select id="po-status" onchange="onPOStatusChange()"><option>Talep</option><option>Teklif İstendi</option><option>Onay Bekliyor</option><option>Sipariş Verildi</option><option>Kısmi Teslim</option><option>Teslim Alındı</option><option>Faturalandı</option><option>İptal</option></select></div>
-            <div class="form-group span-2"><label>Ödeme Vadesi (gün)</label><input type="number" id="po-term" min="0" step="1" placeholder="Cariden"></div>
+            <div class="form-group span-2"><label>Ödeme Vadesi (gün)</label><input type="number" id="po-term" min="0" step="1" placeholder="Cariden" oninput="onPOTermManual()"></div>
             <div class="form-group span-2"><label>Teklif Son Tarihi</label><input type="date" id="po-quote-due"></div>
             <div class="form-group span-5"><label>Not</label><input id="po-note" placeholder="Teslim yeri, şart, referans"></div>
             <div class="form-group span-12" style="margin-top:-4px"><div class="section-sub" id="po-mode-hint" style="margin:0"></div></div>
@@ -4332,7 +4332,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.14.0';
+const APP_VERSION='0.14.1';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -11009,8 +11009,13 @@ function poDueEstimate(o){
   if(t===null)return '';
   return addDaysYmd(o.date||todayYmd(),t);
 }
-function poTermLabel(o){
+function poTermLabel(o,mode){
   const t=poTermDays(o);
+  if(mode==='rfq'){
+    if(t===null)return 'Teklifinizde belirtiniz';
+    if(t===0)return 'Peşin (teklifinizde teyit ediniz)';
+    return 'Fatura tarihinden '+t+' gün (teklifinizde teyit ediniz)';
+  }
   if(t===null)return 'Cari kartında vade tanımlı değil';
   if(t===0)return 'Peşin';
   const est=poDueEstimate(o);
@@ -11260,7 +11265,7 @@ function renderPOLines(){
 }
 function clearPurchaseOrderForm(){
   _poLines=[];renderPOLines();
-  ['po-note','po-term','po-quote-due'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['po-note','po-term','po-quote-due'].forEach(id=>{const e=document.getElementById(id);if(e){e.value='';if(e.dataset)e.dataset.manual='';}});
   const e=document.getElementById('po-edit-id');if(e)e.value='';
   const d=document.getElementById('po-date');if(d)d.value=todayYmd();
   const x=document.getElementById('po-expected');if(x)x.value='';
@@ -11284,14 +11289,28 @@ function updatePOCodePreview(){
   el.value=nextPurchaseOrderCode(prj);
   el.title='Kayıtta bu numara verilecek ve bir daha değişmeyecek.';
 }
-/* Tedarikçi seçilince cari vadesi vade alanına ipucu olarak yazılır. */
+/* Tedarikçi seçilince cari kartındaki vade, vade alanına VARSAYILAN olarak
+   yazılır. Kullanıcı alana farklı bir gün yazarsa yalnız o sipariş için
+   geçerli olur ve üzerine bir daha yazılmaz. */
 function onPOSupplierChange(){
   const term=document.getElementById('po-term');
   if(!term)return;
   const sid=(document.getElementById('po-supplier')||{}).value||'';
   const t=supplierTermDays(sid);
   term.placeholder=(t===null)?'Cari kartında vade yok':('Cariden: '+t+' gün');
+  if(!(term.dataset&&term.dataset.manual==='1'))term.value=(t===null)?'':String(t);
   onPOStatusChange();
+}
+function onPOTermManual(){
+  const e=document.getElementById('po-term');
+  if(e&&e.dataset)e.dataset.manual='1';
+  onPOStatusChange();
+}
+/* Formda o an geçerli olan vade (elle yazılmışsa o, yoksa cari vadesi). */
+function poFormTermDays(){
+  const raw=(document.getElementById('po-term')||{}).value;
+  if(raw!==''&&raw!=null)return Math.max(0,Math.round(n(raw)));
+  return supplierTermDays((document.getElementById('po-supplier')||{}).value||'');
 }
 /* Durum "Talep" veya "Teklif İstendi" iken fiyat zorunlu değildir;
    satın alma önce teklif ister, fiyat gelince aynı SAP siparişi düzenlenir. */
@@ -11303,8 +11322,12 @@ function onPOStatusChange(){
   if(qd&&qd.parentElement)qd.parentElement.style.opacity=isReq?'1':'0.55';
   if(!hint)return;
   const sid=(document.getElementById('po-supplier')||{}).value||'';
-  const t=supplierTermDays(sid);
-  const vadeTxt=(t===null)?'Cari kartında ödeme vadesi tanımlı değil; formda vade yazmaz.':('Ödeme vadesi: fatura tarihinden '+t+' gün (cari kartından).');
+  const cariT=supplierTermDays(sid);
+  const t=poFormTermDays();
+  const kaynak=(cariT!==null&&t===cariT)?' (cari kartından geldi)':(cariT===null?' (cari kartında vade yok)':' (bu siparişe özel; cari vadesi '+cariT+' gün)');
+  const vadeTxt=(t===null)
+    ? 'Ödeme vadesi girilmedi; formda vade yazmaz. Tedarikçi kartına vade girerseniz buraya otomatik gelir.'
+    : (t===0?('Ödeme vadesi: peşin'+kaynak+'.'):('Ödeme vadesi: fatura tarihinden '+t+' gün'+kaynak+'.'));
   hint.innerHTML=isReq
     ? '<strong>Talep modu:</strong> Fiyat girmeden kaydedebilirsiniz. "🖨 Form" butonu <strong>Teklif Talep Formu</strong> basar; tutar sütunları tedarikçinin doldurması için boş gelir. Teklif geldiğinde bu siparişi Düzenle ile açıp birim fiyatları girin, durumu "Sipariş Verildi" yapın ve formu sipariş olarak yeniden basın. <strong>SAP No değişmez.</strong> '+htmlEsc(vadeTxt)
     : '<strong>Sipariş modu:</strong> Birim fiyatlar zorunludur. "🖨 Form" butonu genel şartları da içeren <strong>Satın Alma Sipariş Formu</strong> basar. '+htmlEsc(vadeTxt);
@@ -11338,7 +11361,15 @@ function savePurchaseOrder(){
     expectedDate:(document.getElementById('po-expected')||{}).value||'',
     currency:cur, rate:(rate||1),
     status:status,
-    termDays:(function(){const v=(document.getElementById('po-term')||{}).value;return v===''||v==null?null:Math.max(0,Math.round(n(v)));})(),
+    /* Vade cari kartındakiyle aynıysa siparişe yazılmaz; böylece cari kartı
+       güncellenince sipariş de yeni vadeyi kullanır. Farklıysa siparişe özel
+       vade olarak saklanır. */
+    termDays:(function(){
+      const v=(document.getElementById('po-term')||{}).value;
+      const val=(v===''||v==null)?null:Math.max(0,Math.round(n(v)));
+      const sup=supplierTermDays(supplierId);
+      return (val!==null&&sup!==null&&val===sup)?null:val;
+    })(),
     quoteDueDate:(document.getElementById('po-quote-due')||{}).value||'',
     note:((document.getElementById('po-note')||{}).value||'').trim(),
     lines:_poLines.map(l=>Object.assign({},l)),
@@ -11371,7 +11402,10 @@ function editPurchaseOrder(id){
   set('po-date',o.date||'');set('po-expected',o.expectedDate||'');
   set('po-currency',o.currency||'TRY');set('po-rate',o.rate||1);
   set('po-status',o.status||'Talep');set('po-note',o.note||'');
-  set('po-term',(o.termDays===null||o.termDays===undefined||o.termDays==='')?'':String(o.termDays));
+  const tEl=document.getElementById('po-term');
+  const ozel=!(o.termDays===null||o.termDays===undefined||o.termDays==='');
+  if(tEl&&tEl.dataset)tEl.dataset.manual=ozel?'1':'';
+  if(tEl)tEl.value=ozel?String(o.termDays):'';
   set('po-quote-due',o.quoteDueDate||'');
   onPOSupplierChange();onPOStatusChange();
   _poLines=poLines(o).map(l=>Object.assign({},l));renderPOLines();
@@ -11501,7 +11535,7 @@ function purchaseOrderDocHtml(o,forceMode){
   const infoRow=(a,b,c,d)=>'<tr><th>'+a+'</th><td>'+b+'</td><th>'+c+'</th><td>'+d+'</td></tr>';
   const logo=MT_LOGO_DATA?('<img class="po-logo" src="'+MT_LOGO_DATA+'" alt="'+htmlEsc(MT_COMPANY.name)+'">')
     :('<div class="po-mark">MT</div><div><div class="po-name">'+htmlEsc(MT_COMPANY.name)+'</div><div class="po-sub">'+htmlEsc(MT_COMPANY.tagline)+'</div></div>');
-  const vade=rfq?'Teklifinizde belirtiniz':htmlEsc(poTermLabel(o));
+  const vade=htmlEsc(poTermLabel(o,rfq?'rfq':'order'));
   const head=rfq?'TEKLİF TALEP FORMU':'SATIN ALMA SİPARİŞ FORMU';
   const lineHead=rfq
     ? '<tr><th style="width:34px">#</th><th>Malzeme / Hizmet</th><th style="width:70px" class="num">Miktar</th><th style="width:70px">Birim</th><th style="width:110px" class="num">Birim Fiyat</th><th style="width:120px" class="num">Tutar</th></tr>'
@@ -11571,7 +11605,9 @@ function purchaseOrderDocHtml(o,forceMode){
     +'<table>'
     +infoRow(rfq?'Talep No':'SAP No','<span class="po-badge">'+htmlEsc(o.code||'')+'</span>',rfq?'Talep Tarihi':'Sipariş Tarihi',htmlEsc(dmy(o.date)))
     +infoRow('Proje',(prj?('<strong>'+htmlEsc(prj.code||'')+'</strong>'+(prj.title?(' · '+htmlEsc(prj.title)):'')):'Genel Satın Alma (projesiz)'),rfq?'İstenen Teslim':'Beklenen Teslim',htmlEsc(dmy(o.expectedDate))||'—')
-    +infoRow('Ödeme Vadesi',vade,'Para Birimi',(rfq?'Teklifinizde belirtiniz':htmlEsc(CURRENCY_LABELS[cur]||cur)+(cur!=='TRY'?(' · Kur '+formatNumberTr(n(o.rate)||1,4)):'')))
+    +infoRow('Ödeme Vadesi',vade,'Para Birimi',(rfq
+        ? htmlEsc(CURRENCY_LABELS[cur]||cur)+' (farklı para biriminde teklif verecekseniz belirtiniz)'
+        : htmlEsc(CURRENCY_LABELS[cur]||cur)+(cur!=='TRY'?(' · Kur '+formatNumberTr(n(o.rate)||1,4)):'')))
     +(rfq&&o.quoteDueDate?('<tr><th>Teklif Son Tarihi</th><td colspan="3"><strong>'+htmlEsc(dmy(o.quoteDueDate))+'</strong></td></tr>'):'')
     +(rfq?'':('<tr><th>Durum</th><td colspan="3">'+htmlEsc(o.status||'')+'</td></tr>'))
     +'</table>'

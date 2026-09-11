@@ -1,0 +1,35 @@
+NakitPilot v0.14.1 Test Notu
+
+- index.html satır içi JavaScript sözdizimi doğrulandı: 1 blok, 0 hata.
+- sw.js ve manifest.webmanifest doğrulandı.
+- Hata, gerçek arayüz akışı Chromium'da adım adım oynatılarak tespit edildi:
+  tedarikçi ekranından vade girildi, sipariş ekranından talep açıldı ve
+  üretilen form incelendi. Vadenin teklif formunda sabit metinle ezildiği
+  görüldü.
+
+Yeni testler — 17 senaryo (toplam 65/65 başarılı):
+
+Teklif formunda vade
+  * 30 günlük caride "Fatura tarihinden 30 gün (teklifinizde teyit ediniz)"
+  * Peşin caride "Peşin (teklifinizde teyit ediniz)"
+  * Vadesiz caride "Teklifinizde belirtiniz"
+
+Vade varsayılanı
+  * Tedarikçi seçilince vade alanı cariden doldu (30)
+  * Açıklama satırı "cari kartından geldi" diyor
+  * Varsayılanla kaydedilen siparişe termDays yazılmadı, etkin vade yine 30
+  * Cari vadesi 45'e çekilince varsayılanlı sipariş de 45 oldu
+  * Vadesiz caride alan boş kaldı ve uyarı çıktı
+
+Elle vade ezme
+  * Elle 90 girilince açıklama "bu siparişe özel" diyor
+  * Siparişe termDays=90 kaydedildi, cariyi ezdi
+  * Sipariş formunda "Fatura tarihinden 90 gün · tahmini vade 10.12.2026"
+  * Düzenlemede 90 geri geldi ve tedarikçi yenilenince ezilmedi
+  * Varsayılanlı sipariş düzenlemede cariden 30 olarak doldu
+
+Gerileme testleri
+  * v0.8.3: 7/7, v0.9.0: 25/25, v0.9.2: 18/18, v0.9.5: 8/8, v0.9.6: 20/20,
+    v0.10.0: 26/26, v0.11.0: 27/27, v0.12.0: 31/31, v0.13.0 arayüz: 32/32
+
+Toplam 259 senaryo başarılı.

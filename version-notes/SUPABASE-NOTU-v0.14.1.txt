@@ -1,0 +1,16 @@
+NakitPilot v0.14.1 Supabase Notu
+
+Şema değişikliği yoktur.
+
+Davranış notu: data.purchasing.orders[].termDays alanına artık yalnız
+CARİDEN FARKLI vade yazılır. Cari kartındaki vade ile aynı olan siparişlerde
+bu alan null kalır ve vade okuma anında
+data.purchasing.suppliers[].paymentTermDays üzerinden hesaplanır.
+
+Böylece tedarikçinin vadesi güncellendiğinde, o cariye ait varsayılan vadeli
+tüm siparişler yeni vadeyi kullanır. Siparişe özel vade girilmiş kayıtlar
+etkilenmez.
+
+v0.14.0'da termDays alanına cariyle aynı değer yazılmış siparişler varsa,
+bunlar siparişe özel vade gibi davranmaya devam eder; düzeltmek için siparişi
+açıp vade alanını temizleyip yeniden kaydetmek yeterlidir.

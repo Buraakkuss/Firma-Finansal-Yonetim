@@ -109,4 +109,9 @@
   yalnız yazdırma anında belgeye gömülür ve sayfa düzenini bozmaz.
 - Teklif kapağı için kurumsal logo desteği.
 
-Güncel baz sürüm: **v0.9.2**
+## v0.9.3
+- Teklif belgesinin kapağına Marmara Teknik kurumsal logosu eklendi; logo belgeye
+  gömülü taşınır, kaydedilen PDF'te de görünür.
+- Kapak bilgi tablosunda sağ sütunu boş kalan satırlardaki boş kutu giderildi.
+
+Güncel baz sürüm: **v0.9.3**

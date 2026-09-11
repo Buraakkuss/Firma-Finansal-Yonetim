@@ -1,0 +1,6 @@
+NakitPilot v0.9.3 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Logo uygulama dosyasının içine gömülüdür; veritabanında yer kaplamaz ve
+company_data boyutunu etkilemez.

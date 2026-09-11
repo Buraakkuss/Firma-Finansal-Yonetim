@@ -1,0 +1,28 @@
+NakitPilot v0.16.0 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu; dosya yüklemeye gerek yoktur.
+- ?v=0.16.0 ile açın, görünüm eski kalırsa Ctrl + F5.
+- Bu sürümde uygulama klasörüne yeni bir "guide" klasörü yüklenir (kılavuz
+  görselleri). Otomatik yayın bunu kendisi yapar.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Kılavuzu kullanma
+1) Sol menüde <strong>Kullanım Kılavuzu</strong>na basın.
+2) Üstteki arama kutusuna aradığınız konuyu yazın. Örnek kelimeler:
+   fatura · tahsilat · irsaliye · SAP · vade · teklif · yetki · mal kabul
+3) İlgisiz konular gizlenir, eşleşen kelime sarı ile işaretlenir.
+4) Arama kutusunun altındaki başlıklardan (Başlarken, İlk kurulum, Proje
+   süreci...) doğrudan o bölüme atlayabilirsiniz.
+5) <strong>Temizle</strong> ile tüm kılavuza geri dönersiniz.
+
+Ekipteki herkes görebilir
+- Kılavuz tüm rollerde görünür. Yeni bir arkadaş işe başladığında önce bu
+  ekranı okumasını söylemeniz yeterlidir.
+
+Öneri
+- İlk kurulum bölümünü (2. bölüm) sırayla uygulayın: kişi kartları, banka
+  hesapları, tedarikçiler ve ödeme vadeleri. Sistemin geri kalanı bu üç şeye
+  dayanır.

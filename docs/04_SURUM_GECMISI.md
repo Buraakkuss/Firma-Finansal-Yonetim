@@ -295,4 +295,32 @@
 - Kullanım kılavuzuna "Mühendislik araçları" bölümü eklendi (13 bölüm,
   39 konu, 25 görsel).
 
-Güncel baz sürüm: **v0.17.0**
+## v0.18.0
+- Mühendislik başlığının altına **Standart Ekipmanlar** bölümü eklendi; içinde
+  iki kütüphane var: **Hazır CAD Datalar** ve **Kataloglar**.
+- Hazır CAD Datalar ilk açılışta beş hazır başlıkla gelir: Yataklı Rulmanlar
+  CAD, Doğuş Kalıp CAD, Alhan CAD, Emes Teker CAD, Surfence CAD. Bu başlıklar
+  bir kez oluşturulur; silinirse geri gelmez.
+- Kullanıcı **kendi klasörlerini** istediği kademede açabilir
+  (Yataklı Rulmanlar CAD › UCF Serisi › UCF205). Kök seviyede klasör açmak yeni
+  bir kütüphane başlığı demektir; sistem böylece kullanıcı tarafından
+  çoğaltılabilir.
+- Her klasöre **dosya yüklenebilir** (STEP, STP, DWG, DXF, IGES, PDF, resim;
+  birden fazla dosya aynı anda). Mühendis **⬇️ İndir** ile dosyayı doğrudan
+  indirir; PDF ve resimlerde **👁** yeni sekmede açar. Dış bağlantı adresi de
+  kaydedilebilir.
+- Yol çubuğu (breadcrumb), üst klasör butonu, klasör içi sayımlar
+  (kaç klasör / kaç dosya), dosya türü ikonları ve boyut gösterimi.
+- **Arama**: klasör adı, dosya adı ve notlar içinde kütüphanenin tamamında
+  arar; sonuçta dosyanın hangi klasörde olduğu yazar.
+- Yeniden adlandırma ve silme. Dolu klasör silinmez (veri kaybı koruması);
+  dosya silindiğinde Storage'dan da kaldırılır.
+- Yetki: Mühendislik modülünde **görüntüleme** yetkisi olan herkes indirir,
+  **düzenleme** yetkisi olan klasör açar, yükler ve siler.
+- Veri `company_data.data.stdlib` içinde, dosyalar Supabase Storage
+  `project-files` bucket'ında `<firmaId>/stdlib/<kütüphane>/...` yolunda durur.
+  Bucket politikaları yolun ilk parçasındaki firma kimliğine baktığı için
+  **ek SQL gerekmez**.
+- Kullanım kılavuzuna "Standart Ekipmanlar" konusu eklendi (13 bölüm, 40 konu).
+
+Güncel baz sürüm: **v0.18.0**

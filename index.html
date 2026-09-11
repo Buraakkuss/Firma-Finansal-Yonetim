@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.17.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.17.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.17.0">
-  <title>NakitPilot Marmara Teknik — v0.17.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.18.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.18.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.18.0">
+  <title>NakitPilot Marmara Teknik — v0.18.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -1292,6 +1292,41 @@
 .nav-btn.nav-parent .chev { font-size:12px; opacity:.75; transition:transform .15s; }
 .nav-btn.nav-parent.open .chev { transform:rotate(90deg); }
 .nav-sub-group .nav-btn { padding-left:42px; font-size:12.5px; }
+.nav-sub-group .nav-btn.nav-btn-deep { padding-left:58px; }
+.nav-sub-label { padding:9px 18px 4px 42px; font-size:10.5px; font-weight:800; letter-spacing:.075em;
+  text-transform:uppercase; color:rgba(255,255,255,.55); }
+/* v0.18.0 — Standart Ekipmanlar kütüphanesi (klasör + dosya kartları) */
+.stdlib-searchbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:6px 0 10px; }
+.stdlib-searchbar input { flex:1 1 320px; min-width:0; }
+.stdlib-crumb { display:flex; flex-wrap:wrap; align-items:center; gap:4px; padding:8px 10px; margin-bottom:10px;
+  background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; }
+.stdlib-crumb-btn { border:0; background:transparent; color:var(--primary); font-family:inherit; font-size:13px;
+  font-weight:700; cursor:pointer; padding:3px 7px; border-radius:8px; }
+.stdlib-crumb-btn:hover { background:var(--bg); text-decoration:underline; }
+.stdlib-crumb-btn.cur { color:var(--text); cursor:default; }
+.stdlib-crumb-btn.up { margin-left:auto; border:1px solid var(--border-strong); background:var(--bg); }
+.stdlib-sep { color:var(--text-muted); font-size:13px; }
+.stdlib-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:11px; margin-top:6px; }
+.stdlib-card { display:flex; flex-direction:column; padding:12px 13px; background:var(--bg-card);
+  border:1px solid var(--border); border-radius:14px; transition:border-color .14s ease, box-shadow .14s ease, transform .14s ease; }
+.stdlib-card.stdlib-folder { cursor:pointer; }
+.stdlib-card:hover { border-color:var(--primary); box-shadow:0 8px 18px rgba(46,79,110,.10); transform:translateY(-1px); }
+.stdlib-ico { font-size:24px; line-height:1; flex:0 0 auto; }
+.stdlib-main { flex:1 1 auto; min-width:0; }
+.stdlib-name { font-size:14px; font-weight:700; color:var(--text); overflow-wrap:anywhere; }
+.stdlib-meta { font-size:11.5px; color:var(--text-muted); margin-top:3px; overflow-wrap:anywhere; }
+.stdlib-path { font-size:11px; color:var(--primary); margin-top:3px; overflow-wrap:anywhere; }
+.stdlib-note { font-size:12px; color:var(--text); opacity:.82; margin-top:4px; overflow-wrap:anywhere; }
+.stdlib-top { display:flex; align-items:flex-start; gap:11px; }
+.stdlib-act { display:flex; flex-wrap:wrap; gap:5px; justify-content:flex-end; margin-top:9px; }
+.stdlib-act:empty { display:none; }
+.stdlib-act .btn { padding:5px 9px; }
+@media (max-width:640px){
+  .stdlib-grid { grid-template-columns:1fr; }
+  .stdlib-crumb-btn.up { margin-left:0; }
+  .nav-sub-label { padding-left:22px; }
+  .nav-sub-group .nav-btn.nav-btn-deep { padding-left:34px; }
+}
 .project-kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:16px; }
 .project-kpi { background:var(--bg-secondary); border:1px solid var(--border); border-radius:14px; padding:12px 13px; min-height:78px; text-align:left; }
 .project-kpi .label { font-size:10.5px; text-transform:uppercase; letter-spacing:.055em; color:var(--text-muted); font-weight:800; line-height:1.25; }
@@ -2621,7 +2656,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.17.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.18.0</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -2656,6 +2691,9 @@
       </button>
       <div class="nav-sub-group" id="navgroup-engineering">
         <button class="nav-btn" onclick="showPage('weightCalc',this)">Ağırlık Hesaplama</button>
+        <div class="nav-sub-label">Standart Ekipmanlar</div>
+        <button class="nav-btn nav-btn-deep" onclick="showPage('cadLibrary',this)">Hazır CAD Datalar</button>
+        <button class="nav-btn nav-btn-deep" onclick="showPage('catalogs',this)">Kataloglar</button>
       </div>
       <button class="nav-btn nav-parent" id="nav-parent-purchase" data-navgroup="purchase" onclick="toggleNavGroup('purchase')" type="button">
         <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h6M9 16h6"/></svg>Satın Alma</span><span class="chev">›</span>
@@ -3558,6 +3596,70 @@
         </div>
       </div>
 
+      <!-- MÜHENDİSLİK: STANDART EKİPMANLAR · Hazır CAD Datalar -->
+      <div id="page-cadLibrary" class="page form-page-clean pro-layout-page">
+        <div class="card">
+          <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Standart Ekipmanlar · Hazır CAD Datalar</div>
+          <div class="section-sub">Standart satın alınan ekipmanların hazır 3B ve 2B dosyaları burada durur. İstediğiniz kadar klasör ve alt klasör açabilirsiniz (örnek: <strong>Yataklı Rulmanlar CAD › UCF Serisi › UCF205</strong>). Klasörün içine STEP, DWG, DXF veya teknik resim yükleyin; mühendisler dosyaya tıkladığında dosya doğrudan bilgisayarlarına iner.</div>
+          <div class="stdlib-searchbar">
+            <input id="stdlib-cad-search" type="search" placeholder="CAD kütüphanesinde ara: UCF205, rulman, teker, kalıp, step, dwg..." oninput="stdLibSearchInput('cad')" autocomplete="off">
+            <button class="btn btn-sm" type="button" onclick="stdLibClearSearch('cad')">Temizle</button>
+          </div>
+          <div class="stdlib-crumb" id="stdlib-cad-crumb"></div>
+          <div class="pro-grid pro-grid-12" id="stdlib-cad-tools" style="margin-top:4px">
+            <div class="form-group span-4"><label id="stdlib-cad-folder-label">Yeni başlık (klasör) adı</label><input id="stdlib-cad-folder" placeholder="Örn: UCF Serisi" onkeydown="if(event.key==='Enter')stdLibAddFolder('cad')"></div>
+            <div class="form-group span-5"><label>Klasör açıklaması (opsiyonel)</label><input id="stdlib-cad-folder-note" placeholder="Örn: 205-215 arası flanşlı yatak gövdeleri"></div>
+            <div class="form-action span-3"><button class="btn btn-primary" id="stdlib-cad-folder-btn" type="button" onclick="stdLibAddFolder('cad')">📁 Yeni Başlık / Klasör Oluştur</button></div>
+          </div>
+          <div class="section-sub" id="stdlib-cad-readonly" style="display:none">Bu kütüphaneyi görüntüleyebilirsiniz. Klasör açmak ve dosya yüklemek için Mühendislik modülünde <strong>düzenleme</strong> yetkisi gerekir.</div>
+          <div class="section-sub" id="stdlib-cad-status" style="display:none"></div>
+          <div id="stdlib-cad-list"></div>
+        </div>
+        <div class="card" id="stdlib-cad-upload-card">
+          <div class="card-title">⬆️ Dosya Yükle</div>
+          <div class="section-sub">Dosyalar şu an açık olan klasöre yüklenir: <strong id="stdlib-cad-konum">Hazır CAD Datalar</strong>. Birden fazla dosya seçebilirsiniz. Tek dosya sınırı <strong>50 MB</strong>; daha büyük dosyaları ZIP yapıp yükleyin.</div>
+          <div class="pro-grid pro-grid-12">
+            <div class="form-group span-6"><label>Dosya seç (STEP, STP, DWG, DXF, IGES, PDF, resim)</label><input type="file" id="stdlib-cad-file" multiple></div>
+            <div class="form-group span-6"><label>Görünecek ad (opsiyonel)</label><input id="stdlib-cad-title" placeholder="Örn: UCF205 Flanşlı Yatak — STEP"></div>
+            <div class="form-group span-6"><label>Açıklama / not (opsiyonel)</label><input id="stdlib-cad-note" placeholder="Örn: 2024 revizyon, ölçüler mm"></div>
+            <div class="form-group span-6"><label>veya dış bağlantı adresi (opsiyonel)</label><input id="stdlib-cad-link" placeholder="https://... üretici sayfasındaki dosya bağlantısı"></div>
+            <div class="form-action span-3"><button class="btn btn-primary" id="stdlib-cad-upload-btn" type="button" onclick="stdLibUpload('cad')">⬆️ Yükle</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MÜHENDİSLİK: STANDART EKİPMANLAR · Kataloglar -->
+      <div id="page-catalogs" class="page form-page-clean pro-layout-page">
+        <div class="card">
+          <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Standart Ekipmanlar · Kataloglar</div>
+          <div class="section-sub">Üretici katalogları, ölçü tabloları ve teknik dokümanlar burada durur. İstediğiniz kadar klasör ve alt klasör açabilirsiniz (örnek: <strong>Kataloglar › Rulman › SKF 2024</strong>). PDF kataloğu yükleyin; ekip tıklayınca indirir, <strong>👁</strong> ile ekranda açar.</div>
+          <div class="stdlib-searchbar">
+            <input id="stdlib-catalog-search" type="search" placeholder="Kataloglarda ara: rulman, redüktör, pnömatik, ölçü tablosu..." oninput="stdLibSearchInput('catalog')" autocomplete="off">
+            <button class="btn btn-sm" type="button" onclick="stdLibClearSearch('catalog')">Temizle</button>
+          </div>
+          <div class="stdlib-crumb" id="stdlib-catalog-crumb"></div>
+          <div class="pro-grid pro-grid-12" id="stdlib-catalog-tools" style="margin-top:4px">
+            <div class="form-group span-4"><label id="stdlib-catalog-folder-label">Yeni başlık (klasör) adı</label><input id="stdlib-catalog-folder" placeholder="Örn: Rulman Katalogları" onkeydown="if(event.key==='Enter')stdLibAddFolder('catalog')"></div>
+            <div class="form-group span-5"><label>Klasör açıklaması (opsiyonel)</label><input id="stdlib-catalog-folder-note" placeholder="Örn: 205-215 arası flanşlı yatak gövdeleri"></div>
+            <div class="form-action span-3"><button class="btn btn-primary" id="stdlib-catalog-folder-btn" type="button" onclick="stdLibAddFolder('catalog')">📁 Yeni Başlık / Klasör Oluştur</button></div>
+          </div>
+          <div class="section-sub" id="stdlib-catalog-readonly" style="display:none">Bu kütüphaneyi görüntüleyebilirsiniz. Klasör açmak ve dosya yüklemek için Mühendislik modülünde <strong>düzenleme</strong> yetkisi gerekir.</div>
+          <div class="section-sub" id="stdlib-catalog-status" style="display:none"></div>
+          <div id="stdlib-catalog-list"></div>
+        </div>
+        <div class="card" id="stdlib-catalog-upload-card">
+          <div class="card-title">⬆️ Dosya Yükle</div>
+          <div class="section-sub">Dosyalar şu an açık olan klasöre yüklenir: <strong id="stdlib-catalog-konum">Kataloglar</strong>. Birden fazla dosya seçebilirsiniz. Tek dosya sınırı <strong>50 MB</strong>; daha büyük dosyaları ZIP yapıp yükleyin.</div>
+          <div class="pro-grid pro-grid-12">
+            <div class="form-group span-6"><label>Dosya seç (PDF, resim, Excel, ZIP)</label><input type="file" id="stdlib-catalog-file" multiple></div>
+            <div class="form-group span-6"><label>Görünecek ad (opsiyonel)</label><input id="stdlib-catalog-title" placeholder="Örn: SKF Rulman Kataloğu 2024"></div>
+            <div class="form-group span-6"><label>Açıklama / not (opsiyonel)</label><input id="stdlib-catalog-note" placeholder="Örn: 2024 revizyon, ölçüler mm"></div>
+            <div class="form-group span-6"><label>veya dış bağlantı adresi (opsiyonel)</label><input id="stdlib-catalog-link" placeholder="https://... üretici sayfasındaki dosya bağlantısı"></div>
+            <div class="form-action span-3"><button class="btn btn-primary" id="stdlib-catalog-upload-btn" type="button" onclick="stdLibUpload('catalog')">⬆️ Yükle</button></div>
+          </div>
+        </div>
+      </div>
+
       <!-- KULLANIM KILAVUZU -->
       <div id="page-guide" class="page form-page-clean pro-layout-page">
         <div class="guide-search-bar">
@@ -3579,7 +3681,7 @@
       <section class="guide-sec" id="gs-7"><h2><span class="gnum">7</span>Yönetim raporu ve kârlılık</h2><p class="guide-lead">İşletme sahibinin tek bakışta durumu gördüğü ekran.</p><div class="guide-item"><h3>Yönetici Paneli</h3><figure class="guide-shot"><div class="gimg"><img src="guide/19-yonetici.jpg" alt="Yönetici paneli" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Özet kartlar: teklif aşaması, onay bekleyen, üretimdeki, geciken proje sayıları.</li><li>Tahsil edilecek ve ödenecek tutarlar, teklif onay oranı ve onaylanan ciro.</li><li>Proje kârlılığı tablosu.</li><li>Geciken projeler listesi — teslim tarihi geçmiş ve kapanmamış projeler.</li></ol><table class="guide-kv"><tbody><tr><th>Satış</th><td>Projenin onaylanan teklif tutarı.</td></tr><tr><th>Tahmini Maliyet</th><td>Projenin seçili maliyet çalışmasından gelir.</td></tr><tr><th>Gerçek Maliyet</th><td>Projeye bağlanan <strong>tedarikçi faturalarından</strong> gelir.</td></tr><tr><th>Gerçek Kâr</th><td>Satış eksi gerçek maliyet.</td></tr><tr><th>Marj</th><td>Gerçek kârın satışa oranı.</td></tr><tr><th>Kalan Alacak</th><td>Faturalanmış ama henüz tahsil edilmemiş tutar.</td></tr></tbody></table><div class="guide-warn">Bir projede <strong>"ölçülemiyor"</strong> yazıyorsa o projeye hiç tedarikçi faturası bağlanmamıştır. Gerçek maliyet bilinmediği için kâr da hesaplanamaz. Maliyetin doğru çıkması için tedarikçi faturalarında <strong>PROJE alanını mutlaka doldurun</strong>.</div></div><div class="guide-item"><h3>Raporlar ekranı</h3><p>Seçtiğiniz tarih aralığında nakit akışı, kategori dağılımı, aylık tablo ve risk durumu. Excel, CSV ve görsel rapor olarak indirilebilir.</p><figure class="guide-shot"><div class="gimg"><img src="guide/24-raporlar.jpg" alt="Raporlar ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note"><strong>Kasa Portföyü</strong> yalnız nakit kasayı kapsar, <u>banka hesaplarını içermez</u>. Banka dâhil toplam için Özet Paneli'ne veya Banka Merkezi'ne bakın.</div></div><div class="guide-item"><h3>Özet Paneli</h3><figure class="guide-shot"><div class="gimg"><img src="guide/01-ozet.jpg" alt="Özet paneli" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Net finansal varlık ve banka/kart/KMH dağılımı.</li><li>Dönem kartları: gelir, gider, beklenen kalemler, tahmini net.</li><li>Gelir-gider grafiği ve gider kategori dağılımı.</li><li>Nakit akışı projeksiyonu — gelecek ayların tahmini portföyü.</li><li>Tahsilat vade uyarıları — vadesi geçen ve 7 gün içinde dolacak faturalar.</li></ol></div></section>
       <section class="guide-sec" id="gs-8"><h2><span class="gnum">8</span>Kişi kartları ve belgelerdeki bilgiler</h2><p class="guide-lead">Teklif ve sipariş belgelerinde kimin bilgisi görünecek.</p><div class="guide-item"><h3>Belgelerde sorumlu kişi nasıl seçilir</h3><p>Hem teklif penceresinde hem satın alma sipariş formunda <strong>Sorumlu Kişi</strong> alanı vardır.</p><ol class="guide-steps"><li>Belgeyi açtığınızda <strong>varsayılan olarak sizin kartınız</strong> seçili gelir.</li><li>Arkadaşınız yerinde değilse ve onun adına belge düzenliyorsanız listeden onun kartını seçin.</li><li>Ad, <strong>cep telefonu</strong> ve e-posta üçü birden o kişininkiyle değişir.</li><li>İsterseniz bu alanları elle de düzenleyebilirsiniz.</li></ol><table class="guide-kv"><tbody><tr><th>Belgede görünen numara</th><td>Kişinin <strong>cep telefonu</strong>. Girilmemişse kartın sabit numarası yazılır.</td></tr><tr><th>Belgenin en altındaki künye</th><td>Firma unvanı · şehir · web adresi · <strong>firma sabit telefonu</strong>.</td></tr><tr><th>Kart seçilmezse</th><td>Firma varsayılan bilgileri basılır (eski davranış).</td></tr></tbody></table><div class="guide-note">Bir kişi herhangi bir teklif veya siparişte sorumlu olarak geçiyorsa <strong>kartı silinemez</strong>. Kişi işten ayrıldıysa kartı silmeyin; not alanına düşün ki geçmiş belgeler bozulmasın.</div></div></section>
       <section class="guide-sec" id="gs-9"><h2><span class="gnum">9</span>Yetkiler ve roller</h2><p class="guide-lead">Kim neyi görebilir, kim neyi değiştirebilir.</p><div class="guide-item"><h3>Rollerin varsayılan yetkileri</h3><table class="guide-kv"><tbody><tr><th>Yönetici</th><td>Her modülde tam yetki. Firma & Ekip, Yasal ve kişi kartı yönetimi yalnız bu roldedir.</td></tr><tr><th>Muhasebe</th><td>Finans ve Cari düzenler; Proje ve Satın Alma'yı görür ama değiştiremez.</td></tr><tr><th>Mühendis / Proje</th><td>Proje düzenler; Satın Alma ve Cari'yi görür. Finans girişi ve Yönetim Raporu'nu göremez.</td></tr><tr><th>Satın Alma</th><td>Satın Alma düzenler; Finans ve Proje'yi görür ama değiştiremez.</td></tr><tr><th>Rapor Kullanıcısı</th><td>Her modülü görüntüler, hiçbir şeyi değiştiremez.</td></tr></tbody></table><p>Bu varsayılanlar <strong>Ayarlar &gt; Firma &amp; Ekip</strong> ekranındaki <em>Modül Yetkileri</em> matrisinden kişi bazında değiştirilebilir. Her kullanıcı her modülde üç seviyeden birini alır: <strong>erişim yok</strong> / <strong>görüntüleme</strong> / <strong>düzenleme</strong>.</p><figure class="guide-shot"><div class="gimg"><img src="guide/21-yetki.jpg" alt="Firma & Ekip ve modül yetkileri" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Muhasebe parayı girer; satın alma ve proje ekibi aynı veriyi <strong>izleyebilir</strong> ama değiştiremez. Sistem bu ayrımı korumak üzere kurulmuştur.</div></div></section>
-      <section class="guide-sec" id="gs-10"><h2><span class="gnum">10</span>Mühendislik araçları</h2><p class="guide-lead">Tasarım ve maliyet çalışması sırasında kullanılan hesaplama araçları.</p><div class="guide-item"><h3>Ağırlık hesaplama</h3><p>Profil, sac, lama, boru, köşebent gibi ürünlerin malzeme cinsine ve ölçülerine göre ağırlığını hesaplar. Ölçüler <strong>milimetre</strong>, yoğunluk <strong>kg/dm³</strong>, sonuç <strong>kilogram</strong>dır.</p><ol class="guide-steps"><li><strong>Mühendislik &gt; Ağırlık Hesaplama</strong>.</li><li><strong>Malzeme</strong>yi seçin; yoğunluk otomatik gelir. Listede olmayan bir malzeme için "Özel" seçip yoğunluğu elle yazın.</li><li><strong>Kesit Tipi</strong>ni seçin. Sağda o kesitin şeması ve ölçü harfleri görünür.</li><li>Ölçüleri ve uzunluğu girin; sonuç anında hesaplanır.</li><li><strong>Adet</strong> girerek toplam ağırlığı görün.</li><li>İsterseniz <strong>Listeye Ekle</strong> ile birden çok kalemi biriktirin.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/25-agirlik.jpg" alt="Ağırlık hesaplama ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Malzeme, yoğunluk, kesit tipi ve adet.</li><li>Seçilen kesite göre değişen ölçü alanları.</li><li>Kesit şeması — ölçü harfleri formdaki alanlarla aynıdır.</li><li>Sonuç kartları: kesit alanı, kg/m, parça ağırlığı ve toplam.</li><li>Hesabın nasıl yapıldığını adım adım gösteren satır.</li><li>Hesap listesi; malzeme fiyatı girilirse tutar da çıkar.</li></ol><table class="guide-kv"><tbody><tr><th>Kesit tipleri</th><td>Sac/plaka · lama · kare dolu · yuvarlak dolu (mil) · boru · kutu profil (kare ve dikdörtgen) · altıgen · köşebent · U · T · I/H profil</td></tr><tr><th>Malzemeler</th><td>Çelik, paslanmaz 304/316, dökme demir, alüminyum, bakır, pirinç, bronz, çinko, kurşun, titanyum, nikel, magnezyum, PVC, PE, POM, PA6, PTFE, pleksi, cam, ahşap ve özel</td></tr></tbody></table><div class="guide-ok">Liste hazırken <strong>Listeyi Kopyala</strong> ile panoya alıp maliyet çalışmasına veya e-postaya yapıştırabilirsiniz. Malzeme fiyatı (TL/kg) girerseniz her satırın ve toplamın tutarı da hesaplanır.</div><div class="guide-note">Köşebent, U, T ve I/H profillerde köşe radyusları ve flanş eğimleri hesaba katılmaz; sonuç standart katalog değerinden yaklaşık %1-3 sapabilir. Kritik işlerde üretici kataloğundan doğrulayın.</div><div class="guide-warn">Hesap listesi kaydedilmez; ekrandan çıkınca veya sayfayı yenileyince silinir. Saklamak istediğiniz listeyi kopyalayın.</div></div></section>
+      <section class="guide-sec" id="gs-10"><h2><span class="gnum">10</span>Mühendislik araçları</h2><p class="guide-lead">Tasarım ve maliyet çalışması sırasında kullanılan hesaplama araçları.</p><div class="guide-item"><h3>Ağırlık hesaplama</h3><p>Profil, sac, lama, boru, köşebent gibi ürünlerin malzeme cinsine ve ölçülerine göre ağırlığını hesaplar. Ölçüler <strong>milimetre</strong>, yoğunluk <strong>kg/dm³</strong>, sonuç <strong>kilogram</strong>dır.</p><ol class="guide-steps"><li><strong>Mühendislik &gt; Ağırlık Hesaplama</strong>.</li><li><strong>Malzeme</strong>yi seçin; yoğunluk otomatik gelir. Listede olmayan bir malzeme için "Özel" seçip yoğunluğu elle yazın.</li><li><strong>Kesit Tipi</strong>ni seçin. Sağda o kesitin şeması ve ölçü harfleri görünür.</li><li>Ölçüleri ve uzunluğu girin; sonuç anında hesaplanır.</li><li><strong>Adet</strong> girerek toplam ağırlığı görün.</li><li>İsterseniz <strong>Listeye Ekle</strong> ile birden çok kalemi biriktirin.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/25-agirlik.jpg" alt="Ağırlık hesaplama ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Malzeme, yoğunluk, kesit tipi ve adet.</li><li>Seçilen kesite göre değişen ölçü alanları.</li><li>Kesit şeması — ölçü harfleri formdaki alanlarla aynıdır.</li><li>Sonuç kartları: kesit alanı, kg/m, parça ağırlığı ve toplam.</li><li>Hesabın nasıl yapıldığını adım adım gösteren satır.</li><li>Hesap listesi; malzeme fiyatı girilirse tutar da çıkar.</li></ol><table class="guide-kv"><tbody><tr><th>Kesit tipleri</th><td>Sac/plaka · lama · kare dolu · yuvarlak dolu (mil) · boru · kutu profil (kare ve dikdörtgen) · altıgen · köşebent · U · T · I/H profil</td></tr><tr><th>Malzemeler</th><td>Çelik, paslanmaz 304/316, dökme demir, alüminyum, bakır, pirinç, bronz, çinko, kurşun, titanyum, nikel, magnezyum, PVC, PE, POM, PA6, PTFE, pleksi, cam, ahşap ve özel</td></tr></tbody></table><div class="guide-ok">Liste hazırken <strong>Listeyi Kopyala</strong> ile panoya alıp maliyet çalışmasına veya e-postaya yapıştırabilirsiniz. Malzeme fiyatı (TL/kg) girerseniz her satırın ve toplamın tutarı da hesaplanır.</div><div class="guide-note">Köşebent, U, T ve I/H profillerde köşe radyusları ve flanş eğimleri hesaba katılmaz; sonuç standart katalog değerinden yaklaşık %1-3 sapabilir. Kritik işlerde üretici kataloğundan doğrulayın.</div><div class="guide-warn">Hesap listesi kaydedilmez; ekrandan çıkınca veya sayfayı yenileyince silinir. Saklamak istediğiniz listeyi kopyalayın.</div></div><div class="guide-item"><h3>Standart Ekipmanlar — Hazır CAD Datalar ve Kataloglar</h3><p>Mühendislik başlığının altındaki <strong>Standart Ekipmanlar</strong> bölümünde iki kütüphane vardır: <strong>Hazır CAD Datalar</strong> (STEP, STP, DWG, DXF, IGES ve teknik resimler) ve <strong>Kataloglar</strong> (üretici katalogları, ölçü tabloları, PDF dokümanlar). İkisi de aynı şekilde çalışır.</p><ol class="guide-pins"><li>Menü → <strong>Mühendislik</strong> → <strong>Hazır CAD Datalar</strong>. İlk açılışta hazır başlıklar gelir: Yataklı Rulmanlar CAD, Doğuş Kalıp CAD, Alhan CAD, Emes Teker CAD, Surfence CAD.</li><li>Bir başlığa <strong>tıklayınca içine girersiniz</strong>. Üstteki yol çubuğundan (🏠 Hazır CAD Datalar › … ) istediğiniz kademeye geri dönebilir, <strong>⬆️ Üst klasör</strong> ile bir üst kademeye çıkabilirsiniz.</li><li>Yeni klasör açmak için <strong>Yeni başlık (klasör) adı</strong> kutusuna adı yazıp <strong>Klasör Oluştur</strong>a basın. İçindeyken açtığınız klasör <strong>alt klasör</strong> olur: Yataklı Rulmanlar CAD › <strong>UCF Serisi</strong> › <strong>UCF205</strong> gibi. Kademe sınırı yoktur.</li><li>Kök seviyede klasör açarak <strong>yeni bir kütüphane başlığı</strong> da ekleyebilirsiniz (örn. yeni bir tedarikçi).</li><li>Dosya eklemek için klasörün içine girin, alttaki <strong>Dosya Yükle</strong> kartından dosyayı seçin (<strong>birden fazla dosya</strong> seçebilirsiniz), istersek görünecek adı ve notu yazıp <strong>Yükle</strong>ye basın.</li><li>Mühendis dosyanın üzerindeki <strong>⬇️ İndir</strong> butonuna basınca dosya doğrudan bilgisayarına iner. PDF ve resimlerde <strong>👁</strong> butonu dosyayı yeni sekmede açar.</li><li>Üstteki <strong>arama kutusu</strong> kütüphanenin tamamında arar: klasör adı, dosya adı ve not içinde. Sonuçta dosyanın hangi klasörde olduğu da yazar.</li><li><strong>✏️</strong> adı değiştirir, <strong>🗑</strong> siler. Dolu bir klasör silinmez; önce içindekileri silmeniz istenir.</li></ol><div class="guide-ok">Dış kaynaktaki bir dosyayı kütüphaneye almak istemiyorsanız <strong>dış bağlantı adresi</strong> alanına üreticinin sayfa adresini yazıp kaydedebilirsiniz; kart 🔗 ikonuyla görünür.</div><div class="guide-note">Tek dosya sınırı <strong>50 MB</strong>. Daha büyük CAD dosyalarını ZIP yapıp yükleyin. Dosyalar firmanın bulut alanında saklanır; sadece o firmanın kullanıcıları görebilir.</div><div class="guide-warn">Klasör açma, dosya yükleme ve silme için <strong>Mühendislik modülünde düzenleme yetkisi</strong> gerekir. Görüntüleme yetkisi olan herkes dosyaları <strong>indirebilir</strong>. Silinen dosya buluttan da kalkar, geri alınamaz.</div></div></section>
       <section class="guide-sec" id="gs-11"><h2><span class="gnum">11</span>Telefonda kullanım</h2><p class="guide-lead">Sistem telefonda da tam çalışır.</p><div class="guide-item"><h3>Mobil menü ve ekranlar</h3><ol class="guide-steps"><li>Üst soldaki <strong>☰</strong> butonuna basın; menü çekmece olarak açılır.</li><li>Modül başlığına basınca alt ekranlar açılır.</li><li>Bir ekran seçince menü kendiliğinden kapanır.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/22-mobil.jpg" alt="Telefonda menü" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Telefonda formlar tek sütuna iner, butonlar parmakla basılacak boyuttadır ve geniş tablolar kendi içinde yana kaydırılır. Sayfa asla yana taşmaz.</div></div></section>
       <section class="guide-sec" id="gs-12"><h2><span class="gnum">12</span>Uyarı mesajları ve anlamları</h2><p class="guide-lead">Sistemin verdiği uyarıların ne demek olduğu ve ne yapmanız gerektiği.</p><div class="guide-item"><h3>Sık karşılaşılan uyarılar</h3><table class="guide-kv"><tbody><tr><th>"Önce bu projeye ait teklif kaydı oluşturun"</th><td>Projeyi Onaylandı veya üretim durumuna almaya çalıştınız ama projede teklif yok. Teklif &amp; Maliyet ekranından teklif oluşturun.</td></tr><tr><th>"Teslim Edildi durumuna geçmek için teslim tarihi girilmelidir"</th><td>Projeyi düzenleyip durumu Teslim Edildi seçin; açılan alanlara teslim tarihi ve irsaliye numarasını girin.</td></tr><tr><th>"Faturalandırıldı durumuna geçmek için önce fatura kaydı girilmelidir"</th><td>Proje Finans Durumu ekranından faturayı kaydedin.</td></tr><tr><th>"Kalan alacak ... Tahsilat tamamlanmadan bu duruma geçilemez"</th><td>Henüz tahsil edilmemiş tutar var. Tahsilatı girin; durum kendiliğinden ilerler.</td></tr><tr><th>"Tahsilat tutarı faturanın kalanından fazla"</th><td>Fatura tutarı, kalan ve girdiğiniz tutar uyarıda yazar. En fazla kalan kadar girebilirsiniz.</td></tr><tr><th>"Ödeme tutarı faturanın kalan borcundan fazla"</th><td>Aynı kural tedarikçi ödemelerinde de geçerlidir.</td></tr><tr><th>"Bu faturaya bağlı ... tahsilat var. Önce tahsilatları silin"</th><td>Tahsilatı olan fatura silinemez. Önce tahsilat kayıtlarını silin.</td></tr><tr><th>"Bu tedarikçiye bağlı sipariş veya fatura var"</th><td>Kayıt kullanılıyor; silinemez.</td></tr><tr><th>"Bu kayıt henüz talep/teklif aşamasında"</th><td>Mal kabul yapmadan önce fiyatları girip durumu Sipariş Verildi yapın.</td></tr><tr><th>"Bu e-posta başka bir kişi kartında kayıtlı"</th><td>Aynı e-posta ile ikinci kart açılamaz.</td></tr><tr><th>"... yetkiniz yok"</th><td>Rolünüz bu işlemi yapmaya izin vermiyor. Yöneticinizden yetki isteyin.</td></tr></tbody></table></div></section>
       <section class="guide-sec" id="gs-13"><h2><span class="gnum">13</span>Altın kurallar</h2><p class="guide-lead">Sistemin doğru çalışması için bunlara uyun.</p><div class="guide-item"><h3>Yapılması gerekenler</h3><div class="guide-ok"><ul style="margin:0;padding-left:18px;line-height:1.85"><li>Proje tahsilatlarını <strong>Proje Finans Durumu</strong> ekranından girin, Günlük Kayıt'tan değil.</li><li>Tedarikçi ödemelerini <strong>Faturalar &amp; Ödemeler</strong> ekranından girin, Günlük Kayıt'tan değil.</li><li>Tedarikçi faturasında <strong>PROJE alanını doldurun</strong> — projenin gerçek maliyeti buna bağlıdır.</li><li>Fatura ve tahsilatta <strong>vade tarihini</strong> girin — tüm gecikme takibi buna dayanır.</li><li>Tedarikçi kartına <strong>ödeme vadesini</strong> girin — sipariş ve fatura vadesi otomatik hesaplansın.</li><li>Kişi kartınızın e-postası <strong>giriş e-postanızla aynı</strong> olsun.</li><li>Döviz işlemlerinde <strong>kuru</strong> mutlaka girin.</li></ul></div></div><div class="guide-item"><h3>Yapılmaması gerekenler</h3><div class="guide-warn"><ul style="margin:0;padding-left:18px;line-height:1.85"><li>Aynı parayı iki yerden girmeyin (proje tahsilatı + günlük gelir gibi).</li><li>KMH kullanımını ve kredi kartı borcu ödemesini gelir/gider olarak girmeyin — bunlar varlıklar arası harekettir, Banka Merkezi'nden işlenir.</li><li>İşten ayrılan kişinin kartını silmeyin; geçmiş belgeler ona bağlıdır.</li><li>Yanlış SAP No ile açılmış siparişi düzeltmeye çalışmayın — numara değişmez. Faturası kesilmemişse silip yenisini açın.</li><li>Tahsilatı "hesap kapansın diye" fazla girmeyin; sistem zaten engeller.</li></ul></div></div><div class="guide-item"><h3>Bir şey ters giderse</h3><ol class="guide-steps"><li><strong>Proje Hareket Geçmişi</strong>ne bakın (Projeler ekranının altı). Hiçbir kayıt silinmez; kim ne zaman ne yaptı orada yazar.</li><li>Yanlış kaydı silin veya düzenleyin — sistem bağlı kayıtları (gelir, banka bakiyesi, proje durumu) kendiliğinden geri alır.</li><li>Durum otomatik geri alındıysa panik yapmayın; hareket geçmişinde nedeni yazar.</li><li>Emin değilseniz kaydı silmeden önce ekran görüntüsü alın.</li></ol></div></section>
@@ -4510,9 +4612,9 @@
 
 <script>
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-const PAGE_TITLES={weightCalc:'Mühendislik · Ağırlık Hesaplama',guide:'Kullanım Kılavuzu',people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
+const PAGE_TITLES={weightCalc:'Mühendislik · Ağırlık Hesaplama',cadLibrary:'Standart Ekipmanlar · Hazır CAD Datalar',catalogs:'Standart Ekipmanlar · Kataloglar',guide:'Kullanım Kılavuzu',people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.17.0';
+const APP_VERSION='0.18.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -4604,7 +4706,7 @@ const ROLE_LABELS={admin:'Yönetici',accounting:'Muhasebe',engineer:'Mühendis /
 const APP_MODULES=[
   {key:'finance',   label:'Finans',            pages:['dashboard','ai','daily','fixed','forecast','banking','creditCards','reports','plan5','categories']},
   {key:'project',   label:'Proje Yönetimi',    pages:['projectMeetings','projects','projectCosts','projectProduction','projectFiles','projectFinance']},
-  {key:'engineering',label:'Mühendislik',      pages:['weightCalc']},
+  {key:'engineering',label:'Mühendislik',      pages:['weightCalc','cadLibrary','catalogs']},
   {key:'purchase',  label:'Satın Alma',        pages:['suppliers','purchaseOrders','supplierInvoices']},
   {key:'current',   label:'Cari Hesaplar',     pages:['receivables','payables']},
   {key:'management',label:'Yönetim Raporları', pages:['execDashboard']},
@@ -4832,7 +4934,7 @@ function findNavButton(id){
 const NAV_GROUPS={
   finance:['ai','daily','fixed','forecast','banking','creditCards'],
   project:['projectMeetings','projects','projectCosts','projectProduction','projectFiles','projectFinance'],
-  engineering:['weightCalc'],
+  engineering:['weightCalc','cadLibrary','catalogs'],
   purchase:['suppliers','purchaseOrders','supplierInvoices'],
   current:['receivables','payables'],
   report:['execDashboard','reports','plan5','export'],
@@ -6782,7 +6884,7 @@ function rerenderActivePage(){
   const active=document.querySelector('.page.active');
   if(!active)return;
   const id=active.id.replace('page-','');
-  const renders={weightCalc:renderWeightCalc,guide:renderGuide,people:renderPeople,receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
+  const renders={weightCalc:renderWeightCalc,cadLibrary:()=>renderStdLib('cad'),catalogs:()=>renderStdLib('catalog'),guide:renderGuide,people:renderPeople,receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
   if(renders[id])renders[id]();
 }
 
@@ -7495,7 +7597,7 @@ function showPage(id,btn){
   closeMobileNav();
   document.getElementById('topbar-title').textContent=PAGE_TITLES[id]||'';
   populateCatSelects();
-  const renders={weightCalc:renderWeightCalc,guide:renderGuide,people:renderPeople,receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
+  const renders={weightCalc:renderWeightCalc,cadLibrary:()=>renderStdLib('cad'),catalogs:()=>renderStdLib('catalog'),guide:renderGuide,people:renderPeople,receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
   if(renders[id])renders[id]();
   if(id==='billing'&&isAdmin()&&currentCompanyId)refreshSubscriptionRequests(false);
   updateBillingAlert();
@@ -11516,6 +11618,384 @@ function renderWeightCalc(){
   if(f&&!f.innerHTML){onEngMaterialChange();onEngSectionChange();}
   else engCalc();
   renderEngList();
+}
+
+/* ──────── v0.18.0 — MÜHENDİSLİK: STANDART EKİPMANLAR ────────
+   İki kütüphane vardır: Hazır CAD Datalar ve Kataloglar. Her kütüphanede
+   kullanıcı istediği kadar klasör ve alt klasör açabilir (örn. Yataklı
+   Rulmanlar CAD > UCF Serisi > UCF205) ve her klasörün içine STEP, DWG,
+   teknik resim veya PDF yükleyebilir. Mühendis dosyaya tıklayınca dosya
+   doğrudan iner. Klasör ağacı company_data.data.stdlib içinde tutulur,
+   dosyaların kendisi Supabase Storage 'project-files' bucket'ında
+   <firmaId>/stdlib/<kok>/... yolunda durur. Bucket politikaları yolun ilk
+   parçasındaki firma kimliğine baktığı için ek SQL gerekmez. */
+const STD_LIB_ROOTS={
+  cad:{key:'cad',ad:'Hazır CAD Datalar',page:'cadLibrary',
+       ipucu:'STEP, STP, DWG, DXF, IGES, SolidWorks dosyaları ve teknik resimler'},
+  catalog:{key:'catalog',ad:'Kataloglar',page:'catalogs',
+       ipucu:'Üretici katalogları, ölçü tabloları, PDF dokümanlar'}
+};
+const STD_LIB_SEED={cad:['Yataklı Rulmanlar CAD','Doğuş Kalıp CAD','Alhan CAD','Emes Teker CAD','Surfence CAD'],catalog:[]};
+const STD_LIB_MAX_MB=50;
+let _stdLibAt={cad:'',catalog:''};
+let _stdLibQ={cad:'',catalog:''};
+let _stdLibBusy=false;
+
+function stdLibStore(){
+  if(!data.stdlib||typeof data.stdlib!=='object')data.stdlib={folders:[],files:[],seeded:{}};
+  if(!Array.isArray(data.stdlib.folders))data.stdlib.folders=[];
+  if(!Array.isArray(data.stdlib.files))data.stdlib.files=[];
+  if(!data.stdlib.seeded||typeof data.stdlib.seeded!=='object')data.stdlib.seeded={};
+  return data.stdlib;
+}
+function stdLibRoot(root){return STD_LIB_ROOTS[root]?root:'cad';}
+function stdLibCfg(root){return STD_LIB_ROOTS[stdLibRoot(root)];}
+function stdLibCanEdit(){return canModuleEdit('engineering');}
+function stdLibFolderById(id){if(!id)return null;return stdLibStore().folders.find(f=>String(f.id)===String(id))||null;}
+function stdLibFileById(id){return stdLibStore().files.find(f=>String(f.id)===String(id))||null;}
+function stdLibTr(v){return String(v||'').toLocaleLowerCase('tr');}
+function stdLibSort(a,b){return stdLibTr(a).localeCompare(stdLibTr(b),'tr',{numeric:true});}
+function stdLibChildren(root,parentId){
+  return stdLibStore().folders.filter(f=>f.root===root&&String(f.parentId||'')===String(parentId||''))
+    .sort((a,b)=>stdLibSort(a.name,b.name));
+}
+function stdLibFilesIn(root,folderId){
+  return stdLibStore().files.filter(f=>f.root===root&&String(f.folderId||'')===String(folderId||''))
+    .sort((a,b)=>stdLibSort(a.title||a.fileName,b.title||b.fileName));
+}
+function stdLibChain(root,folderId){
+  const out=[];let cur=stdLibFolderById(folderId),guard=0;
+  while(cur&&guard++<50){out.unshift(cur);cur=cur.parentId?stdLibFolderById(cur.parentId):null;}
+  return out;
+}
+function stdLibPathText(root,folderId){
+  const chain=stdLibChain(root,folderId);
+  return [stdLibCfg(root).ad].concat(chain.map(f=>f.name)).join(' › ');
+}
+function stdLibDescendants(root,folderId){
+  const out=[];const walk=(id)=>{stdLibChildren(root,id).forEach(c=>{out.push(String(c.id));walk(c.id);});};
+  walk(folderId);return out;
+}
+/* Klasörün kendisi dahil altındaki klasör ve dosya sayısı. */
+function stdLibCounts(root,folderId){
+  const ids=[String(folderId||'')].concat(stdLibDescendants(root,folderId));
+  const st=stdLibStore();
+  return {klasor:ids.length-1,dosya:st.files.filter(f=>f.root===root&&ids.indexOf(String(f.folderId||''))>=0).length};
+}
+function stdLibSize(b){
+  b=Number(b||0);if(!b)return '';
+  const u=['B','KB','MB','GB'];let i=0;
+  while(b>=1024&&i<u.length-1){b/=1024;i++;}
+  return (i?b.toFixed(1):String(Math.round(b)))+' '+u[i];
+}
+function stdLibExt(name){const p=String(name||'').split('.');return p.length>1?p.pop().toLowerCase():'';}
+function stdLibIcon(name){
+  const e=stdLibExt(name);
+  if(['step','stp','iges','igs','sldprt','sldasm','ipt','iam','x_t','x_b','sat','3dm','stl','prt','catpart'].indexOf(e)>=0)return '🧊';
+  if(['dwg','dxf'].indexOf(e)>=0)return '📐';
+  if(e==='pdf')return '📕';
+  if(['png','jpg','jpeg','gif','webp','bmp','tif','tiff','svg'].indexOf(e)>=0)return '🖼️';
+  if(['zip','rar','7z'].indexOf(e)>=0)return '🗜️';
+  if(['xls','xlsx','csv'].indexOf(e)>=0)return '📊';
+  if(['doc','docx','txt'].indexOf(e)>=0)return '📄';
+  return '📎';
+}
+function stdLibPreviewable(f){
+  if(!f)return false;
+  if(/^https?:\/\//i.test(f.url||''))return true;
+  const e=stdLibExt(f.fileName||f.title);
+  return e==='pdf'||['png','jpg','jpeg','gif','webp','bmp','svg'].indexOf(e)>=0;
+}
+/* İlk açılışta CAD kütüphanesinin hazır başlıkları bir kez oluşturulur.
+   Kullanıcı bunları silerse tekrar gelmez (seeded bayrağı). */
+function stdLibSeed(root){
+  const list=STD_LIB_SEED[root]||[];
+  if(!list.length)return false;
+  const st=stdLibStore();
+  if(st.seeded[root])return false;
+  if(st.folders.some(f=>f.root===root))return false;
+  if(!stdLibCanEdit())return false;
+  const now=new Date().toISOString(),who=currentUser&&currentUser.email||'';
+  list.forEach(ad=>st.folders.push({id:makeId('stdf'),root,parentId:'',name:ad,note:'',createdAt:now,createdBy:who}));
+  st.seeded[root]=true;
+  saveData(data);
+  return true;
+}
+function stdLibGo(root,folderId){
+  root=stdLibRoot(root);
+  _stdLibAt[root]=folderId?String(folderId):'';
+  const s=document.getElementById('stdlib-'+root+'-search');
+  if(s&&s.value){s.value='';_stdLibQ[root]='';}
+  renderStdLib(root);
+  const card=document.getElementById('stdlib-'+root+'-list');
+  if(card&&card.scrollIntoView)card.scrollIntoView({block:'nearest'});
+}
+function stdLibUp(root){
+  root=stdLibRoot(root);
+  const cur=stdLibFolderById(_stdLibAt[root]);
+  stdLibGo(root,cur?cur.parentId||'':'');
+}
+function stdLibSearchInput(root){
+  root=stdLibRoot(root);
+  _stdLibQ[root]=(document.getElementById('stdlib-'+root+'-search')?.value||'').trim();
+  renderStdLib(root);
+}
+function stdLibClearSearch(root){
+  root=stdLibRoot(root);
+  const s=document.getElementById('stdlib-'+root+'-search');if(s)s.value='';
+  _stdLibQ[root]='';renderStdLib(root);
+}
+function stdLibStatus(root,msg,tur){
+  const el=document.getElementById('stdlib-'+root+'-status');
+  if(!el)return;
+  el.textContent=msg||'';
+  el.style.display=msg?'':'none';
+  el.style.color=tur==='err'?'var(--danger)':(tur==='ok'?'var(--success)':'var(--text-muted)');
+}
+function stdLibAddFolder(root){
+  root=stdLibRoot(root);
+  if(!stdLibCanEdit())return denyAction('Klasör oluşturmak için Mühendislik modülünde düzenleme yetkisi gerekir.');
+  const inp=document.getElementById('stdlib-'+root+'-folder');
+  const noteEl=document.getElementById('stdlib-'+root+'-folder-note');
+  const ad=((inp&&inp.value)||'').trim();
+  if(!ad){alert('Klasör adı girin. Örnek: UCF Serisi');if(inp)inp.focus();return;}
+  const parentId=_stdLibAt[root]||'';
+  if(stdLibChildren(root,parentId).some(f=>stdLibTr(f.name)===stdLibTr(ad))){alert('Bu klasörün içinde aynı adlı bir klasör zaten var.');return;}
+  stdLibStore().folders.push({id:makeId('stdf'),root,parentId,name:ad,note:((noteEl&&noteEl.value)||'').trim(),
+    createdAt:new Date().toISOString(),createdBy:currentUser&&currentUser.email||''});
+  saveData(data);
+  if(inp)inp.value='';if(noteEl)noteEl.value='';
+  stdLibStatus(root,'"'+ad+'" klasörü oluşturuldu.','ok');
+  renderStdLib(root);
+}
+function stdLibRenameFolder(root,id){
+  root=stdLibRoot(root);
+  if(!stdLibCanEdit())return denyAction('Klasör adı değiştirme yetkisi gerekir.');
+  const f=stdLibFolderById(id);if(!f)return;
+  const ad=(prompt('Klasörün yeni adı:',f.name)||'').trim();
+  if(!ad||ad===f.name)return;
+  if(stdLibChildren(root,f.parentId||'').some(x=>String(x.id)!==String(f.id)&&stdLibTr(x.name)===stdLibTr(ad))){alert('Aynı adlı başka bir klasör var.');return;}
+  f.name=ad;saveData(data);renderStdLib(root);
+}
+function stdLibDeleteFolder(root,id){
+  root=stdLibRoot(root);
+  if(!stdLibCanEdit())return denyAction('Klasör silme yetkisi gerekir.');
+  const f=stdLibFolderById(id);if(!f)return;
+  const c=stdLibCounts(root,id);
+  if(c.klasor||c.dosya){
+    alert('"'+f.name+'" boş değil: içinde '+c.klasor+' klasör ve '+c.dosya+' dosya var.\nVeri kaybı olmasın diye önce içindekileri silin, sonra klasörü silin.');
+    return;
+  }
+  if(!confirm('"'+f.name+'" klasörü silinsin mi?'))return;
+  const st=stdLibStore();
+  st.folders=st.folders.filter(x=>String(x.id)!==String(id));
+  saveData(data);
+  if(String(_stdLibAt[root])===String(id))_stdLibAt[root]=f.parentId||'';
+  renderStdLib(root);
+}
+async function stdLibUpload(root){
+  root=stdLibRoot(root);
+  if(!stdLibCanEdit())return denyAction('Dosya yükleme yetkisi gerekir.');
+  if(_stdLibBusy)return;
+  const inp=document.getElementById('stdlib-'+root+'-file');
+  const titleEl=document.getElementById('stdlib-'+root+'-title');
+  const noteEl=document.getElementById('stdlib-'+root+'-note');
+  const linkEl=document.getElementById('stdlib-'+root+'-link');
+  const files=Array.from((inp&&inp.files)||[]);
+  const link=((linkEl&&linkEl.value)||'').trim();
+  const title=((titleEl&&titleEl.value)||'').trim();
+  const note=((noteEl&&noteEl.value)||'').trim();
+  const folderId=_stdLibAt[root]||'';
+  if(!files.length&&!link){alert('Dosya seçin veya bir bağlantı adresi girin.');return;}
+  const st=stdLibStore();
+  const now=()=>new Date().toISOString(),who=currentUser&&currentUser.email||'';
+  const temizle=()=>{
+    [titleEl,noteEl,linkEl].forEach(el=>{if(el)el.value='';});
+    if(inp)inp.value='';
+  };
+  if(!files.length){
+    if(!/^https?:\/\//i.test(link)){alert('Bağlantı adresi http:// veya https:// ile başlamalıdır.');return;}
+    st.files.push({id:makeId('stdx'),root,folderId,title:title||link,fileName:'',size:0,url:link,note,
+      createdAt:now(),createdBy:who});
+    saveData(data);temizle();
+    stdLibStatus(root,'Bağlantı kaydedildi.','ok');
+    renderStdLib(root);
+    return;
+  }
+  const sb=ensureSupabase();
+  if(!sb||!currentCompanyId){alert('Dosya yükleme için bulut bağlantısı ve firma seçimi gerekir.');return;}
+  const buyuk=files.find(f=>f.size>STD_LIB_MAX_MB*1024*1024);
+  if(buyuk){alert('"'+buyuk.name+'" dosyası '+stdLibSize(buyuk.size)+'. Tek dosya sınırı '+STD_LIB_MAX_MB+' MB.\nDaha büyük dosyaları sıkıştırıp (ZIP) yükleyin.');return;}
+  _stdLibBusy=true;
+  const btn=document.getElementById('stdlib-'+root+'-upload-btn');
+  if(btn){btn.disabled=true;btn.dataset.eski=btn.textContent;}
+  let ok=0,hata='';
+  for(let i=0;i<files.length;i++){
+    const file=files[i];
+    if(btn)btn.textContent='Yükleniyor '+(i+1)+'/'+files.length+'…';
+    stdLibStatus(root,'"'+file.name+'" yükleniyor ('+(i+1)+'/'+files.length+')…');
+    const safeName=String(file.name||'dosya').replace(/[^a-zA-Z0-9._-]+/g,'-');
+    const path=currentCompanyId+'/stdlib/'+root+'/'+Date.now()+'-'+i+'-'+safeName;
+    try{
+      const {error}=await sb.storage.from('project-files').upload(path,file,{upsert:false});
+      if(error){hata=error.message;break;}
+    }catch(e){hata=String(e&&e.message||e);break;}
+    st.files.push({id:makeId('stdx'),root,folderId,
+      title:(files.length===1&&title)?title:(title?title+' — '+file.name:file.name),
+      fileName:file.name,size:file.size,url:path,note,createdAt:now(),createdBy:who});
+    ok++;
+  }
+  if(ok)saveData(data);
+  if(btn){btn.disabled=false;btn.textContent=btn.dataset.eski||'⬆️ Yükle';}
+  _stdLibBusy=false;
+  if(hata)stdLibStatus(root,(ok?ok+' dosya yüklendi. ':'')+'Hata: '+hata,'err');
+  else{temizle();stdLibStatus(root,ok+' dosya "'+stdLibPathText(root,folderId)+'" içine yüklendi.','ok');}
+  renderStdLib(root);
+}
+async function stdLibSignedUrl(f,indir){
+  const sb=ensureSupabase();
+  if(!sb){alert('Bulut bağlantısı yok. Dosyayı açmak için internet bağlantınızı ve oturumunuzu kontrol edin.');return '';}
+  const opt=indir?{download:f.fileName||f.title||true}:{};
+  const {data:sgn,error}=await sb.storage.from('project-files').createSignedUrl(f.url,60*10,opt);
+  if(error||!sgn){alert('Dosya bağlantısı oluşturulamadı: '+((error&&error.message)||'bilinmeyen hata'));return '';}
+  return sgn.signedUrl;
+}
+async function stdLibDownload(root,id){
+  const f=stdLibFileById(id);if(!f||!f.url)return;
+  if(/^https?:\/\//i.test(f.url)){window.open(f.url,'_blank','noopener');return;}
+  const href=await stdLibSignedUrl(f,true);
+  if(!href)return;
+  const a=document.createElement('a');
+  a.href=href;a.download=f.fileName||f.title||'dosya';a.rel='noopener';
+  document.body.appendChild(a);a.click();a.remove();
+}
+async function stdLibPreview(root,id){
+  const f=stdLibFileById(id);if(!f||!f.url)return;
+  if(/^https?:\/\//i.test(f.url)){window.open(f.url,'_blank','noopener');return;}
+  const href=await stdLibSignedUrl(f,false);
+  if(href)window.open(href,'_blank','noopener');
+}
+function stdLibRenameFile(root,id){
+  root=stdLibRoot(root);
+  if(!stdLibCanEdit())return denyAction('Dosya adı değiştirme yetkisi gerekir.');
+  const f=stdLibFileById(id);if(!f)return;
+  const ad=(prompt('Dosyanın listede görünecek adı:',f.title||f.fileName||'')||'').trim();
+  if(!ad||ad===f.title)return;
+  f.title=ad;saveData(data);renderStdLib(root);
+}
+async function stdLibDeleteFile(root,id){
+  root=stdLibRoot(root);
+  if(!stdLibCanEdit())return denyAction('Dosya silme yetkisi gerekir.');
+  const f=stdLibFileById(id);if(!f)return;
+  const link=/^https?:\/\//i.test(f.url||'');
+  if(!confirm('"'+(f.title||f.fileName)+'" '+(link?'bağlantısı listeden kaldırılsın mı?':'dosyası kalıcı olarak silinsin mi? Bu işlem geri alınamaz.')))return;
+  if(!link&&f.url){
+    const sb=ensureSupabase();
+    if(sb){
+      try{
+        const {error}=await sb.storage.from('project-files').remove([f.url]);
+        if(error)stdLibStatus(root,'Kayıt silindi ama dosya buluttan kaldırılamadı: '+error.message,'err');
+      }catch(e){stdLibStatus(root,'Kayıt silindi ama dosya buluttan kaldırılamadı.','err');}
+    }
+  }
+  const st=stdLibStore();
+  st.files=st.files.filter(x=>String(x.id)!==String(id));
+  saveData(data);renderStdLib(root);
+}
+function stdLibFolderCard(root,f){
+  const c=stdLibCounts(root,f.id);
+  const meta=[c.klasor?c.klasor+' klasör':'',c.dosya?c.dosya+' dosya':''].filter(Boolean).join(' · ')||'Boş klasör';
+  const edit=stdLibCanEdit();
+  return '<div class="stdlib-card stdlib-folder" onclick="stdLibGo(\''+root+'\',\''+f.id+'\')" title="Aç: '+htmlEsc(f.name)+'">'
+    +'<div class="stdlib-top"><div class="stdlib-ico">📁</div>'
+    +'<div class="stdlib-main"><div class="stdlib-name">'+htmlEsc(f.name)+'</div>'
+    +'<div class="stdlib-meta">'+htmlEsc(meta)+'</div>'
+    +(f.note?'<div class="stdlib-note">'+htmlEsc(f.note)+'</div>':'')+'</div></div>'
+    +'<div class="stdlib-act">'
+    +(edit?'<button class="btn btn-sm" type="button" onclick="event.stopPropagation();stdLibRenameFolder(\''+root+'\',\''+f.id+'\')" title="Adını değiştir">✏️</button>'
+          +'<button class="btn btn-sm btn-del" type="button" onclick="event.stopPropagation();stdLibDeleteFolder(\''+root+'\',\''+f.id+'\')" title="Sil">🗑</button>':'')
+    +'</div></div>';
+}
+function stdLibFileCard(root,f,yolGoster){
+  const edit=stdLibCanEdit();
+  const link=/^https?:\/\//i.test(f.url||'');
+  const alt=[link?'Bağlantı':htmlEsc(f.fileName||''),stdLibSize(f.size)].filter(Boolean).join(' · ');
+  return '<div class="stdlib-card stdlib-file" ondblclick="stdLibDownload(\''+root+'\',\''+f.id+'\')">'
+    +'<div class="stdlib-top"><div class="stdlib-ico">'+(link?'🔗':stdLibIcon(f.fileName||f.title))+'</div>'
+    +'<div class="stdlib-main"><div class="stdlib-name">'+htmlEsc(f.title||f.fileName||'Dosya')+'</div>'
+    +'<div class="stdlib-meta">'+alt+'</div>'
+    +(yolGoster?'<div class="stdlib-path">'+htmlEsc(stdLibPathText(root,f.folderId))+'</div>':'')
+    +(f.note?'<div class="stdlib-note">'+htmlEsc(f.note)+'</div>':'')+'</div></div>'
+    +'<div class="stdlib-act">'
+    +'<button class="btn btn-sm btn-primary" type="button" onclick="stdLibDownload(\''+root+'\',\''+f.id+'\')">⬇️ İndir</button>'
+    +(stdLibPreviewable(f)?'<button class="btn btn-sm" type="button" onclick="stdLibPreview(\''+root+'\',\''+f.id+'\')" title="Yeni sekmede aç">👁</button>':'')
+    +(edit?'<button class="btn btn-sm" type="button" onclick="stdLibRenameFile(\''+root+'\',\''+f.id+'\')" title="Adını değiştir">✏️</button>'
+          +'<button class="btn btn-sm btn-del" type="button" onclick="stdLibDeleteFile(\''+root+'\',\''+f.id+'\')" title="Sil">🗑</button>':'')
+    +'</div></div>';
+}
+function stdLibSearchResults(root,q){
+  const nq=stdLibTr(q);
+  const st=stdLibStore();
+  const klasorler=st.folders.filter(f=>f.root===root&&(stdLibTr(f.name).indexOf(nq)>=0||stdLibTr(f.note).indexOf(nq)>=0))
+    .sort((a,b)=>stdLibSort(a.name,b.name));
+  const dosyalar=st.files.filter(f=>f.root===root&&(stdLibTr(f.title).indexOf(nq)>=0||stdLibTr(f.fileName).indexOf(nq)>=0
+      ||stdLibTr(f.note).indexOf(nq)>=0||stdLibTr(stdLibPathText(root,f.folderId)).indexOf(nq)>=0))
+    .sort((a,b)=>stdLibSort(a.title||a.fileName,b.title||b.fileName));
+  let html='<div class="section-sub"><strong>'+klasorler.length+'</strong> klasör, <strong>'+dosyalar.length+'</strong> dosya bulundu — arama tüm kütüphanede yapılır.</div>';
+  if(!klasorler.length&&!dosyalar.length)
+    return html+'<div class="empty">"'+htmlEsc(q)+'" için sonuç yok. Farklı bir kelime deneyin veya <button class="btn btn-sm" type="button" onclick="stdLibClearSearch(\''+root+'\')">aramayı temizleyin</button>.</div>';
+  html+='<div class="stdlib-grid">'
+    +klasorler.map(f=>stdLibFolderCard(root,f)).join('')
+    +dosyalar.map(f=>stdLibFileCard(root,f,true)).join('')+'</div>';
+  return html;
+}
+function renderStdLib(root){
+  root=stdLibRoot(root);
+  const cfg=stdLibCfg(root);
+  stdLibSeed(root);
+  if(_stdLibAt[root]&&!stdLibFolderById(_stdLibAt[root]))_stdLibAt[root]='';
+  const edit=stdLibCanEdit();
+  const cur=_stdLibAt[root]||'';
+  const konum=stdLibPathText(root,cur);
+  ['tools','upload-card'].forEach(k=>{
+    const el=document.getElementById('stdlib-'+root+'-'+k);
+    if(el)el.style.display=edit?'':'none';
+  });
+  const hint=document.getElementById('stdlib-'+root+'-readonly');
+  if(hint)hint.style.display=edit?'none':'';
+  const konumEl=document.getElementById('stdlib-'+root+'-konum');
+  if(konumEl)konumEl.textContent=konum;
+  const btnAdd=document.getElementById('stdlib-'+root+'-folder-btn');
+  if(btnAdd)btnAdd.textContent=cur?'📁 Klasörün İçine Yeni Klasör':'📁 Yeni Başlık / Klasör Oluştur';
+  const lblAdd=document.getElementById('stdlib-'+root+'-folder-label');
+  if(lblAdd)lblAdd.textContent=cur?('"'+stdLibChain(root,cur).slice(-1)[0].name+'" içinde yeni klasör adı'):'Yeni başlık (klasör) adı';
+  const crumb=document.getElementById('stdlib-'+root+'-crumb');
+  if(crumb){
+    const chain=stdLibChain(root,cur);
+    crumb.innerHTML='<button type="button" class="stdlib-crumb-btn'+(cur?'':' cur')+'" onclick="stdLibGo(\''+root+'\',\'\')">🏠 '+htmlEsc(cfg.ad)+'</button>'
+      +chain.map((f,i)=>'<span class="stdlib-sep">›</span><button type="button" class="stdlib-crumb-btn'+(i===chain.length-1?' cur':'')+'" onclick="stdLibGo(\''+root+'\',\''+f.id+'\')">'+htmlEsc(f.name)+'</button>').join('')
+      +(cur?'<button type="button" class="stdlib-crumb-btn up" onclick="stdLibUp(\''+root+'\')">⬆️ Üst klasör</button>':'');
+  }
+  const wrap=document.getElementById('stdlib-'+root+'-list');
+  if(!wrap)return;
+  const q=_stdLibQ[root]||'';
+  if(q){wrap.innerHTML=stdLibSearchResults(root,q);return;}
+  const klasorler=stdLibChildren(root,cur);
+  const dosyalar=stdLibFilesIn(root,cur);
+  let html='';
+  if(!cur){
+    const kokKlasor=stdLibStore().folders.filter(f=>f.root===root).length;
+    const kokDosya=stdLibStore().files.filter(f=>f.root===root).length;
+    html+='<div class="section-sub">Bu kütüphanede toplam <strong>'+kokKlasor+'</strong> klasör ve <strong>'+kokDosya+'</strong> dosya var. '+htmlEsc(cfg.ipucu)+'.</div>';
+  }
+  if(!klasorler.length&&!dosyalar.length){
+    html+='<div class="empty">'+(cur?'Bu klasör boş.':'Kütüphane boş.')+(edit?' Yukarıdan yeni klasör oluşturun veya dosya yükleyin.':' Dosya eklemek için Mühendislik modülünde düzenleme yetkisi gerekir.')+'</div>';
+  }else{
+    html+='<div class="stdlib-grid">'
+      +klasorler.map(f=>stdLibFolderCard(root,f)).join('')
+      +dosyalar.map(f=>stdLibFileCard(root,f,false)).join('')+'</div>';
+  }
+  wrap.innerHTML=html;
 }
 
 /* ──────── v0.15.0 — KİŞİ KARTLARI ────────

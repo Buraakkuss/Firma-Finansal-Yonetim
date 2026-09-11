@@ -1,0 +1,29 @@
+NakitPilot v0.18.0 — Kurulum notu
+
+DOSYALAR
+Domaine kopyalanacak dosyalar:
+  index.html            (değişti — yeni modül, yeni sayfalar, kılavuz konusu)
+  sw.js                 (değişti — APP_VERSION 0.18.0)
+  manifest.webmanifest  (değişti — start_url ?v=0.18.0)
+Diğer dosyalarda (icons/, guide/) değişiklik yok.
+
+Üzerine yazmak yeterlidir. GitHub'daki otomatik yayın (Actions) main dalına
+birleştikten sonra bu dosyaları kendisi yükler.
+
+SUPABASE
+Çalıştırılacak SQL YOKTUR. Ayrıntı için SUPABASE-NOTU-v0.18.0.txt.
+
+AÇILIŞTA NE OLUR
+İlk kez "Mühendislik → Hazır CAD Datalar" ekranını açan düzenleme yetkili
+kullanıcıda beş hazır başlık (Yataklı Rulmanlar CAD, Doğuş Kalıp CAD, Alhan CAD,
+Emes Teker CAD, Surfence CAD) bir kez oluşturulur ve kaydedilir. Bu bir defaya
+mahsustur; sonradan silinirse geri gelmez.
+
+TARAYICI ÖNBELLEĞİ
+Sürüm numarası değiştiği için servis çalışanı (sw.js) yeni sürümü kendisi
+yükler. Ekran eski görünürse sayfayı bir kez yenileyin (Ctrl+F5).
+
+GERİYE DÖNÜŞ
+Bu sürüm mevcut hiçbir veriyi değiştirmez, taşımaz veya silmez. Yeni veri
+company_data.data.stdlib anahtarında tutulur. Eski index.html'e dönülürse bu
+anahtar olduğu yerde kalır, sadece ekranlar görünmez.

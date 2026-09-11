@@ -1,0 +1,76 @@
+NakitPilot v0.18.0 — Test raporu
+Tarih: 11 Eylül 2026
+
+ÖZET
+  667 test çalıştı, 667 geçti, 0 kaldı.
+  Yeni modül için yazılan test: e2e-10-kutuphane (80 test).
+  Mevcut 587 testin tamamı yeniden çalıştırıldı; gerileme yok.
+
+SÖZDİZİMİ VE DOSYA DOĞRULAMASI
+  index.html script blokları ....... 1 blok, 0 hata
+  sw.js ............................ node --check temiz
+  manifest.webmanifest ............. geçerli JSON
+
+YENİ MODÜL TESTLERİ (e2e-10-kutuphane — 80 test)
+1) Menü ve sayfa kaydı (9 test)
+   - İki sayfa (Hazır CAD Datalar, Kataloglar) tanımlı, başlıkları doğru.
+   - engineering modülüne ve NAV grubuna eklendi, izin kontrolünden geçiyor.
+   - Sol menüde "STANDART EKİPMANLAR" ara başlığı ve iki buton görünüyor.
+2) İlk açılış (11 test)
+   - Beş hazır CAD başlığı bir kez oluşuyor, yeniden çizimde çoğalmıyor.
+   - Veri company_data.data.stdlib içine yazılıyor, kaydetme çağrılıyor.
+   - Kataloglar boş başlıyor.
+3) Klasör ağacı (11 test)
+   - Yataklı Rulmanlar CAD › UCF Serisi › UCF205 / UCF206 oluşturuldu.
+   - Yol çubuğu kademeleri, üst klasör butonu, doğal sıralama (205 < 206).
+   - Aynı adlı klasör (büyük/küçük harf farkı dahil) engellendi.
+   - Üst klasörde alt sayım doğru görünüyor (3 klasör).
+4) Dosya yükleme ve indirme (14 test)
+   - İki dosya (STEP + DWG) tek seferde yüklendi.
+   - Yol: test-co/stdlib/cad/... — firma kimliği ile başlıyor (RLS uyumlu),
+     içinde Türkçe karakter ve boşluk yok.
+   - Boyut, ikon (STEP 🧊 / DWG 📐), not ve durum mesajı doğru.
+   - İndirme imzalı bağlantı ile ve download parametresiyle yapılıyor;
+     tarayıcıda dosya adıyla iniyor.
+5) Kataloglar (11 test)
+   - PDF yüklendi, verilen adla göründü, ayrı klasör yoluna yazıldı.
+   - PDF'te önizleme butonu var ve önizlemede indirme zorlanmıyor.
+   - Dış bağlantı kaydı eklendi (Storage'a yükleme yapılmadı, 🔗 ikonu).
+   - http/https ile başlamayan bağlantı reddedildi.
+   - İki kütüphanenin verisi birbirine karışmıyor.
+6) Arama (7 test)
+   - Kütüphanenin tamamında arama; klasör, dosya adı ve not içinde.
+   - Sonuçta dosyanın klasör yolu gösteriliyor; sonuç yoksa uyarı.
+   - Arama temizlenince bulunulan klasöre dönülüyor; sayfa yeniden
+     açıldığında son klasör hatırlanıyor.
+7) Yeniden adlandırma ve silme (7 test)
+   - Klasör adı değişiyor.
+   - DOLU KLASÖR SİLİNMİYOR: kaç klasör/dosya içerdiği söyleniyor.
+   - Boş klasör siliniyor; dosya silindiğinde Storage'dan da kaldırılıyor.
+8) Yetki (7 test)
+   - Rapor kullanıcısında klasör araçları ve yükleme kartı gizli,
+     salt-okunur uyarısı görünüyor, silme butonu yok.
+   - İNDİRME BUTONU DURUYOR (görüntüleme yetkisi olan indirebiliyor).
+   - Yetkisiz kullanıcı fonksiyonu doğrudan çağırsa bile klasör açamıyor.
+   - Mühendis rolünde düzenleme açık.
+9) Görsel ve mobil (3 test)
+   - 1500 px ve 390 px ekranlarda görüntü alındı.
+   - Telefonda yatay taşma yok, kartlar tek sütuna iniyor.
+   - Sayfada JavaScript hatası yok.
+
+GERİLEME TESTLERİ (mevcut 587 test — hepsi geçti)
+  e2e-1-finans 14 · e2e-2-proje 43 · e2e-3-kenar 39 · e2e-4-satinalma 50
+  e2e-5-butun 28 · e2e-6-yetki 31 · e2e-7-kisi 58 · e2e-8-kilavuz 28
+  e2e-9-muhendislik 36 · ui-test 33 · test-v0140 65
+  test-v083 7 · test-v090 25 · test-v092 18 · test-v095 8 · test-v096 20
+  test-v0100 26 · test-v0110 27 · test-v0120 31
+
+KILAVUZ
+  Kılavuz 13 bölüm / 40 konu oldu. "CAD", "UCF", "katalog" aramaları yeni
+  konuyu buluyor.
+
+NOT — TEST ORTAMI
+  Supabase Storage çağrıları testte taklit edildi (upload / createSignedUrl /
+  remove kaydediliyor). Gerçek yükleme canlı ortamda, gerçek oturumla
+  yapılmalıdır; politika yolu (firma kimliği ile başlayan yol) testte
+  doğrulandı.

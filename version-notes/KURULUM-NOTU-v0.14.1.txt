@@ -1,0 +1,21 @@
+NakitPilot v0.14.1 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu; dosya yüklemeye gerek yoktur.
+- ?v=0.14.1 ile açın, görünüm eski kalırsa Ctrl + F5.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Yapmanız gereken bir şey yok
+- Daha önce tedarikçi kartlarına girdiğiniz vadeler olduğu gibi kullanılır.
+- Sipariş açarken tedarikçiyi seçtiğinizde vade alanı kendiliğinden dolar.
+- Farklı bir vade uygulayacaksanız alana yazmanız yeterli; o sipariş kendi
+  vadesini korur.
+
+Kontrol listesi
+1) Satın Alma > Tedarikçiler: "Vade" sütununda gün sayısı görünüyor mu?
+2) Satın Alma > Satın Alma Siparişleri: tedarikçi seçin, "Ödeme Vadesi (gün)"
+   alanı kendiliğinden dolmalı ve altta "cari kartından geldi" yazmalı.
+3) Talep kaydedip "🖨 Teklif Formu" açın: "Ödeme Vadesi" satırında cari
+   vadeniz yazmalı.

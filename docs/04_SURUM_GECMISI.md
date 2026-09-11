@@ -204,4 +204,15 @@
   Verildi" yapılır ve genel şartlı sipariş formu basılır. **SAP No değişmez.**
 - "Sipariş Verildi" ve sonrası durumlarda fiyatsız kayıt engellenir.
 
-Güncel baz sürüm: **v0.14.0**
+## v0.14.1
+- Düzeltme: teklif talep formu cari kartındaki ödeme vadesini yazmıyordu,
+  sabit olarak "Teklifinizde belirtiniz" basıyordu. Artık cari vadesi yazılır.
+- Sipariş ekranındaki "Ödeme Vadesi (gün)" alanı, tedarikçi seçilince cari
+  kartındaki vadeyle otomatik dolar; elle farklı gün yazılırsa yalnız o
+  sipariş için geçerli olur.
+- Vade cari ile aynıysa siparişe kaydedilmez; cari kartı güncellenince
+  varsayılan vadeli tüm siparişler yeni vadeyi kullanır.
+- Form üstündeki açıklama vadenin cariden mi yoksa siparişe özel mi
+  geldiğini söyler.
+
+Güncel baz sürüm: **v0.14.1**

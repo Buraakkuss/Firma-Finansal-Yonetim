@@ -1,0 +1,15 @@
+NakitPilot v0.10.0 Supabase Notu
+
+Uygulamanın çalışması için şema değişikliği ZORUNLU DEĞİLDİR.
+
+İsteğe bağlı SQL: sql/nakitpilot-satinalma-rolu-v0.10.0.sql
+- company_members ve company_invitations tablolarındaki rol kısıtına
+  'purchasing' değerini ekler.
+- np_can_edit_company fonksiyonunu, satın alma rolünün de ortak veriye
+  yazabilmesi için günceller.
+- Yalnız kısıt genişletilir; veri silinmez, mevcut roller etkilenmez.
+- Yerel PostgreSQL 16 üzerinde gerçek şema ile test edilmiştir.
+
+Kullanıcı bazlı modül izinleri veritabanı şeması gerektirmez;
+company_data.data içinde _modulePermissions alanında tutulur ve Banka
+Merkezi'nin normalize tablo senkronizasyonuna dahil değildir.

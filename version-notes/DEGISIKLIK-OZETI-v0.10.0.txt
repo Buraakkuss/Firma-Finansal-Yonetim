@@ -1,0 +1,46 @@
+NakitPilot v0.10.0 — Modül ve yetki altyapısı (ERP temeli)
+
+Bu sürüm, sistemin ERP ekosistemine dönüşmesi için gereken temeli kurar.
+
+Yeni: modül yapısı
+- Sistem altı modüle bölündü:
+  Finans, Proje Yönetimi, Satın Alma, Cari Hesaplar, Yönetim Raporları, Sistem.
+- Her sayfa bir modüle bağlıdır. Sayfa erişimi artık sabit rol listelerinden
+  değil, modül izinlerinden türer.
+
+Yeni: üç seviyeli izin
+- Her kullanıcının her modülde üç seviyeden biri olur:
+  Erişim yok / Görüntüleme / Düzenleme.
+- Seviye önce kullanıcıya özel izinden, yoksa rolün varsayılanından gelir.
+
+Rol varsayılanları
+  Yönetici        : tüm modüllerde düzenleme
+  Muhasebe        : Finans ve Cari düzenleme; Proje, Satın Alma, Yönetim görüntüleme
+  Mühendis/Proje  : Proje düzenleme; Satın Alma ve Cari görüntüleme; Finans erişimi yok
+  Satın Alma      : Satın Alma düzenleme; Finans, Proje ve Cari görüntüleme
+  Rapor Kullanıcısı: tüm modüllerde görüntüleme
+
+- Böylece muhasebe gelir ve gideri girer; satın alma ile proje ekibi kendi
+  işlerinin para karşılığını görebilir ama değiştiremez.
+
+Yeni: Modül Yetkileri ekranı
+- Firma & Ekip sayfasına "Modül Yetkileri" kartı eklendi.
+- Yönetici, her kullanıcı için her modülün seviyesini tablodan seçer.
+- Boş bırakılan hücrede rolün varsayılanı geçerli olur.
+- "Tümünü Rol Varsayılanına Döndür" ile tüm özel izinler temizlenir.
+
+Yeni: Satın Alma rolü
+- Ekip rollerine "Satın Alma" eklendi.
+- Rolün veritabanında tanımlanması için sql/nakitpilot-satinalma-rolu-v0.10.0.sql
+  dosyasının bir kez çalıştırılması gerekir. Zorunlu değildir; yetki, mevcut
+  rollere Modül Yetkileri ekranından da verilebilir.
+
+Güvenlik sıkılaştırması
+- Firma & Ekip sayfası yalnız yöneticiye açıktır.
+- Yasal & Hesap sayfası yönetici veya finans düzenleme yetkisi olanlara açıktır.
+- Sol menüdeki başlıklar, altındaki tüm sayfalar gizliyse otomatik gizlenir.
+
+Supabase
+- Uygulama şema değişikliği olmadan çalışır.
+- Satın Alma rolünü ayrı bir rol olarak kullanmak isterseniz ilgili SQL dosyası
+  çalıştırılmalıdır.

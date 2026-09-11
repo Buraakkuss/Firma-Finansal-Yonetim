@@ -136,4 +136,13 @@
 - Tahsilat düzenlenince bağlı gelir güncelleniyor, silinince geri alınıyor.
 - Ödeme planı oluşturulurken durum değişikliği artık geçiş kurallarından geçiyor.
 
-Güncel baz sürüm: **v0.9.6**
+## v0.10.0
+- ERP temeli: sistem altı modüle bölündü (Finans, Proje, Satın Alma, Cari,
+  Yönetim Raporları, Sistem).
+- Üç seviyeli izin: her kullanıcının her modülde erişim yok / görüntüleme /
+  düzenleme seviyesi olabilir. Seviye kullanıcı iznine, yoksa rol varsayılanına bakar.
+- Firma & Ekip sayfasına "Modül Yetkileri" matrisi eklendi.
+- "Satın Alma" rolü eklendi (sql/nakitpilot-satinalma-rolu-v0.10.0.sql).
+- Firma & Ekip ve Yasal sayfaları için yetki sıkılaştırıldı.
+
+Güncel baz sürüm: **v0.10.0**

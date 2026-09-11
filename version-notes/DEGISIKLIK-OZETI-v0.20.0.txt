@@ -1,0 +1,57 @@
+NakitPilot v0.20.0 — Yeni kullanıcı kaydı, yönetici onayı ve davet düzeltmeleri
+
+ÖNCE ŞUNU YAPIN
+Supabase > SQL Editor'de sql/nakitpilot-uyelik-onay-v0.20.0.sql dosyasını tek
+parça çalıştırın. Bu yapılmadan üyelik talebi ekranı ve yeni davet rolleri
+çalışmaz (ekranlar bunu anlatan bir uyarı gösterir).
+
+1) GİRİŞ EKRANI ARTIK İKİ SEKMELİ
+   - "Giriş Yap": e-posta + şifre (eskisi gibi) ve Şifremi Unuttum.
+   - "Kayıt Ol": ad soyad, e-posta, telefon (opsiyonel), şifre ve şifre tekrarı.
+   Şifreler tutmuyorsa, şifre kısaysa veya e-posta hatalıysa sunucuya hiç
+   gidilmez, ekranda anlaşılır uyarı çıkar. E-posta zaten kayıtlıysa
+   "bu e-posta ile zaten bir hesap var" denir ve giriş sekmesine dönülür.
+   Ad soyad ve telefon kullanıcı kaydına yazılır; sonraki ekranlarda otomatik
+   doldurulur. Doğrulama maili uygulamanın kendi adresine döner.
+
+2) YENİ KULLANICI NASIL İÇERİ GİRER (onay akışı)
+   a. Kişi "Kayıt Ol" ile hesabını açar. (Supabase'de e-posta doğrulaması
+      açıksa önce mailindeki bağlantıyı açar.)
+   b. Giriş yapar. Henüz bir firmaya bağlı olmadığı için ÜYELİK TALEBİ ekranı
+      gelir: firma seçer, istediği rolü, adını, telefonunu ve isterse bir not
+      yazar, "Katılma Talebi Gönder" der.
+   c. Ekranda "onay bekliyor" yazar. İsterse talebini geri çekebilir.
+   d. Yönetici: Ayarlar > Firma & Ekip > "Üyelik Talepleri" kartında talebi
+      görür (ad, e-posta, telefon, not, istediği rol ve tarih). Verilecek rolü
+      seçip "Onayla" der; ya da "Reddet" deyip sebep yazar.
+   e. Onaylanan kişi "Onaylandı mı? Kontrol Et" düğmesine basar (veya tekrar
+      giriş yapar) ve panel açılır. Reddedilen kişi yöneticinin yazdığı sebebi
+      görür, gerekirse yeniden talep gönderir.
+
+3) ÜYELİK TALEPLERİNİ KAPATMA
+   Firma & Ekip ekranındaki "Bu firma yeni üyelik taleplerine açık olsun"
+   kutusunun işaretini kaldırırsanız kimse talep gönderemez; o zaman yeni
+   kullanıcıları yalnız davet bağlantısıyla eklersiniz.
+
+4) DAVET BAĞLANTISINDA DÜZELTİLENLER
+   - Davet rolü eksikti: artık beş rolün hepsi seçilebiliyor (Rapor Kullanıcısı,
+     Muhasebe, Mühendis/Proje, Satın Alma, Yönetici). Önceden Mühendis ve
+     Satın Alma seçilse bile sunucu sessizce "Rapor Kullanıcısı" yapıyordu.
+   - Davet bağlantısı açıldığında ekranın üstünde "Firma daveti aldınız"
+     bandı çıkıyor ve ne yapılacağı yazıyor.
+   - Davet bilgisi tarayıcıda saklanıyor: kişi hesabını açıp e-posta
+     doğrulamasından döndüğünde adresteki davet bilgisi kaybolsa bile davet
+     uygulanıyor. Eskiden bu adımda davet kayboluyordu.
+   - "Mail ile Gönder" düğmesi eklendi: davet edilen adrese hazır metinle mail
+     penceresi açar.
+   - Aynı kişiye ikinci davet oluşturursanız eski davet iptal edilir, tek
+     geçerli bağlantı kalır.
+   - Zaten üye olan bir e-posta davet edilemez; hatalı e-posta reddedilir.
+
+5) DİĞER
+   - Ekip listesinde ve rol değiştirme kutusunda eksik olan "Satın Alma" rolü
+     eklendi.
+   - Firma sahibinin yönetici yetkisi artık kaldırılamıyor (yanlışlıkla
+     firmanın yöneticisiz kalması engellendi).
+   - Firma oluşturma seçeneği duruyor ama artık ikinci planda: üyelik talebi
+     ekranının altında "Kendi firmamı oluşturmak istiyorum" başlığında.

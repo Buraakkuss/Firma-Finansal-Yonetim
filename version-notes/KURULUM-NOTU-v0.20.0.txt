@@ -1,0 +1,32 @@
+NakitPilot v0.20.0 — Kurulum notu
+
+1) ÖNCE SUPABASE (zorunlu)
+   Supabase > SQL Editor > New query > sql/nakitpilot-uyelik-onay-v0.20.0.sql
+   dosyasının tamamını yapıştırıp Run deyin. Sonunda üç satırlık bir kontrol
+   tablosu döner; üçü de "t" olmalıdır.
+   Dosya iki kez çalıştırılabilir, mevcut veriye dokunmaz.
+
+2) SONRA DOSYALAR
+   index.html            (değişti)
+   sw.js                 (değişti — APP_VERSION 0.20.0)
+   manifest.webmanifest  (değişti — start_url ?v=0.20.0)
+   Domaine kopyalayıp üzerine yazın. GitHub'daki otomatik yayın main dalına
+   birleştikten sonra bunu kendisi yapar.
+
+3) SIRALAMA ÖNEMLİ
+   SQL çalıştırılmadan yeni sürüm açılırsa üyelik talebi ekranı ve yönetici
+   kartı "SQL kurulumu gerekli" uyarısı gösterir; mevcut kullanıcıların girişi
+   ve tüm diğer ekranlar normal çalışmaya devam eder.
+
+4) KONTROL LİSTESİ (ilk kurulumdan sonra)
+   - Yönetici olarak girin, Ayarlar > Firma & Ekip ekranında "Üyelik Talepleri"
+     kartının açıldığını ve hata vermediğini görün.
+   - "Bu firma yeni üyelik taleplerine açık olsun" kutusunun işaretli olduğunu
+     doğrulayın.
+   - Deneme için kendi telefonunuzdan/başka bir tarayıcıdan Kayıt Ol ile bir
+     hesap açıp talep gönderin, panelden onaylayın.
+   - Ekip Daveti kutusunda rol listesinde beş rolün göründüğünü kontrol edin.
+
+5) TARAYICI ÖNBELLEĞİ
+   Sürüm değiştiği için sw.js yeni sürümü kendisi alır. Ekran eski görünürse
+   Ctrl+F5 yapın.

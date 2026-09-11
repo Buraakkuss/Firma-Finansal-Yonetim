@@ -1,0 +1,32 @@
+NakitPilot v0.12.0 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu; dosya yüklemeye gerek yoktur.
+- ?v=0.12.0 ile açın, görünüm eski kalırsa Ctrl + F5.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Yeni ekranlar nasıl kullanılır
+
+1) Cari Hesaplar > Alacaklar
+   - Müşteri adının altında hangi projelerden alacaklı olduğunuz yazar.
+   - 90+ Gün sütununda tutar varsa o müşteriyle önce görüşün.
+   - Buradan veri girilmez. Bir alacak yanlış görünüyorsa Projeler ekranındaki
+     fatura veya tahsilat kaydını düzeltin.
+
+2) Cari Hesaplar > Borçlar
+   - Tedarikçi bazında kalan borcunuzu gösterir.
+   - Bir borç kapandığı hâlde listede duruyorsa Satın Alma > Faturalar &
+     Ödemeler ekranından ödemenin girildiğini kontrol edin.
+
+3) Yönetim Raporu > Yönetici Paneli
+   - Gerçek maliyetin doğru çıkması için tedarikçi faturalarında PROJE alanının
+     doldurulması şarttır. Proje seçilmemiş fatura projenin maliyetine yazılmaz.
+   - Tahmini maliyetin doğru çıkması için projede bir maliyet çalışması seçili
+     olmalıdır.
+   - Marj sütunu satış üzerinden hesaplanır.
+
+Önemli
+- Bu üç ekran hesap yapmaz, mevcut kayıtları toplar. Sayı yanlışsa hata kaynağı
+  proje faturası, tahsilat, tedarikçi faturası veya ödeme kaydındadır.

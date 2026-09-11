@@ -154,4 +154,16 @@
   ödeme tamamlanmış gider oluşturup bankadan düşer ve beklenen gideri kapatır.
 - Projeye bağlanan tedarikçi faturaları projenin gerçek maliyetini oluşturur.
 
-Güncel baz sürüm: **v0.11.0**
+## v0.12.0
+- Cari Hesaplar modülü: Alacaklar ve Borçlar ekranları.
+- Alacak müşteri bazında (proje faturaları − tahsilatlar), borç tedarikçi
+  bazında (tedarikçi faturaları − ödemeler) otomatik hesaplanır.
+- Yaşlandırma: Vadesi Gelmedi / 1-30 / 31-60 / 61-90 / 90+ gün.
+- Yönetim Raporu modülü: Yönetici Paneli.
+- Sekiz özet kart (pipeline, geciken proje, tahsil edilecek, ödenecek,
+  teklif onay oranı, onaylanan ciro) ve proje kârlılığı tablosu.
+- Kârlılık tablosunda tahmini maliyet (maliyet çalışması) ile gerçek maliyet
+  (projeye bağlı tedarikçi faturaları) yan yana; gerçek kâr ve marj hesaplanır.
+- Her iki modül salt okunurdur; veri kaynağı proje ve satın alma kayıtlarıdır.
+
+Güncel baz sürüm: **v0.12.0**

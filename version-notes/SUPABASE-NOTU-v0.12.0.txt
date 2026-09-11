@@ -1,0 +1,14 @@
+NakitPilot v0.12.0 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Alacak, borç ve yönetim raporu ekranları yeni veri saklamaz; tamamı mevcut
+company_data.data içeriğinden hesaplanır:
+
+- Alacaklar : data.mtpro.projects[].invoices ve .collections
+- Borçlar   : data.purchasing.invoices ve .payments
+- Kârlılık  : projenin seçili maliyet çalışması (tahmini maliyet) ve projeye
+              bağlı tedarikçi faturaları (gerçek maliyet)
+
+Bu alanların hiçbiri Banka Merkezi'nin normalize tablo senkronizasyonuna dahil
+değildir; trg_company_data_banking_sync tetikleyicisi etkilenmez.

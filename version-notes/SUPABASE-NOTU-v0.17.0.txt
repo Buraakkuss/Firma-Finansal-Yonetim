@@ -1,0 +1,12 @@
+NakitPilot v0.17.0 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Ağırlık hesaplama aracı tamamen tarayıcı içinde çalışır; veritabanına hiçbir
+şey yazmaz ve hiçbir şey okumaz. Hesap listesi yalnız açık olan ekranın
+belleğinde durur, sayfa yenilenince silinir.
+
+Yeni "engineering" modülü yalnız yetki matrisinde görünür; rol varsayılanları
+index.html içindeki ROLE_MODULE_DEFAULTS sabitindedir. Kullanıcıya özel
+seviye verilirse bu, mevcut data._modulePermissions yapısına yazılır
+(yeni alan değil, var olan yapının içinde yeni bir anahtar).

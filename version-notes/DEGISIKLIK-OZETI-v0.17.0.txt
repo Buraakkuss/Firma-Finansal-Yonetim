@@ -1,0 +1,65 @@
+NakitPilot v0.17.0 — Mühendislik modülü ve Ağırlık Hesaplama
+
+SOL MENÜYE YENİ BAŞLIK: MÜHENDİSLİK
+Proje Takip ile Satın Alma arasında yeni bir modül başlığı açıldı. Tasarım ve
+maliyet çalışması sırasında kullanılan araçlar buraya toplanacak. İlk araç:
+
+AĞIRLIK HESAPLAMA
+Profil, sac, lama, boru, köşebent gibi ürünlerin malzeme cinsine ve ölçülerine
+göre ağırlığını hesaplar. Ölçüler milimetre, yoğunluk kg/dm³, sonuç kilogram.
+
+12 KESİT TİPİ
+- Sac / Plaka
+- Lama (dikdörtgen dolu)
+- Kare Dolu (mil)
+- Yuvarlak Dolu (mil)
+- Boru (yuvarlak)
+- Kutu Profil (kare)
+- Kutu Profil (dikdörtgen)
+- Altıgen Dolu (anahtar ağzı ölçüsüyle)
+- Köşebent (L profil, eşit veya farklı kollu)
+- U Profil
+- T Profil
+- I / H Profil
+
+Her kesit için sağda ölçü harflerini gösteren bir şema çizilir; formdaki alan
+adları şemadaki harflerle aynıdır.
+
+24 MALZEME
+Çelik (S235/St37), alaşımlı çelik, paslanmaz 304 ve 316, dökme demir,
+alüminyum ve alaşımları, bakır, pirinç, bronz, çinko, kurşun, titanyum,
+nikel, magnezyum, PVC, PE, POM, PA6, PTFE, pleksiglas, cam, ahşap.
+Listede olmayan malzeme için "Özel" seçilip yoğunluk elle girilebilir.
+
+SONUÇLAR
+- Kesit alanı (mm² ve cm²)
+- Birim ağırlık (kg/m)
+- Parça ağırlığı (kg)
+- Toplam ağırlık (adet çarpanıyla, kg ve ton)
+- Hesabın nasıl yapıldığını adım adım gösteren açıklama satırı
+
+HESAP LİSTESİ
+- Birden fazla kalemi listeye ekleyip toplam ağırlığı görebilirsiniz.
+- Malzeme fiyatı (TL/kg) girilirse her satırın ve toplamın tutarı hesaplanır.
+- "Listeyi Kopyala" ile liste panoya alınır; maliyet çalışmasına veya
+  e-postaya yapıştırılabilir.
+- Liste kaydedilmez; ekrandan çıkınca silinir.
+
+KORUMALAR
+- Et kalınlığı dış ölçünün yarısından büyükse hesaplama yapılmaz.
+- Uzunluk veya yoğunluk girilmemişse sonuç gösterilmez.
+- Köşebent, U, T ve I/H profillerde köşe radyusları ve flanş eğimleri hesaba
+  katılmaz; standart katalog değerinden yaklaşık %1-3 sapabilir. Bu not
+  ekranda da gösterilir.
+
+YETKİ
+- Tüm roller ağırlık hesaplamayı görebilir ve kullanabilir.
+- Düzenleme seviyesi yönetici ve mühendis rolündedir (ileride eklenecek
+  kalıcı tablolar için).
+
+KULLANIM KILAVUZU
+- Kılavuza 10. bölüm olarak "Mühendislik araçları" eklendi; kılavuz artık
+  13 bölüm ve 39 konu.
+
+Supabase
+- Şema değişikliği gerekmez. Hesaplama aracı veritabanına hiçbir şey yazmaz.

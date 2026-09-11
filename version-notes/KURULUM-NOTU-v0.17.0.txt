@@ -1,0 +1,35 @@
+NakitPilot v0.17.0 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu; dosya yüklemeye gerek yoktur.
+- ?v=0.17.0 ile açın, görünüm eski kalırsa Ctrl + F5.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Kullanım
+1) Sol menüde <strong>Mühendislik &gt; Ağırlık Hesaplama</strong>.
+2) Malzemeyi seçin; yoğunluk otomatik gelir.
+3) Kesit tipini seçin; sağda o kesitin şeması ve ölçü harfleri görünür.
+4) Ölçüleri ve uzunluğu milimetre olarak girin. Sonuç anında hesaplanır.
+5) Adet girerek toplam ağırlığı görün.
+6) Birden çok kalem için "Listeye Ekle" kullanın.
+7) Malzeme fiyatı (TL/kg) girerseniz tutar da hesaplanır.
+8) "Listeyi Kopyala" ile listeyi maliyet çalışmasına yapıştırabilirsiniz.
+
+Doğruluk kontrolü (isterseniz)
+- Lama 50×5, 6 m, çelik → 11,775 kg (1,9625 kg/m)
+- Boru Ø48,3×3, çelik → 3,351 kg/m
+- Kutu profil 40×40×2, çelik → 2,386 kg/m
+- Sac 1000×2000×3, çelik → 47,10 kg
+Bu değerler standart tablolarla birebir uyuşur.
+
+Not
+- Köşebent, U, T ve I/H profillerde köşe radyusları hesaba katılmadığı için
+  sonuç katalog değerinden %1-3 düşük çıkabilir. Örnek: köşebent 40×40×4
+  hesapta 2,386 kg/m, katalogda 2,42 kg/m.
+- Hesap listesi kaydedilmez. Saklamak istediğiniz listeyi kopyalayın.
+
+Sırada ne var
+- Bu başlık altına hazır teknik ölçü tabloları, CAD verileri ve başka
+  hesaplama araçları eklenebilir. Aklınıza geldikçe iletin.

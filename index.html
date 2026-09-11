@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.14.1">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.14.1" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.14.1">
-  <title>NakitPilot Marmara Teknik — v0.14.1</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.14.2">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.14.2" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.14.2">
+  <title>NakitPilot Marmara Teknik — v0.14.2</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -901,6 +901,17 @@
   }
   .table-wrap table th:last-child,
   .table-wrap table td:last-child { width:110px; }
+  /* v0.14.2 — Satır içinde 3-4 işlem butonu olan tablolarda son sütun dar
+     kalıp butonları alt alta itiyordu. */
+  #po-table .table-wrap table th:last-child,
+  #po-table .table-wrap table td:last-child,
+  #pinv-table .table-wrap table th:last-child,
+  #pinv-table .table-wrap table td:last-child,
+  #supplier-table .table-wrap table th:last-child,
+  #supplier-table .table-wrap table td:last-child { width:200px; }
+  #project-list-card .table-wrap table th:last-child,
+  #project-list-card .table-wrap table td:last-child { width:230px; }
+  .project-action-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
   @media (max-width:1180px) {
     .fx-grid-main,
     .fixed-money-grid { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
@@ -2544,7 +2555,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.14.1</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.14.2</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -3534,7 +3545,7 @@
             <div class="form-group span-1"><label>Kur</label><input type="number" id="pinv-rate" min="0" step="0.0001" value="1"></div>
             <div class="form-group span-2"><label>KDV %</label><input type="number" id="pinv-vat" min="0" step="0.1" value="20"></div>
             <div class="form-group span-3"><label>Vade Tarihi</label><input type="date" id="pinv-due" onchange="onPurInvoiceDueManual()"></div>
-            <div class="form-group span-12" style="margin-top:-4px"><div class="section-sub" id="pinv-term-hint" style="margin:0"></div></div>
+            <div class="form-group span-12" style="margin-top:-4px;display:none"><div class="section-sub" id="pinv-term-hint" style="margin:0"></div></div>
             <div class="form-group span-6"><label>Açıklama</label><input id="pinv-note" placeholder="Örn. Sac malzeme alımı"></div>
             <div class="form-action span-3"><button class="btn btn-primary" onclick="savePurchaseInvoice()">🧾 Faturayı Kaydet</button></div>
             <div class="form-action span-2"><button class="btn" onclick="clearPurInvoiceForm()">Temizle</button></div>
@@ -4332,7 +4343,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.14.1';
+const APP_VERSION='0.14.2';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -9817,6 +9828,12 @@ function onQuoteCostChange(preserveAmount){
     }
   }
 }
+/* v0.14.2 — HATA DÜZELTMESİ: _quoteBaseline hiç tanımlanmamıştı.
+   openQuoteModal içinde onQuoteTemplateChange() → markQuoteDirty() sırası,
+   initQuoteDirtyTracking() henüz çalışmadan bu değişkeni OKUYOR ve sayfa
+   açıldıktan sonraki İLK teklif açılışında ReferenceError veriyordu; bu
+   yüzden teklif penceresi hiç açılmıyordu. */
+let _quoteBaseline='';
 function quoteFormSnapshot(){
   const ids=['quote-id','quote-project-id','quote-code','quote-cost','quote-date','quote-valid-until','quote-delivery-time','quote-delivery-type','quote-payment-terms','quote-currency','quote-amount','quote-revision-note','quote-technical'];
   const obj={};ids.forEach(id=>{const el=document.getElementById(id);obj[id]=el?String(el.value||''):'';});
@@ -10460,7 +10477,39 @@ function loadProductionForm(){
   ['design','supply','production','assembly','test','delivery'].forEach(k=>{const el=document.getElementById('prod-'+k);if(el)el.value=p&&p.stages?p.stages[k]||'':'';});
   const st=document.getElementById('prod-status');if(st)st.value=p?p.status||'Onaylandı':'Onaylandı';const note=document.getElementById('prod-note');if(note)note.value=p&&p.stageNote?p.stageNote:'';renderProductionTimeline();
 }
-function saveProductionPlan(){if(!projectCanEdit())return denyAction('Üretim süreci güncelleme yetkisi gerekir.');const p=mtpro().projects.find(x=>String(x.id)===String(document.getElementById('prod-project')?.value));if(!p){alert('Üretim takibinde sadece Onaylandı ve sonrası projeler görünür. Önce proje durumunu Onaylandı yapın.');return;}p.stages=p.stages||{};PROJECT_STAGE_KEYS.forEach(k=>{p.stages[k]=document.getElementById('prod-'+k)?.value||'';});p.status=document.getElementById('prod-status').value||p.status;p.stageNote=document.getElementById('prod-note').value.trim();p.updatedAt=new Date().toISOString();saveData(data);renderProductionTimeline();renderProjects();}
+/* v0.14.2 — HATA DÜZELTMESİ: Üretim Takibi ekranı durumu doğrudan atıyordu.
+   Böylece geçiş kuralları (irsaliye, fatura, tahsilat şartı) atlanabiliyor ve
+   durum değişikliği proje hareket geçmişine hiç yazılmıyordu. Artık proje
+   listesiyle aynı kuraldan geçer ve geçmişe kaydedilir. */
+function saveProductionPlan(){
+  if(!projectCanEdit())return denyAction('Üretim süreci güncelleme yetkisi gerekir.');
+  const p=mtpro().projects.find(x=>String(x.id)===String(document.getElementById('prod-project')?.value));
+  if(!p){alert('Üretim takibinde sadece Onaylandı ve sonrası projeler görünür. Önce proje durumunu Onaylandı yapın.');return;}
+  const oncekiAsama=Object.assign({},p.stages||{});
+  p.stages=p.stages||{};
+  PROJECT_STAGE_KEYS.forEach(k=>{p.stages[k]=document.getElementById('prod-'+k)?.value||'';});
+  const degisen=PROJECT_STAGE_KEYS.filter(k=>String(oncekiAsama[k]||'')!==String(p.stages[k]||''));
+  const oncekiNot=String(p.stageNote||'');
+  p.stageNote=document.getElementById('prod-note').value.trim();
+  const istenen=document.getElementById('prod-status').value||p.status;
+  const oncekiDurum=p.status||'';
+  let durumTamam=true;
+  if(istenen!==oncekiDurum){
+    if(requiresApprovedQuoteForStatus(istenen) && !p.approvedQuoteId){
+      const rows=quotesForProject(p.id);
+      if(!rows.length){alert('Projeyi bu duruma almak için önce bu projeye ait teklif kaydı oluşturun.');durumTamam=false;}
+      else {saveData(data);renderProductionTimeline();renderProjects();openApprovedQuoteModal(p.id,istenen);return;}
+    }else{
+      durumTamam=applyProjectStatusChange(p,istenen,'üretim takibi');
+    }
+  }
+  if(degisen.length)logProjectActivity(p.id,'stage','Üretim planı güncellendi: '+degisen.map(k=>PROJECT_STAGE_LABELS[k]+' → '+(p.stages[k]?dmy(p.stages[k]):'temizlendi')).join(', '),{stages:p.stages});
+  if(oncekiNot!==p.stageNote && p.stageNote)logProjectActivity(p.id,'note','Süreç notu: '+p.stageNote,{});
+  p.updatedAt=new Date().toISOString();
+  saveData(data);
+  const st=document.getElementById('prod-status');if(st&&!durumTamam)st.value=p.status||'';
+  renderProductionTimeline();renderProjects();renderProjectActivity();
+}
 function renderProductionTimeline(){
   syncProjectSelects();const wrap=document.getElementById('production-timeline');if(!wrap)return;const p=mtpro().projects.find(x=>String(x.id)===String(document.getElementById('prod-project')?.value))||mtpro().projects.find(isProductionProject);
   if(!p){wrap.innerHTML='<div class="empty">Üretim takibinde görünecek proje yok. Proje durumunu Onaylandı yaptığınızda burada görünür.</div>';return;}
@@ -10556,16 +10605,29 @@ function projectPaymentAlerts(){
   });
   return out.sort((a,b)=>(a.info.days??9999)-(b.info.days??9999));
 }
-/* Tahsilat tamamlandığında durumu otomatik ilerletir. */
+/* Fatura ve tahsilat durumuna göre proje durumunu İKİ YÖNLÜ eşitler.
+   v0.14.2 — Önceden yalnız ileri alıyordu: tahsilat silinince veya tutarı
+   düşürülünce proje "Tahsilat Tamamlandı"/"Kapandı" görünmeye devam ediyor,
+   kalan alacak olduğu hâlde iş bitmiş sanılıyordu. Artık geri de alır. */
 function syncProjectCollectionStatus(p){
-  if(!p)return;
+  if(!p)return false;
   const inv=projectInvoicedTotal(p);
-  if(inv>0 && projectRemainingTotal(p)<=0.01 && p.status==='Faturalandırıldı'){
-    const prev=p.status;
-    p.status='Tahsilat Tamamlandı';p.updatedAt=new Date().toISOString();
-    logProjectActivity(p.id,'status','Durum değişti: '+prev+' → Tahsilat Tamamlandı (tahsilat tamamlandığı için otomatik)',{from:prev,to:'Tahsilat Tamamlandı',source:'otomatik'});
+  const kalan=projectRemainingTotal(p);
+  const prev=p.status||'';
+  const gec=(to,neden)=>{
+    p.status=to;p.updatedAt=new Date().toISOString();
+    logProjectActivity(p.id,'status','Durum değişti: '+(prev||'—')+' → '+to+' ('+neden+')',{from:prev,to:to,source:'otomatik'});
     return true;
-  }
+  };
+  // Faturası kalmadıysa faturalı/tahsilatlı durumlarda kalamaz.
+  if(inv<=0 && ['Faturalandırıldı','Tahsilat Tamamlandı'].includes(prev))
+    return gec(p.deliveryDate||p.waybillNo?'Teslim Edildi':'Üretimde','fatura kaydı kalmadığı için otomatik');
+  // Tamamı tahsil edildiyse ileri al.
+  if(inv>0 && kalan<=0.01 && prev==='Faturalandırıldı')
+    return gec('Tahsilat Tamamlandı','tahsilat tamamlandığı için otomatik');
+  // Kalan alacak doğduysa geri al (tahsilat silindi/azaltıldı ya da yeni fatura eklendi).
+  if(inv>0 && kalan>0.01 && ['Tahsilat Tamamlandı','Kapandı'].includes(prev))
+    return gec('Faturalandırıldı','kalan alacak '+fmtTL(kalan)+' olduğu için otomatik geri alındı');
   return false;
 }
 /* Açıklamada proje kodu yoksa başına ekler; varsa olduğu gibi bırakır. */
@@ -10573,7 +10635,10 @@ function withProjectCode(text,code){
   const t=String(text||'').trim(), c=String(code||'').trim();
   if(!c)return t;
   if(!t)return c;
-  return t.toUpperCase().includes(c.toUpperCase())?t:(c+' — '+t);
+  /* v0.14.2 — Sınır duyarlı arama: "MTP26-12" metni "MTP26-1" kodunu
+     içeriyor sayılmasın. */
+  const re=new RegExp('(^|[^A-Za-z0-9])'+escapeRe(c)+'([^A-Za-z0-9]|$)','i');
+  return re.test(t)?t:(c+' — '+t);
 }
 function selectedFinanceProject(){
   const sel=document.getElementById('pfin-project');
@@ -10641,6 +10706,7 @@ function deleteProjectInvoice(id){
   if(!confirm('Fatura '+(inv.no||'')+' silinsin mi?'))return;
   p.invoices=projectInvoices(p).filter(x=>String(x.id)!==String(id));
   logProjectActivity(p.id,'delete','Fatura silindi: '+(inv.no||'')+' · '+fmtCurrency(inv.amount,inv.currency),{invoiceId:id});
+  syncProjectCollectionStatus(p);
   saveData(data);renderProjectFinance();renderProjects();renderProjectActivity();
 }
 /* ──────── v0.9.6 — PROJE ↔ FİNANS KÖPRÜSÜ ────────
@@ -10725,6 +10791,18 @@ function saveProjectCollection(){
   const cur=document.getElementById('col-currency').value||'TRY';
   const rate=cur==='TRY'?1:(parseDecimalInput(document.getElementById('col-rate').value)||0);
   if(cur!=='TRY'&&rate<=1){alert(CURRENCY_LABELS[cur]+' tahsilatta kayıt kuru zorunludur.');return;}
+  /* v0.14.2 — Tahsilat, faturanın kalan tutarını aşamaz. Aşarsa kalan alacak
+     eksiye düşüyor, şirket geliri ve cari raporu şişiyordu. Düzenlemede kaydın
+     kendi tutarı kalandan düşülmez (iki kez sayılmasın). */
+  const oncekiTL=editId?(function(){const o=projectCollections(p).find(x=>String(x.id)===String(editId));return o?invoiceTL(o):0;})():0;
+  const faturaKalan=Math.round((invoiceTL(inv)-invoiceCollectedTotal(p,invoiceId)+oncekiTL)*100)/100;
+  const yeniTL=Math.round(amount*rate*100)/100;
+  if(yeniTL>faturaKalan+0.01){
+    alert('Tahsilat tutarı faturanın kalanından fazla.\n\nFatura: '+(inv.no||'')+'\nFatura tutarı: '+fmtTL(invoiceTL(inv))
+      +'\nKalan: '+fmtTL(faturaKalan)+'\nGirilen: '+fmtTL(yeniTL)
+      +'\n\nEn fazla kalan kadar girebilirsiniz. Fazla gelen para varsa Tamamlanmış Gelir/Gider ekranından ayrı kaydedin.');
+    return;
+  }
   const rec={id:editId||makeId('col'),invoiceId,date,amount,currency:cur,rate,
     note:withProjectCode((document.getElementById('col-note').value||'').trim(),p.code),
     projectCode:p.code||'',
@@ -10782,6 +10860,7 @@ function deleteProjectCollection(id){
   p.collections=projectCollections(p).filter(x=>String(x.id)!==String(id));
   logProjectActivity(p.id,'delete','Tahsilat silindi: '+fmtCurrency(c.amount,c.currency)
     +(removed?' · şirket gelir kaydı da geri alındı':''),{collectionId:id});
+  syncProjectCollectionStatus(p);
   saveData(data);renderProjectFinance();renderProjects();renderProjectActivity();
   if(typeof renderHistory==='function')renderHistory();
   if(typeof renderBankingDashboard==='function')renderBankingDashboard();
@@ -10824,6 +10903,10 @@ function renderPaymentAlerts(){
     +'</tbody></table></div>';
 }
 /* v0.9.5 — Fatura ve tahsilat açıklamaları proje koduyla ön doldurulur. */
+/* v0.14.2 — HATA DÜZELTMESİ: Proje değiştirilince açıklama alanında önceki
+   projenin kodu kalıyor, kayıt "MTP26-3 — MTP26-1" gibi iki kod taşıyordu.
+   Artık alan yalnız otomatik doldurulmuş kodu içeriyorsa yenilenir; kullanıcı
+   kendi yazdıysa metnine dokunulmaz. */
 function applyProjectCodeDefaults(p){
   if(!p)return;
   const code=p.code||'';
@@ -10831,9 +10914,18 @@ function applyProjectCodeDefaults(p){
   const col=document.getElementById('col-note');
   const editingInv=(document.getElementById('inv-edit-id')||{}).value||'';
   const editingCol=(document.getElementById('col-edit-id')||{}).value||'';
-  if(inv&&!editingInv&&!inv.value.trim())inv.value=code;
-  if(col&&!editingCol&&!col.value.trim())col.value=code;
-  [['inv-note',inv],['col-note',col]].forEach(([id,el])=>{if(el)el.placeholder=code?(code+' — açıklama ekleyebilirsiniz'):'Açıklama';});
+  const tazele=(el,editing)=>{
+    if(!el)return;
+    if(!editing){
+      const mevcut=String(el.value||'').trim();
+      const oncekiOtomatik=(el.dataset&&el.dataset.autoCode)||'';
+      if(!mevcut||mevcut===oncekiOtomatik)el.value=code;
+    }
+    if(el.dataset)el.dataset.autoCode=code;
+    el.placeholder=code?(code+' — açıklama ekleyebilirsiniz'):'Açıklama';
+  };
+  tazele(inv,editingInv);
+  tazele(col,editingCol);
 }
 function renderProjectInvoicing(){
   renderPaymentAlerts();
@@ -11429,6 +11521,8 @@ function setPurchaseOrderStatus(id,status){
 function receiveAllGoods(id){
   if(!purCanEdit())return purDeny();
   const o=purchasing().orders.find(x=>String(x.id)===String(id));if(!o)return;
+  if(o.status==='İptal'){alert('İptal edilmiş siparişte mal kabul yapılamaz.');return;}
+  if(poIsRequest(o)){alert('Bu kayıt henüz talep/teklif aşamasında.\n\nÖnce siparişi Düzenle ile açıp birim fiyatları girin ve durumu "Sipariş Verildi" yapın; sonra mal kabul yapabilirsiniz.');return;}
   if(!confirm('Siparişin tamamı teslim alındı olarak işaretlensin mi?'))return;
   poLines(o).forEach(l=>{l.receivedQty=n(l.qty);});
   o.receivedAt=todayYmd();o.status='Teslim Alındı';o.updatedAt=new Date().toISOString();
@@ -11476,7 +11570,9 @@ function renderPurchaseOrders(){
         +'<td><div class="project-action-row">'
           +'<button class="btn btn-sm" onclick="printPurchaseOrder(&quot;'+htmlEsc(o.id)+'&quot;)">'+(poIsRequest(o)?'🖨 Teklif Formu':'🖨 Sipariş Formu')+'</button>'
           +(purCanEdit()?'<button class="btn btn-sm" onclick="editPurchaseOrder(&quot;'+htmlEsc(o.id)+'&quot;)">Düzenle</button>':'')
-          +(purCanEdit()&&ratio<100?'<button class="btn btn-sm btn-primary" onclick="receiveAllGoods(&quot;'+htmlEsc(o.id)+'&quot;)">Mal Kabul</button>':'')
+          /* v0.14.2 — Talep/teklif aşamasındaki veya iptal edilmiş siparişte
+             mal kabul yapılamaz; önce fiyat girilip sipariş verilmelidir. */
+          +(purCanEdit()&&ratio<100&&!poIsRequest(o)&&o.status!=='İptal'?'<button class="btn btn-sm btn-primary" onclick="receiveAllGoods(&quot;'+htmlEsc(o.id)+'&quot;)">Mal Kabul</button>':'')
           +(purCanEdit()?'<button class="btn btn-sm btn-del" onclick="deletePurchaseOrder(&quot;'+htmlEsc(o.id)+'&quot;)">🗑</button>':'')
         +'</div></td></tr>';
     }).join('')+'</tbody></table></div>';
@@ -11659,9 +11755,11 @@ function applyPurInvoiceTerm(order){
   const t=order?poTermDays(order):supplierTermDays(sid);
   const date=(document.getElementById('pinv-date')||{}).value||todayYmd();
   if(hint){
-    hint.textContent=(t===null)
+    hint.textContent=!sid ? '' : ((t===null)
       ? 'Bu carinin kartında ödeme vadesi tanımlı değil. Vade tarihini elle girin.'
-      : (t===0?'Cari vadesi: peşin.':'Cari vadesi '+t+' gün. Fatura tarihine göre vade '+dmy(addDaysYmd(date,t))+' olarak hesaplandı.');
+      : (t===0?'Cari vadesi: peşin.':'Cari vadesi '+t+' gün. Fatura tarihine göre vade '+dmy(addDaysYmd(date,t))+' olarak hesaplandı.'));
+    /* v0.14.2 — Boş ipucu satırı formda kocaman bir boşluk bırakıyordu. */
+    if(hint.parentElement)hint.parentElement.style.display=hint.textContent?'':'none';
   }
   if(due.dataset&&due.dataset.manual==='1')return;
   due.value=(t===null)?'':addDaysYmd(date,t);
@@ -11772,6 +11870,15 @@ function savePurchasePayment(){
   const cur=(document.getElementById('ppay-currency')||{}).value||'TRY';
   const rate=cur==='TRY'?1:(parseDecimalInput((document.getElementById('ppay-rate')||{}).value)||0);
   if(cur!=='TRY'&&rate<=1){alert(CURRENCY_LABELS[cur]+' ödemede kayıt kuru zorunludur.');return;}
+  /* v0.14.2 — Ödeme, tedarikçi faturasının kalanını aşamaz. */
+  const kalanBorc=Math.round(purInvoiceRemaining(inv)*100)/100;
+  const odemeTL=Math.round(amount*rate*100)/100;
+  if(odemeTL>kalanBorc+0.01){
+    alert('Ödeme tutarı faturanın kalan borcundan fazla.\n\nFatura: '+(inv.no||'')+'\nFatura tutarı: '+fmtTL(purInvoiceTL(inv))
+      +'\nKalan borç: '+fmtTL(kalanBorc)+'\nGirilen: '+fmtTL(odemeTL)
+      +'\n\nEn fazla kalan borç kadar girebilirsiniz.');
+    return;
+  }
   const rec={
     id:makeId('ppay'), invoiceId, supplierId:inv.supplierId, date, amount, currency:cur, rate,
     account:(document.getElementById('ppay-account')||{}).value||'cash',
@@ -12040,8 +12147,13 @@ function renderExecDashboard(){
       +'<td style="text-align:right">'+fmtTL(r.sale)+'</td>'
       +'<td style="text-align:right;color:var(--text-muted)">'+(r.planned>0?fmtTL(r.planned):'—')+'</td>'
       +'<td style="text-align:right;color:var(--expense)">'+(r.actual>0?fmtTL(r.actual):'—')+'</td>'
-      +'<td style="text-align:right;font-weight:700;color:'+(r.actualProfit>=0?'var(--income)':'var(--expense)')+'">'+fmtTL(r.actualProfit)+'</td>'
-      +'<td style="text-align:right;font-weight:600;color:'+(r.margin>=0?'var(--income)':'var(--expense)')+'">%'+r.margin.toFixed(1)+'</td>'
+      /* v0.14.2 — Gerçek maliyet henüz girilmemişse gerçek kâr ve marj
+         "satışın tamamı kâr" gibi görünüyordu. Artık maliyet girilene kadar
+         ölçülemez kabul edilir ve tire gösterilir. */
+      +'<td style="text-align:right;font-weight:700;color:'+(r.actual<=0?'var(--text-muted)':(r.actualProfit>=0?'var(--income)':'var(--expense)'))+'">'
+        +(r.actual<=0?'<span title="Bu projeye bağlı tedarikçi faturası yok; gerçek kâr henüz ölçülemiyor.">ölçülemiyor</span>':fmtTL(r.actualProfit))+'</td>'
+      +'<td style="text-align:right;font-weight:600;color:'+(r.actual<=0?'var(--text-muted)':(r.margin>=0?'var(--income)':'var(--expense)'))+'">'
+        +(r.actual<=0?'—':('%'+r.margin.toFixed(1)))+'</td>'
       +'<td style="text-align:right;color:'+(r.remaining>0.01?'var(--expense)':'var(--text-muted)')+'">'+(r.remaining>0.01?fmtTL(r.remaining):'—')+'</td></tr>').join('')
     +'</tbody></table></div>';
   if(m.lateProjects.length){
@@ -13691,7 +13803,7 @@ function renderReportCenter(){
   const biggestExpense=categoryRowsForReport(report.expenseCats,expenseTotal,1)[0];
   const worstMonth=report.monthly.reduce((worst,row)=>!worst||row.actualNet<worst.actualNet?row:worst,null);
   kpis.innerHTML=`
-    <div class="metric"><div class="metric-label">Toplam Portföy</div><div class="metric-value ${report.totals.actualPortfolio>=0?'positive':'negative'}">${fmtTL(report.totals.actualPortfolio)}</div><div class="metric-sub">Gerçek kasa + döviz değerleme</div></div>
+    <div class="metric"><div class="metric-label">Kasa Portföyü</div><div class="metric-value ${report.totals.actualPortfolio>=0?'positive':'negative'}">${fmtTL(report.totals.actualPortfolio)}</div><div class="metric-sub">Nakit kasa + döviz/altın değerleme · banka hesapları hariç</div></div>
     <div class="metric"><div class="metric-label">Tahmini Portföy</div><div class="metric-value ${report.totals.projectedPortfolio>=0?'positive':'negative'}">${fmtTL(report.totals.projectedPortfolio)}</div><div class="metric-sub">Bekleyen tahminler sonrası</div></div>
     <div class="metric"><div class="metric-label">Dönem Net</div><div class="metric-value ${netClass}">${fmt(report.totals.reportPeriodNet)}</div><div class="metric-sub">Gelir - gerçek/kesin gider</div></div>
     <div class="metric"><div class="metric-label">Bekleyen Fatura/Tahmin</div><div class="metric-value" style="color:#BF6A00">${fmt(report.totals.variableEstimateOpen)}</div><div class="metric-sub">Kapanmamış değişken kalem</div></div>`;
@@ -14246,7 +14358,7 @@ function exportCSV(){
   };
 
   addRow('Rapor Bilgisi','Dönem',`${report.range.fromStr||'Tüm'} / ${report.range.toStr||'Tüm'}`,'','Rapor tarihi: '+report.generatedAt.toLocaleString('tr-TR'),'TL','','','','','','','','','','Hazırlandı','Açılış bakiyesi 0 TL varsayılır.');
-  addRow('Yönetim Özeti','Toplam Portföy','','','Gerçek kasa + döviz/altın değerleme','TL','','','','','',report.totals.actualPortfolio,'','',report.totals.actualPortfolio>=0?'Pozitif':'Negatif','');
+  addRow('Yönetim Özeti','Kasa Portföyü','','','Nakit kasa + döviz/altın değerleme · banka hesapları hariç','TL','','','','','',report.totals.actualPortfolio,'','',report.totals.actualPortfolio>=0?'Pozitif':'Negatif','');
   addRow('Yönetim Özeti','Tahmini Portföy','','','Bekleyen tahminler sonrası portföy','TL','','','','','',report.totals.projectedPortfolio,'','',report.totals.projectedPortfolio>=0?'Pozitif':'Negatif','');
   addRow('Yönetim Özeti','Dönem Net','','','Gelir - gerçek/kesin gider','TL','','','','',report.totals.reportPeriodNet,'',csvPercent(report.totals.margin),'',report.totals.reportPeriodNet>=0?'Pozitif':'Negatif','Oran yüzde kolonunda net marj yer alır.');
   addRow('Yönetim Özeti','Bekleyen Tahmin','','','Kapanmamış değişken fatura/tahmin','TL','','','',report.totals.variableEstimateOpen,-report.totals.variableEstimateOpen,'','','',report.totals.variableEstimateOpen>0?'Açık':'Yok','');
@@ -14621,7 +14733,7 @@ function showExportPreview(sheets,report){
   const r=report||buildExportReport();
   const kpis=`
     <div class="metrics-grid" style="margin-bottom:16px">
-      <div class="metric"><div class="metric-label">Toplam Portföy</div><div class="metric-value ${r.totals.actualPortfolio>=0?'positive':'negative'}">${fmtTL(r.totals.actualPortfolio)}</div><div class="metric-sub">Gerçek kasa + döviz değerleme</div></div>
+      <div class="metric"><div class="metric-label">Kasa Portföyü</div><div class="metric-value ${r.totals.actualPortfolio>=0?'positive':'negative'}">${fmtTL(r.totals.actualPortfolio)}</div><div class="metric-sub">Nakit kasa + döviz/altın değerleme · banka hesapları hariç</div></div>
       <div class="metric"><div class="metric-label">Tahmini Portföy</div><div class="metric-value ${r.totals.projectedPortfolio>=0?'positive':'negative'}">${fmtTL(r.totals.projectedPortfolio)}</div><div class="metric-sub">Bekleyen tahminler sonrası</div></div>
       <div class="metric"><div class="metric-label">Dönem Net</div><div class="metric-value ${r.totals.reportPeriodNet>=0?'positive':'negative'}">${fmt(r.totals.reportPeriodNet)}</div><div class="metric-sub">Gelir - gerçek/kesin gider</div></div>
       <div class="metric"><div class="metric-label">Bekleyen Tahmin</div><div class="metric-value" style="color:#BF6A00">${fmt(r.totals.variableEstimateOpen)}</div><div class="metric-sub">Kapanmamış değişken faturalar</div></div>
@@ -14902,7 +15014,7 @@ function buildStandaloneHtmlReport(report){
   @media(max-width:680px){.bank-tile-mini-grid,.bank-account-stats2,.dashboard-bank-mini-grid{grid-template-columns:1fr}.bank-tile-highlight .value,.bank-account-card2-balance{font-size:22px}}
 </style></head><body><button class="print-btn" onclick="window.print()" title="PDF alırken tarayıcı başlık/altlık kapalı, arka plan grafikleri açık olmalı.">Yazdır / PDF</button><div class="wrap">
     <div class="hero"><div class="hero-main"><div class="eyebrow">NakitPilot · Finans Raporu</div><h1>Nakit Akışı Yönetim Raporu</h1><div class="hero-meta"><span class="chip">Dönem: ${htmlEsc(report.range.fromStr||'Tüm')} / ${htmlEsc(report.range.toStr||'Tüm')}</span><span class="chip">Kâr Marjı: ${formatPct(margin)}</span><span class="chip">Açılış Kasa: 0 TL</span></div></div><div class="hero-side"><div class="side-row"><span>Oluşturma</span><span>${htmlEsc(report.generatedAt.toLocaleString('tr-TR'))}</span></div><div class="side-row"><span>Para Birimi</span><span>TL</span></div><div class="side-row"><span>Rapor Tipi</span><span>Görsel HTML</span></div></div></div>
-    <div class="kpis"><div class="kpi"><div class="label">Toplam Portföy</div><div class="val ${report.totals.actualPortfolio>=0?'pos':'neg'}">${moneyHtml(report.totals.actualPortfolio)}</div><div class="sub">Gerçek kasa + döviz değerleme</div></div><div class="kpi"><div class="label">Tahmini Portföy</div><div class="val ${report.totals.projectedPortfolio>=0?'pos':'neg'}">${moneyHtml(report.totals.projectedPortfolio)}</div><div class="sub">Bekleyen tahminler sonrası</div></div><div class="kpi"><div class="label">Dönem Net</div><div class="val ${report.totals.reportPeriodNet>=0?'pos':'neg'}">${moneyHtml(report.totals.reportPeriodNet)}</div><div class="sub">Gelir - gerçek/kesin gider</div></div><div class="kpi"><div class="label">Bekleyen Tahmin</div><div class="val neg">${moneyHtml(report.totals.variableEstimateOpen)}</div><div class="sub">Kapanmamış değişken faturalar</div></div></div>
+    <div class="kpis"><div class="kpi"><div class="label">Kasa Portföyü</div><div class="val ${report.totals.actualPortfolio>=0?'pos':'neg'}">${moneyHtml(report.totals.actualPortfolio)}</div><div class="sub">Nakit kasa + döviz/altın değerleme · banka hesapları hariç</div></div><div class="kpi"><div class="label">Tahmini Portföy</div><div class="val ${report.totals.projectedPortfolio>=0?'pos':'neg'}">${moneyHtml(report.totals.projectedPortfolio)}</div><div class="sub">Bekleyen tahminler sonrası</div></div><div class="kpi"><div class="label">Dönem Net</div><div class="val ${report.totals.reportPeriodNet>=0?'pos':'neg'}">${moneyHtml(report.totals.reportPeriodNet)}</div><div class="sub">Gelir - gerçek/kesin gider</div></div><div class="kpi"><div class="label">Bekleyen Tahmin</div><div class="val neg">${moneyHtml(report.totals.variableEstimateOpen)}</div><div class="sub">Kapanmamış değişken faturalar</div></div></div>
     <div class="section visual-grid"><div class="chart-card"><div class="section-head"><h2>Nakit Akışı Grafiği</h2><div class="section-note">Yeşil gelir, kırmızı gider, mavi/koyu net</div></div>${trendBars||'<div class="empty">Veri yok</div>'}</div><div class="chart-card"><div class="section-head"><h2>Gider Dağılımı</h2><span class="pill">Top 8</span></div>${categoryBars||'<div class="empty">Gider verisi yok</div>'}</div></div>
     <div class="section"><div class="section-head"><h2>Aylık Performans</h2><div class="section-note">Gelir, gider, net ve portföy hareketi</div></div><div class="table-card wide-table"><table><thead><tr><th>Ay</th><th>Gelir</th><th>Gelir Grafik</th><th>Gider</th><th>Gider Grafik</th><th>Dönem Net</th><th>Net Grafik</th><th>Tahmini Portföy</th><th>Tahmin</th></tr></thead><tbody>${monthlyRows}</tbody></table></div></div>
     <div class="section two"><div><div class="section-head"><h2>Gelir Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(incomeCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div><div><div class="section-head"><h2>Gider Kategorileri</h2><span class="pill">Top 10</span></div><div class="table-card"><table><thead><tr><th>Kategori</th><th>Tutar</th></tr></thead><tbody>${safeRows(expenseCats,'<tr><td colspan="2" class="empty">Veri yok</td></tr>')}</tbody></table></div></div></div>
@@ -15012,7 +15124,7 @@ function buildWorkbookSheets(report,flags){
     rows.push(['NakitPilot Kurumsal Finans Raporu','','','','','','','']);
     rows.push(['Dönem',`${report.range.fromStr||'Tüm'} / ${report.range.toStr||'Tüm'}`,'Oluşturma',report.generatedAt.toLocaleString('tr-TR'),'Kur Yayın Tarihi',(currentFxRates&&currentFxRates.date)||'','Para Birimi','TL']);
     rows.push(['','','','','','','','']);
-    rows.push(['TOPLAM PORTFÖY','','TAHMİNİ PORTFÖY','','DÖNEM NET DEĞERLEME','','BEKLEYEN TAHMİNİ FATURA','']);
+    rows.push(['KASA PORTFÖYÜ (banka hariç)','','TAHMİNİ PORTFÖY','','DÖNEM NET DEĞERLEME','','BEKLEYEN TAHMİNİ FATURA','']);
     rows.push([report.totals.actualPortfolio,'',report.totals.projectedPortfolio,'',report.totals.reportPeriodNet,'',report.totals.variableEstimateOpen,'']);
     rows.push(['Gerçek TL kasa + EUR/USD/Gram Altın değerleme kuru','',`Portföy - kapanmamış değişken tahminler`,'',`Gelir kayıt değeri - gerçek/sabit gider`,'','Önceki ve seçili dönem kapanmamış değişken tahminler','']);
     rows.push(['','','','','','','','']);

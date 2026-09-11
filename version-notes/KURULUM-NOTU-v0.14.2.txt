@@ -1,0 +1,36 @@
+NakitPilot v0.14.2 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu; dosya yüklemeye gerek yoktur.
+- ?v=0.14.2 ile açın, görünüm eski kalırsa Ctrl + F5.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Mevcut verileriniz
+- Hiçbir kayıt değişmez, silinmez veya taşınmaz. Bu sürüm yalnız hata düzeltir.
+- Daha önce yanlışlıkla fazla tahsilat/ödeme girdiyseniz kayıt olduğu gibi
+  durur; düzeltmek isterseniz ilgili tahsilatı/ödemeyi silip yeniden girin.
+
+Değişen davranışlar — bilmeniz gerekenler
+1) Üretim Takibi ekranından artık irsaliyesiz "Teslim Edildi" yapamazsınız.
+   Teslim için: Projeler ekranında projeyi Düzenle → Durum "Teslim Edildi"
+   → açılan alanlara teslim tarihi ve İRSALİYE NO girin → kaydedin.
+2) Bir tahsilatı silerseniz proje otomatik olarak "Faturalandırıldı"ya döner.
+   Bu bir hata değil, kalan alacak doğduğu içindir. Hareket geçmişinde nedeni
+   yazar.
+3) Fatura tutarından fazla tahsilat giremezsiniz. Fazla gelen para varsa
+   Tamamlanmış Gelir/Gider ekranından ayrı kaydedin.
+4) Talep / Teklif İstendi durumundaki siparişte "Mal Kabul" butonu yoktur.
+   Önce Düzenle ile fiyatları girin ve durumu "Sipariş Verildi" yapın.
+5) Raporlar ekranındaki "Kasa Portföyü" bankaları içermez. Banka dâhil toplam
+   için Özet Paneli veya Banka Merkezi'ne bakın.
+
+Kontrol listesi (5 dakika)
+1) Teklif & Maliyet > bir projeye maliyet girin > "Teklif Oluştur" penceresi
+   ilk tıklamada açılmalı.
+2) Proje Finans Durumu > proje seçin > açıklama alanında o projenin kodu
+   yazmalı; başka projeye geçince kod da değişmeli.
+3) Bir faturaya kalanından fazla tahsilat girmeyi deneyin; uyarı gelmeli.
+4) Yönetim Raporu > Yönetici Paneli > tedarikçi faturası olmayan projede
+   gerçek kâr "ölçülemiyor" yazmalı.

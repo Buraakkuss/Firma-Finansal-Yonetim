@@ -1,0 +1,66 @@
+NakitPilot v0.14.2 — Uçtan uca test ve 8 hata düzeltmesi
+
+Tüm modüller demo veriyle baştan sona çalıştırıldı (görüşme → proje → maliyet →
+teklif → onay → üretim → teslim → fatura → tahsilat → kapanış ve tedarikçi →
+talep → teklif → sipariş → mal kabul → fatura → ödeme). Bulunan 8 sorun
+düzeltildi. Hiçbiri veri kaybına yol açmıyor; mevcut kayıtlarınız etkilenmez.
+
+1) TEKLİF PENCERESİ AÇILMIYORDU  (ciddi)
+   Sayfa açıldıktan sonra ilk kez "Teklif Oluştur"a basıldığında JavaScript
+   hatası oluşuyor ve teklif penceresi hiç açılmıyordu (_quoteBaseline
+   değişkeni tanımsızdı). Düzeltildi.
+
+2) ÜRETİM TAKİBİ EKRANI KURALLARI ATLIYORDU  (ciddi)
+   Bu ekrandan durum değiştirince irsaliye/fatura/tahsilat şartları
+   denetlenmiyor ve değişiklik proje hareket geçmişine hiç yazılmıyordu.
+   Artık proje listesiyle aynı kuraldan geçer:
+   - İrsaliyesiz "Teslim Edildi" yapılamaz.
+   - Faturasız "Faturalandırıldı", tahsilatsız "Tahsilat Tamamlandı" yapılamaz.
+   - Durum değişikliği, aşama planı ve süreç notu geçmişe kaydedilir.
+   - Kural reddederse durum kutusu eski değerine döner.
+
+3) TAHSİLAT SİLİNİNCE PROJE KAPALI KALIYORDU
+   Durum eşitlemesi tek yönlüydü. Artık iki yönlü çalışır:
+   - Tamamı tahsil edilince "Tahsilat Tamamlandı" olur (eskisi gibi).
+   - Tahsilat silinir/azaltılır veya yeni fatura eklenirse, kalan alacak
+     doğduğu için proje "Faturalandırıldı"ya GERİ döner (kapanmış proje dâhil).
+   - Son fatura silinirse proje "Teslim Edildi"ye döner.
+   Her geri alma, nedeniyle birlikte hareket geçmişine yazılır.
+
+4) FATURADAN FAZLA TAHSİLAT/ÖDEME KABUL EDİLİYORDU
+   Kalan alacak eksiye düşüyor, şirket geliri ve cari raporu şişiyordu.
+   Artık proje tahsilatı faturanın kalanını, tedarikçi ödemesi faturanın kalan
+   borcunu aşamaz; uyarıda fatura tutarı, kalan ve girilen tutar gösterilir.
+   Tahsilat düzenlemede kaydın kendi tutarı iki kez sayılmaz.
+
+5) YÖNETİCİ PANELİNDE YANILTICI KÂR
+   Gerçek maliyeti henüz girilmemiş projede "gerçek kâr = satış, marj %100"
+   yazıyordu. Artık maliyet girilene kadar "ölçülemiyor" ve marj "—" gösterilir.
+
+6) PROJE KODU AÇIKLAMAYA İKİ KEZ YAZILIYORDU
+   Proje değiştirilince açıklama alanında önceki projenin kodu kalıyor, kayıt
+   "MTP26-3 — MTP26-1" gibi iki kod taşıyordu. Artık alan yalnız otomatik
+   doldurulmuş kodu içeriyorsa yenilenir; sizin yazdığınız metne dokunulmaz.
+   Ayrıca kod eşleştirmesi sınır duyarlı oldu: "MTP26-12" metni "MTP26-1"
+   kodunu içeriyor sayılmaz.
+
+7) TALEP AŞAMASINDA "MAL KABUL" ÇIKIYORDU
+   Henüz fiyatı belli olmayan (Talep / Teklif İstendi) veya iptal edilmiş
+   siparişte mal kabul butonu görünüyordu. Artık görünmez; zorlanırsa uyarı
+   verir ve önce fiyat girip "Sipariş Verildi" yapmanız istenir.
+
+8) RAPORLARDAKİ "TOPLAM PORTFÖY" YANLIŞ OKUNABİLİYORDU
+   Bu değer yalnız nakit kasayı kapsıyor, banka hesaplarını içermiyordu;
+   bankada para varken ₺0,00 görünebiliyordu. Hesap değişmedi, etiket
+   netleştirildi: "Kasa Portföyü · Nakit kasa + döviz/altın değerleme ·
+   banka hesapları hariç". Banka toplamı Özet Paneli ve Banka Merkezi'nde
+   zaten ayrıca gösteriliyor.
+
+GÖRÜNÜM DÜZELTMELERİ
+- Sipariş, tedarikçi, fatura ve proje listelerinde işlem butonları dar sütuna
+  sıkışıp alt alta iniyordu; sütun genişletildi, satırlar kısaldı.
+- Tedarikçi faturası formunda boş vade ipucu satırı kocaman bir boşluk
+  bırakıyordu; içerik yoksa artık hiç görünmüyor.
+
+Supabase
+- Şema değişikliği gerekmez.

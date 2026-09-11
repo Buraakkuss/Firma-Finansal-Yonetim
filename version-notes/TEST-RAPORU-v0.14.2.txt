@@ -1,0 +1,94 @@
+NakitPilot v0.14.2 Test Notu
+
+YÖNTEM
+Uygulama Chromium'da gerçek dosya üzerinden açıldı ve GERÇEK FORMLAR
+doldurularak çalıştırıldı (fonksiyonlar doğrudan çağrılmadı; alanlara değer
+yazılıp kaydet butonlarının çağırdığı fonksiyonlar işletildi). Demo firma
+kuruldu: 2 banka, 2 hesap, 4 proje, 3 tedarikçi, 4 teklif, 3 sipariş,
+4 fatura, 5 tahsilat/ödeme.
+
+BÖLÜM 1 — FİNANS (14/14)
+  * Banka hesabı açılış bakiyeleri (TL ve EUR)
+  * Gelir kaydı bankaya işledi (250.000 → 265.000)
+  * Gider kaydı bankadan düştü (→ 257.000)
+  * EUR gider: TL karşılığı 38.500, amountTry doğru, EUR hesaptan 1.000 düştü
+  * Özet paneli, Gelecekteki Kesin, Banka Merkezi ekranları hatasız çizildi
+
+BÖLÜM 2 — PROJE YAŞAM DÖNGÜSÜ (43/43)
+  * Müşteri görüşmesi kaydı
+  * Proje açma, otomatik kod MTP26-1, başlangıç durumu
+  * Teklifsiz projenin üretime alınması ENGELLENDİ
+  * Maliyet çalışması: 3 kalem 280.000 malzeme + 70.000 işçilik = 350.000,
+    %25 kâr ile teklif 437.500
+  * Teklif penceresi açıldı, tutar maliyetten geldi, teklif kaydedildi
+  * Teklif PDF'i üretildi ve proje kodunu taşıyor
+  * Onay → üretim planı (6 aşama tarihi) → durum Üretimde
+  * İrsaliyesiz teslim ENGELLENDİ; irsaliye girilince Teslim Edildi
+  * Fatura kaydı (MT2026000123) → durum OTOMATİK Faturalandırıldı
+  * Kısmi tahsilat 175.000 → gelir kaydı + banka +175.000, durum korundu
+  * Kalan 262.500 → durum OTOMATİK Tahsilat Tamamlandı, banka 687.500
+  * Proje Kapandı; 10 kayıtlık hareket geçmişi eksiksiz
+
+BÖLÜM 3 — KENAR DURUMLAR (39/39)
+  * Tahsilat silinince durum geri alındı, gelir ve banka geri döndü
+  * Kapanmış projede tahsilat silinince proje yeniden açıldı
+  * Kapanmış projeye yeni fatura eklenince durum geri alındı
+  * Son fatura silinince durum Teslim Edildi'ye döndü
+  * Tahsilatı olan fatura silinemedi
+  * Üretim ekranından irsaliyesiz teslim ENGELLENDİ, durum kutusu geri alındı
+  * Üretim ekranı durum/aşama/not değişiklikleri geçmişe yazıldı
+  * Fatura kalanından fazla tahsilat ENGELLENDİ (tek ve çok adımlı denemede)
+  * Tahsilat düzenlemede kaydın kendi tutarı iki kez sayılmadı
+  * Proje kodu açıklamaya iki kez yazılmıyor; kullanıcı metni korunuyor
+  * MTP26-12 metni MTP26-1 kodu sayılmıyor
+  * Yönetici panelinde ölçülemeyen kâr "ölçülemiyor" gösteriliyor
+
+BÖLÜM 4 — SATIN ALMA (50/50)
+  * 3 tedarikçi, vadeler 45/30/0 gün
+  * Vade alanı cariden otomatik doldu; SAP no önizlemesi MTP26-1-SAP1
+  * Fiyatsız talep kaydedildi, teklif talep formu basıldı (cari vadesi ve
+    teklif son tarihi formda)
+  * Teklif gelince fiyat girildi → SAP no DEĞİŞMEDİ, tutar 45.760
+  * Sipariş formu genel şartları ve vade tarihini (30.10.2026) içeriyor
+  * Mal kabul %100
+  * Tedarikçi faturası → gelecekteki kesin gider (vade tarihine yerleşti),
+    projenin gerçek maliyetine yazıldı
+  * Kalan borçtan fazla ödeme ENGELLENDİ
+  * Kısmi ödeme → gider + banka; kalan ödeme → fatura kapandı, beklenen gider
+    tam kapatıldı, toplam borç sıfır
+  * Proje kârlılığı: satış 437.500 / tahmini 350.000 / gerçek 45.760
+  * Genel (projesiz) sipariş GEN26-SAP1, sonradan projeye bağlandı,
+    faturası taşındı, gerçek maliyet 48.760 oldu
+
+BÖLÜM 5 — BÜTÜNLEŞİK FİRMA VE ÇAPRAZ DOĞRULAMA (28/28)
+  * Cari alacak = projelerin kalan alacağı
+  * Şirket geliri = proje tahsilatları toplamı
+  * Şirket gideri = tedarikçi ödemeleri toplamı
+  * Cari borç = tedarikçi faturaları − ödemeler
+  * Beklenen gider = tedarikçi faturaları toplamı
+  * Banka bakiyesi = açılış + tahsilatlar − ödemeler
+  * Alacak yaşlandırma, borç yaşlandırma, yönetici paneli sayıları doğru
+  * 21 modül ekranı ve 3 belge (teklif PDF, sipariş formu, teklif talep formu)
+    görsel olarak üretildi ve incelendi
+  * Mobilde (390x844) 5 sayfada yatay taşma yok
+
+BÖLÜM 6 — YETKİLER (31/31)
+  * 5 rol için sayfa erişim matrisi çıkarıldı
+  * Muhasebe: finans+cari düzenler, proje görür, admin/ekip göremez
+  * Mühendis: proje düzenler, finans girişi ve yasal sayfayı göremez
+  * Satın alma: satın alma düzenler, finansı görür ama düzenleyemez,
+    yönetici panelini göremez
+  * Rapor kullanıcısı: hiçbir şeyi düzenleyemez
+  * Menüde yetkisiz gruplar tamamen gizleniyor
+  * Yetkisiz kullanıcı proje/sipariş/fatura ekleyemedi
+
+GERİLEME TESTLERİ
+  v0.8.3: 7/7 · v0.9.0: 25/25 · v0.9.2: 18/18 · v0.9.5: 8/8 · v0.9.6: 20/20
+  v0.10.0: 26/26 · v0.11.0: 27/27 · v0.12.0: 31/31 · v0.13.0 arayüz: 32/32
+  v0.14.0/0.14.1 satın alma ve vade: 65/65
+
+SÖZDİZİMİ
+  index.html satır içi JS: 1 blok, 0 hata · sw.js ve manifest geçerli
+  Tüm testlerde JavaScript hatası ve beklenmeyen uyarı yok.
+
+TOPLAM 464 SENARYO BAŞARILI.

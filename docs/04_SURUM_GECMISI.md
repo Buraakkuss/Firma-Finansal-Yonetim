@@ -75,4 +75,14 @@
 - Tüm firmalar için işlem verisi sıfırlama script'i eklendi
   (`sql/nakitpilot-veri-sifirlama-v0.8.3.sql`); tanımlar ve Proje Takip korunur.
 
-Güncel baz sürüm: **v0.8.3**
+## v0.9.0
+- Proje Takip: maliyet çalışmasına kalem bazlı detay eklendi (grup, açıklama, adet,
+  birim, ağırlık, birim fiyat, tedarikçi). Kalem girilince toplam maliyet otomatik
+  hesaplanır; kalem girilmezse eski tek tutarlı çalışma korunur.
+- "Tahsilat Tamamlandı" proje durumu eklendi.
+- Statü geçiş kuralları: ret nedeni, takip tarihi, teslim tarihi ve irsaliye
+  girilmeden ilgili duruma geçilemiyor; geri alma onay istiyor ve loglanıyor.
+- Proje hareket geçmişi eklendi: durum, maliyet ve teklif değişiklikleri tarih ve
+  kullanıcı bilgisiyle saklanıyor.
+
+Güncel baz sürüm: **v0.9.0**

@@ -1,0 +1,27 @@
+NakitPilot v0.9.0 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu olduğu için ayrıca dosya yüklemenize gerek yoktur.
+  main dalına gönderilen sürüm sunucuya kendiliğinden yüklenir.
+- Uygulamayı ?v=0.9.0 ile açın, görünüm eski kalırsa Ctrl + F5 (Mac: Cmd + Shift + R).
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Kullanım
+
+1) Kalem bazlı maliyet
+- Proje Takip > Teklif & Maliyet ekranını açın.
+- "Maliyet Kalemleri" tablosunda "+ Kalem Ekle" ile satır ekleyin.
+- Grup, açıklama, adet, birim, ağırlık, birim fiyat ve tedarikçi girin.
+- Toplam Maliyet alanı otomatik dolar; elle girilemez hale gelir.
+- Kalem kullanmak istemezseniz tabloyu boş bırakıp eskisi gibi tek tutar girin.
+
+2) Statü kuralları
+- Proje formunda durumu "Reddedildi", "Beklemeye Alındı" veya "Teslim Edildi"
+  seçtiğinizde hemen altında gerekli alanlar açılır.
+- Bu alanlar doldurulmadan kayıt o duruma geçmez.
+
+3) Hareket geçmişi
+- Proje Takip > Projeler sayfasının altındaki "Proje Hareket Geçmişi" kartından
+  kim ne zaman hangi değişikliği yapmış görebilirsiniz.

@@ -1,0 +1,33 @@
+NakitPilot v0.9.0 Test Notu
+
+- index.html satır içi JavaScript sözdizimi doğrulandı: hata yok.
+- Fonksiyonlar kaynağın kendisinden okunarak Node üzerinde çalıştırıldı.
+  25 senaryo, 25 başarılı:
+
+Kalem bazlı maliyet
+  * 3 kalemden toplam maliyet 39.000 doğru hesaplandı
+  * Kalem varken elle girilen tutar yok sayıldı
+  * İşçilik 10 adam-gun x 2.000 = 20.000
+  * Ara toplam 59.000, kar %25 = 14.750
+  * Pazarlik payi %5 = 3.687,50, nihai teklif 77.437,50
+  * Toplam agirlik 156 kg
+  * Kalemler kayda yaziliyor
+
+Geriye dönük uyum
+  * Kalem yokken elle girilen tutar kullanılıyor
+  * Kalemsiz eski maliyet kaydının hesabı değişmedi
+
+Statü geçiş kuralları
+  * Ret nedeni olmadan "Reddedildi" engellendi, girilince izin verildi
+  * Takip tarihi olmadan "Beklemeye Alındı" engellendi, girilince izin verildi
+  * Teslim tarihi veya irsaliye eksikken "Teslim Edildi" engellendi
+  * Her ikisi girilince izin verildi
+  * "Tahsilat Tamamlandı" durumu tanınıyor
+  * Geri alma (Üretimde -> Tasarımda) onay istiyor
+
+Hareket geçmişi
+  * Durum değişikliği kullanıcı bilgisiyle loglandı
+  * Aynı duruma tekrar geçiş gereksiz kayıt üretmiyor
+  * Kural ihlalinde durum değişmiyor
+
+Supabase SQL gereksinimi: Yok.

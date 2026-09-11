@@ -1,0 +1,12 @@
+NakitPilot v0.9.0 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Proje Takip verisi (projeler, maliyet çalışmaları, teklifler, hareket geçmişi)
+public.company_data.data JSONB alanı içinde tutulur ve Banka Merkezi'nin
+normalize tablo senkronizasyonuna dahil değildir. Bu nedenle yeni alanlar
+(maliyet kalemleri, durum ek alanları, activity kayıtları) veritabanı tarafında
+herhangi bir değişiklik gerektirmez.
+
+Uyarı
+- sql/ klasöründeki eski kurulum ve migration dosyalarını yeniden çalıştırmayın.

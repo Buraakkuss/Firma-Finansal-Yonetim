@@ -1,0 +1,34 @@
+NakitPilot v0.9.0 — Proje Takip: kalem bazlı maliyet, statü kuralları, hareket geçmişi
+
+Yeni: kalem bazlı maliyet çalışması
+- Maliyet çalışmasına kalem tablosu eklendi.
+- Her kalem için grup, açıklama, adet, birim, ağırlık, birim fiyat, tutar ve
+  tedarikçi girilebiliyor.
+- Gruplar: Malzeme, Satın Alma, İmalat, Motor/Redüktör, Rulman, Pnömatik,
+  Elektrik/Otomasyon, Sac/Profil, Dış Hizmet, Diğer.
+- Kalem girildiğinde Toplam Maliyet alanı kalemlerden otomatik hesaplanır ve
+  elle değiştirilemez hale gelir. Toplam ağırlık da gösterilir.
+- Kalem girilmezse eski tek tutarlı çalışma şekli aynen korunur; mevcut
+  maliyet kayıtları etkilenmez.
+- İşçilik (adam-gün x birim), kâr oranı ve pazarlık payı mantığı değişmedi.
+
+Yeni: Tahsilat Tamamlandı durumu
+- Proje durum listesine "Tahsilat Tamamlandı" eklendi.
+- Akış: ... Teslim Edildi -> Faturalandırıldı -> Tahsilat Tamamlandı -> Kapandı.
+
+Yeni: statü geçiş kuralları
+- "Reddedildi" durumuna geçmek için ret nedeni zorunlu.
+- "Beklemeye Alındı" durumuna geçmek için takip tarihi zorunlu.
+- "Teslim Edildi" durumuna geçmek için teslim tarihi ve irsaliye numarası zorunlu.
+- Bu alanlar, proje formunda ilgili durum seçilince otomatik açılır.
+- Projeyi geri almak (ör. Üretimde -> Tasarımda) artık onay ister ve geçmişe yazılır.
+- Onaylı teklif olmadan üretim aşamasına geçme engeli korundu.
+
+Yeni: proje hareket geçmişi
+- Proje Listesi sayfasına "Proje Hareket Geçmişi" kartı eklendi.
+- Durum değişiklikleri, proje oluşturma, maliyet çalışması kayıtları ve
+  onaylanan teklif seçimi tarih ve kullanıcı bilgisiyle saklanır.
+- Kayıtlar silinmez; son 40 hareket ekranda listelenir.
+
+Supabase
+- Şema değişikliği gerekmez. Proje verisi company_data.data içinde tutulur.

@@ -1,0 +1,39 @@
+NakitPilot v0.18.0 — Supabase notu
+
+ÇALIŞTIRILACAK SQL YOKTUR.
+
+NEDEN GEREKMİYOR
+1) Klasör ağacı ve dosya kayıtları company_data.data.stdlib içinde JSON olarak
+   tutulur. Bu alan zaten mevcut; yeni tablo veya sütun gerekmez.
+   Banka Merkezi tetikleyicisi (trg_company_data_banking_sync) yalnız
+   normalize finans tablolarını ilgilendirir; stdlib anahtarına dokunmaz.
+
+2) Dosyaların kendisi mevcut 'project-files' bucket'ına yüklenir:
+        <firma_id>/stdlib/cad/<zaman>-<dosya adı>
+        <firma_id>/stdlib/catalog/<zaman>-<dosya adı>
+   v0.5.0 kurulumundaki politikalar yolun ilk parçasına bakar:
+        project_files_select : np_is_company_member(split_part(name,'/',1))
+        project_files_insert : np_can_edit_company(split_part(name,'/',1))
+   Yol firma kimliği ile başladığı için yeni politika gerekmez. Bir firmanın
+   dosyasını başka firmanın kullanıcısı göremez.
+
+3) sql/ klasöründeki eski kurulum ve migration dosyalarını YENİDEN
+   ÇALIŞTIRMAYIN. (Banka Merkezi migration'ı v0.7.4'teki digest düzeltmesini
+   geri alır.)
+
+İSTEĞE BAĞLI — DOSYA BOYUTU SINIRI
+Bucket'ta tek dosya sınırı 50 MB'dır. Büyük CAD montajları için bu sınırı
+yükseltmek isterseniz (örnek 200 MB) tek parça olarak şunu çalıştırabilirsiniz:
+
+    UPDATE storage.buckets
+       SET file_size_limit = 209715200
+     WHERE id = 'project-files';
+
+Bu satır yalnız sınırı değiştirir; hiçbir veriyi silmez veya taşımaz.
+Çalıştırmazsanız uygulama 50 MB üstü dosyada uyarı verir ve ZIP önerir.
+
+DEPOLAMA TAKİBİ
+Supabase panelinde Storage > project-files altında stdlib/ klasörü CAD ve
+katalog dosyalarını tutar. Paketin depolama sınırına yaklaşırsanız eski
+sürümlerin dosyalarını uygulama içinden 🗑 ile silebilirsiniz; silinen dosya
+Storage'dan da kalkar.

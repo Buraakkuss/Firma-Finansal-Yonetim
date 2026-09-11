@@ -1,0 +1,64 @@
+NakitPilot v0.18.0 — Standart Ekipmanlar: Hazır CAD Datalar ve Kataloglar
+
+NE EKLENDİ
+Sol menüde Mühendislik başlığının altına "STANDART EKİPMANLAR" bölümü açıldı.
+İçinde iki kütüphane var:
+  - Hazır CAD Datalar  → STEP, STP, DWG, DXF, IGES, teknik resim
+  - Kataloglar         → üretici katalogları, ölçü tabloları, PDF dokümanlar
+İkisi de aynı şekilde çalışır.
+
+HAZIR BAŞLIKLAR
+Hazır CAD Datalar ilk açıldığında şu beş başlık kendiliğinden oluşur:
+  Yataklı Rulmanlar CAD / Doğuş Kalıp CAD / Alhan CAD / Emes Teker CAD /
+  Surfence CAD
+Bu başlıklar yalnız bir kez oluşturulur. Silerseniz geri gelmez, istediğiniz
+gibi düzenleyebilirsiniz. Kataloglar boş başlar; klasörleri siz açarsınız.
+
+KENDİ KLASÖRLERİNİZİ AÇMAK (sistemi siz çoğaltırsınız)
+Bir başlığa tıklayıp içine girin, "Yeni başlık (klasör) adı" kutusuna adı yazıp
+"Klasör Oluştur"a basın. Kademe sınırı yoktur:
+  Yataklı Rulmanlar CAD  ›  UCF Serisi  ›  UCF205
+                                        ›  UCF206
+Kök seviyede (kütüphanenin ana ekranında) açtığınız klasör yeni bir kütüphane
+başlığı olur — yeni bir tedarikçi veya ürün ailesi eklemek için bunu kullanın.
+Klasöre açıklama da yazabilirsiniz (örn. "205-215 arası flanşlı yatak gövdeleri").
+
+DOSYA YÜKLEME
+Klasörün içine girin, alttaki "Dosya Yükle" kartından dosyayı seçin. Aynı anda
+birden fazla dosya seçebilirsiniz. İsterseniz listede görünecek adı ve bir not
+(örn. "2024 revizyon, ölçüler mm") yazabilirsiniz.
+Tek dosya sınırı 50 MB'dır; daha büyük CAD dosyalarını ZIP yapıp yükleyin.
+Dosya yüklemek yerine üreticinin sayfasındaki dosya adresini (https://...)
+kaydetmek de mümkündür; bu kayıt listede 🔗 ikonuyla görünür.
+
+İNDİRME — mühendisler için
+Dosya kartındaki "⬇️ İndir" butonuna basınca dosya doğrudan bilgisayara iner,
+ayrı bir pencere açılmaz. PDF ve resimlerde "👁" butonu dosyayı yeni sekmede
+açar. Dosya kartına çift tıklamak da indirir.
+
+ARAMA
+Üstteki arama kutusu kütüphanenin tamamında arar: klasör adı, dosya adı ve
+notların içinde. Sonuçta her dosyanın hangi klasörde olduğu da yazar. Böylece
+"UCF205" yazıp klasör ağacında gezinmeden dosyayı bulabilirsiniz.
+
+DÜZENLEME VE SİLME
+✏️  adı değiştirir (klasör ve dosya).
+🗑  siler.
+Dolu bir klasör silinmez; kaç klasör ve kaç dosya içerdiği söylenir ve önce
+içindekileri silmeniz istenir. Böylece yanlışlıkla toplu veri kaybı olmaz.
+Bir dosya silindiğinde buluttan da kaldırılır; bu işlem geri alınamaz.
+
+YETKİ
+Mühendislik modülünde:
+  - görüntüleme yetkisi → kütüphaneyi gezer ve dosyaları indirir
+  - düzenleme yetkisi   → klasör açar, dosya yükler, siler, ad değiştirir
+Varsayılan olarak yönetici ve mühendis düzenler; muhasebe, satın alma ve rapor
+kullanıcısı görüntüler ve indirir.
+
+TELEFONDA
+Klasör ve dosya kartları telefonda tek sütuna iner, yatay kaydırma yoktur.
+Aynı işlemlerin hepsi telefondan da yapılabilir.
+
+KULLANIM KILAVUZU
+Kılavuzun "Mühendislik araçları" bölümüne "Standart Ekipmanlar — Hazır CAD
+Datalar ve Kataloglar" konusu eklendi (adım adım anlatım).

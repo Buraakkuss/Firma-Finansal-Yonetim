@@ -1,0 +1,49 @@
+NakitPilot v0.19.0 — Supabase notu (BÜYÜK ARŞİV YÜKLEMEDEN ÖNCE OKUYUN)
+
+ZORUNLU SQL YOKTUR.
+Klasör ağacı company_data.data.stdlib içinde, dosyalar 'project-files'
+bucket'ında <firma_id>/stdlib/<kütüphane>/... yolunda durur. Mevcut politikalar
+yolun ilk parçasındaki firma kimliğine baktığı için yeni kural gerekmez.
+
+1) DEPOLAMA ALANI — en önemli konu
+Yükleyeceğiniz arşiv kadar Supabase depolama alanınız olmalıdır. Planınızın
+ne kadar alan verdiğini ve şu an ne kadarını kullandığınızı Supabase
+Dashboard > Settings > Usage (Storage satırı) ekranından görün.
+Kaba ölçü: Free plan birkaç GB'lık bir CAD arşivine yetmez; Pro planda
+dahil alan çok daha büyüktür ve aşan kısım GB başına ücretlendirilir.
+Güncel rakamlar için Supabase'in fiyat sayfasına bakın; alan yetmezse yükleme
+ortasında hata alırsınız (yüklenenler kayıtlı kalır, kaldığınız yerden devam
+edebilirsiniz).
+
+Alan yetmiyorsa seçenekler:
+  a) Planı yükseltmek.
+  b) Arşivin tamamını değil, mühendislerin gerçekten kullandığı STEP/DWG
+     dosyalarını yüklemek; ham/yedek dosyaları şirket sunucusunda bırakmak.
+  c) Her alt klasörü ZIP yapıp tek dosya olarak yüklemek (yer ve dosya sayısı
+     olarak çok daha verimlidir, ama arama dosya adı üzerinden yapılamaz).
+  d) Büyük dosyaları şirket paylaşımında bırakıp sisteme "dış bağlantı adresi"
+     olarak eklemek.
+
+2) TEK DOSYA SINIRI
+Bucket sınırı 50 MB'dır; üstündeki dosyalar yüklenmez ve sonunda listelenir.
+Yükseltmek isterseniz tek parça olarak çalıştırın (örnek: 200 MB):
+
+    UPDATE storage.buckets
+       SET file_size_limit = 209715200
+     WHERE id = 'project-files';
+
+Bu satır yalnız sınırı değiştirir, veriye dokunmaz.
+NOT: Bucket sınırını yükseltmek tek başına yetmeyebilir. Supabase projesinin
+Storage ayarlarında ayrıca bir "global file size limit" vardır
+(Dashboard > Storage > Settings). Bucket sınırını yükselttiyseniz oradaki
+değerin de en az o kadar olduğundan emin olun. Ayrıca çok büyük dosyalarda
+tarayıcıdan tek seferlik yükleme zorlanır; 200 MB üstü dosyalar için dosyayı
+bölmek veya ZIP'lemek daha güvenlidir.
+
+3) YÜKLEME KESİLİRSE
+Yarım kalan yükleme veri bozmaz: yüklenen her dosya anında kayda geçer
+(her 20 dosyada bir JSON'a yazılır). Aynı klasörü aynı yerde tekrar seçtiğinizde
+ad ve boyutu aynı olan dosyalar atlanır.
+
+4) ESKİ SQL DOSYALARI
+sql/ klasöründeki eski kurulum/migration dosyalarını yeniden ÇALIŞTIRMAYIN.

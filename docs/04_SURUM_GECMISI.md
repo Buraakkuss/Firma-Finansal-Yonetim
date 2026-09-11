@@ -323,4 +323,28 @@
   **ek SQL gerekmez**.
 - Kullanım kılavuzuna "Standart Ekipmanlar" konusu eklendi (13 bölüm, 40 konu).
 
-Güncel baz sürüm: **v0.18.0**
+## v0.19.0
+- Standart Ekipmanlar kütüphanelerine **klasörün tamamını yükleme** eklendi.
+  Tarayıcının klasör seçicisiyle (webkitdirectory) seçilen klasör, **alt klasör
+  yapısı korunarak** sisteme aktarılır; eksik klasörler `webkitRelativePath`
+  üzerinden otomatik oluşturulur.
+- Yükleme sırasında ilerleme çubuğu: kaçıncı dosya, yüzde, aktarılan/toplam
+  boyut ve yeterli örnek toplanınca tahmini kalan süre. Her 20 dosyada bir
+  kayıt ve liste yenilenir.
+- **⛔ Yüklemeyi Durdur**: o ana kadar yüklenenler kalıcıdır. Aynı klasör aynı
+  yerde tekrar seçilirse yüklenmiş dosyalar (ad + boyut aynıysa) atlanır ve
+  yükleme kaldığı yerden devam eder — büyük kütüphaneler birkaç oturumda
+  yüklenebilir.
+- Başlamadan önce kaç dosya, kaç MB ve hangi klasöre yükleneceği onaya sunulur;
+  1 GB üstü yüklemelerde ek uyarı gösterilir.
+- 50 MB üstü dosyalar atlanır ve sonunda adlarıyla listelenir. Thumbs.db,
+  desktop.ini, .DS_Store gibi sistem dosyaları alınmaz.
+- Tek dosyadaki hata yüklemeyi durdurmaz; hata sayısı ve son hata özette
+  bildirilir. Arka arkaya 10 hatada yükleme kendiliğinden durur.
+- Düzeltme: `.pro-grid .form-action .btn` kuralı `display:flex !important`
+  olduğu için satır içi `display:none` çalışmıyordu; gizleme artık
+  `.stdlib-gizli` sınıfı ile yapılıyor.
+- Kullanım kılavuzunun "Standart Ekipmanlar" konusuna klasör yükleme adımları
+  eklendi.
+
+Güncel baz sürüm: **v0.19.0**

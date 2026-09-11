@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.18.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.18.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.18.0">
-  <title>NakitPilot Marmara Teknik — v0.18.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.19.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.19.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.19.0">
+  <title>NakitPilot Marmara Teknik — v0.19.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -1321,6 +1321,11 @@
 .stdlib-act { display:flex; flex-wrap:wrap; gap:5px; justify-content:flex-end; margin-top:9px; }
 .stdlib-act:empty { display:none; }
 .stdlib-act .btn { padding:5px 9px; }
+.stdlib-prog { margin-top:2px; }
+.stdlib-gizli, .pro-grid .form-action .btn.stdlib-gizli { display:none !important; }
+.stdlib-bar { height:9px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:99px; overflow:hidden; }
+.stdlib-bar span { display:block; height:100%; width:0; background:var(--primary); transition:width .25s ease; }
+.stdlib-prog-txt { font-size:12px; color:var(--text-muted); margin-top:6px; white-space:pre-line; overflow-wrap:anywhere; }
 @media (max-width:640px){
   .stdlib-grid { grid-template-columns:1fr; }
   .stdlib-crumb-btn.up { margin-left:0; }
@@ -2656,7 +2661,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.18.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.19.0</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -3617,13 +3622,17 @@
         </div>
         <div class="card" id="stdlib-cad-upload-card">
           <div class="card-title">⬆️ Dosya Yükle</div>
-          <div class="section-sub">Dosyalar şu an açık olan klasöre yüklenir: <strong id="stdlib-cad-konum">Hazır CAD Datalar</strong>. Birden fazla dosya seçebilirsiniz. Tek dosya sınırı <strong>50 MB</strong>; daha büyük dosyaları ZIP yapıp yükleyin.</div>
+          <div class="section-sub">Dosyalar şu an açık olan klasöre yüklenir: <strong id="stdlib-cad-konum">Hazır CAD Datalar</strong>. Tek tek dosya seçebilir <strong>veya bilgisayarınızdaki bir klasörü olduğu gibi</strong> (alt klasörleriyle birlikte) yükleyebilirsiniz — klasör yapısı burada aynen oluşturulur. Tek dosya sınırı <strong>50 MB</strong>; daha büyük dosyaları ZIP yapıp yükleyin.</div>
           <div class="pro-grid pro-grid-12">
             <div class="form-group span-6"><label>Dosya seç (STEP, STP, DWG, DXF, IGES, PDF, resim)</label><input type="file" id="stdlib-cad-file" multiple></div>
             <div class="form-group span-6"><label>Görünecek ad (opsiyonel)</label><input id="stdlib-cad-title" placeholder="Örn: UCF205 Flanşlı Yatak — STEP"></div>
             <div class="form-group span-6"><label>Açıklama / not (opsiyonel)</label><input id="stdlib-cad-note" placeholder="Örn: 2024 revizyon, ölçüler mm"></div>
             <div class="form-group span-6"><label>veya dış bağlantı adresi (opsiyonel)</label><input id="stdlib-cad-link" placeholder="https://... üretici sayfasındaki dosya bağlantısı"></div>
             <div class="form-action span-3"><button class="btn btn-primary" id="stdlib-cad-upload-btn" type="button" onclick="stdLibUpload('cad')">⬆️ Yükle</button></div>
+            <div class="form-group span-6"><label>veya klasörün tamamını yükle — alt klasörleriyle birlikte</label><input type="file" id="stdlib-cad-dir" webkitdirectory directory multiple></div>
+            <div class="form-action span-3"><button class="btn" id="stdlib-cad-dir-btn" type="button" onclick="stdLibUploadFolder('cad')">📂 Klasörü Yükle</button></div>
+            <div class="form-action span-3"><button class="btn btn-del stdlib-gizli" id="stdlib-cad-cancel" type="button" onclick="stdLibCancel()">⛔ Yüklemeyi Durdur</button></div>
+            <div class="span-12 stdlib-prog" id="stdlib-cad-prog" style="display:none"><div class="stdlib-bar"><span id="stdlib-cad-bar"></span></div><div class="stdlib-prog-txt" id="stdlib-cad-prog-txt"></div></div>
           </div>
         </div>
       </div>
@@ -3649,13 +3658,17 @@
         </div>
         <div class="card" id="stdlib-catalog-upload-card">
           <div class="card-title">⬆️ Dosya Yükle</div>
-          <div class="section-sub">Dosyalar şu an açık olan klasöre yüklenir: <strong id="stdlib-catalog-konum">Kataloglar</strong>. Birden fazla dosya seçebilirsiniz. Tek dosya sınırı <strong>50 MB</strong>; daha büyük dosyaları ZIP yapıp yükleyin.</div>
+          <div class="section-sub">Dosyalar şu an açık olan klasöre yüklenir: <strong id="stdlib-catalog-konum">Kataloglar</strong>. Tek tek dosya seçebilir <strong>veya bilgisayarınızdaki bir klasörü olduğu gibi</strong> (alt klasörleriyle birlikte) yükleyebilirsiniz — klasör yapısı burada aynen oluşturulur. Tek dosya sınırı <strong>50 MB</strong>; daha büyük dosyaları ZIP yapıp yükleyin.</div>
           <div class="pro-grid pro-grid-12">
             <div class="form-group span-6"><label>Dosya seç (PDF, resim, Excel, ZIP)</label><input type="file" id="stdlib-catalog-file" multiple></div>
             <div class="form-group span-6"><label>Görünecek ad (opsiyonel)</label><input id="stdlib-catalog-title" placeholder="Örn: SKF Rulman Kataloğu 2024"></div>
             <div class="form-group span-6"><label>Açıklama / not (opsiyonel)</label><input id="stdlib-catalog-note" placeholder="Örn: 2024 revizyon, ölçüler mm"></div>
             <div class="form-group span-6"><label>veya dış bağlantı adresi (opsiyonel)</label><input id="stdlib-catalog-link" placeholder="https://... üretici sayfasındaki dosya bağlantısı"></div>
             <div class="form-action span-3"><button class="btn btn-primary" id="stdlib-catalog-upload-btn" type="button" onclick="stdLibUpload('catalog')">⬆️ Yükle</button></div>
+            <div class="form-group span-6"><label>veya klasörün tamamını yükle — alt klasörleriyle birlikte</label><input type="file" id="stdlib-catalog-dir" webkitdirectory directory multiple></div>
+            <div class="form-action span-3"><button class="btn" id="stdlib-catalog-dir-btn" type="button" onclick="stdLibUploadFolder('catalog')">📂 Klasörü Yükle</button></div>
+            <div class="form-action span-3"><button class="btn btn-del stdlib-gizli" id="stdlib-catalog-cancel" type="button" onclick="stdLibCancel()">⛔ Yüklemeyi Durdur</button></div>
+            <div class="span-12 stdlib-prog" id="stdlib-catalog-prog" style="display:none"><div class="stdlib-bar"><span id="stdlib-catalog-bar"></span></div><div class="stdlib-prog-txt" id="stdlib-catalog-prog-txt"></div></div>
           </div>
         </div>
       </div>
@@ -3681,7 +3694,7 @@
       <section class="guide-sec" id="gs-7"><h2><span class="gnum">7</span>Yönetim raporu ve kârlılık</h2><p class="guide-lead">İşletme sahibinin tek bakışta durumu gördüğü ekran.</p><div class="guide-item"><h3>Yönetici Paneli</h3><figure class="guide-shot"><div class="gimg"><img src="guide/19-yonetici.jpg" alt="Yönetici paneli" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Özet kartlar: teklif aşaması, onay bekleyen, üretimdeki, geciken proje sayıları.</li><li>Tahsil edilecek ve ödenecek tutarlar, teklif onay oranı ve onaylanan ciro.</li><li>Proje kârlılığı tablosu.</li><li>Geciken projeler listesi — teslim tarihi geçmiş ve kapanmamış projeler.</li></ol><table class="guide-kv"><tbody><tr><th>Satış</th><td>Projenin onaylanan teklif tutarı.</td></tr><tr><th>Tahmini Maliyet</th><td>Projenin seçili maliyet çalışmasından gelir.</td></tr><tr><th>Gerçek Maliyet</th><td>Projeye bağlanan <strong>tedarikçi faturalarından</strong> gelir.</td></tr><tr><th>Gerçek Kâr</th><td>Satış eksi gerçek maliyet.</td></tr><tr><th>Marj</th><td>Gerçek kârın satışa oranı.</td></tr><tr><th>Kalan Alacak</th><td>Faturalanmış ama henüz tahsil edilmemiş tutar.</td></tr></tbody></table><div class="guide-warn">Bir projede <strong>"ölçülemiyor"</strong> yazıyorsa o projeye hiç tedarikçi faturası bağlanmamıştır. Gerçek maliyet bilinmediği için kâr da hesaplanamaz. Maliyetin doğru çıkması için tedarikçi faturalarında <strong>PROJE alanını mutlaka doldurun</strong>.</div></div><div class="guide-item"><h3>Raporlar ekranı</h3><p>Seçtiğiniz tarih aralığında nakit akışı, kategori dağılımı, aylık tablo ve risk durumu. Excel, CSV ve görsel rapor olarak indirilebilir.</p><figure class="guide-shot"><div class="gimg"><img src="guide/24-raporlar.jpg" alt="Raporlar ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note"><strong>Kasa Portföyü</strong> yalnız nakit kasayı kapsar, <u>banka hesaplarını içermez</u>. Banka dâhil toplam için Özet Paneli'ne veya Banka Merkezi'ne bakın.</div></div><div class="guide-item"><h3>Özet Paneli</h3><figure class="guide-shot"><div class="gimg"><img src="guide/01-ozet.jpg" alt="Özet paneli" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Net finansal varlık ve banka/kart/KMH dağılımı.</li><li>Dönem kartları: gelir, gider, beklenen kalemler, tahmini net.</li><li>Gelir-gider grafiği ve gider kategori dağılımı.</li><li>Nakit akışı projeksiyonu — gelecek ayların tahmini portföyü.</li><li>Tahsilat vade uyarıları — vadesi geçen ve 7 gün içinde dolacak faturalar.</li></ol></div></section>
       <section class="guide-sec" id="gs-8"><h2><span class="gnum">8</span>Kişi kartları ve belgelerdeki bilgiler</h2><p class="guide-lead">Teklif ve sipariş belgelerinde kimin bilgisi görünecek.</p><div class="guide-item"><h3>Belgelerde sorumlu kişi nasıl seçilir</h3><p>Hem teklif penceresinde hem satın alma sipariş formunda <strong>Sorumlu Kişi</strong> alanı vardır.</p><ol class="guide-steps"><li>Belgeyi açtığınızda <strong>varsayılan olarak sizin kartınız</strong> seçili gelir.</li><li>Arkadaşınız yerinde değilse ve onun adına belge düzenliyorsanız listeden onun kartını seçin.</li><li>Ad, <strong>cep telefonu</strong> ve e-posta üçü birden o kişininkiyle değişir.</li><li>İsterseniz bu alanları elle de düzenleyebilirsiniz.</li></ol><table class="guide-kv"><tbody><tr><th>Belgede görünen numara</th><td>Kişinin <strong>cep telefonu</strong>. Girilmemişse kartın sabit numarası yazılır.</td></tr><tr><th>Belgenin en altındaki künye</th><td>Firma unvanı · şehir · web adresi · <strong>firma sabit telefonu</strong>.</td></tr><tr><th>Kart seçilmezse</th><td>Firma varsayılan bilgileri basılır (eski davranış).</td></tr></tbody></table><div class="guide-note">Bir kişi herhangi bir teklif veya siparişte sorumlu olarak geçiyorsa <strong>kartı silinemez</strong>. Kişi işten ayrıldıysa kartı silmeyin; not alanına düşün ki geçmiş belgeler bozulmasın.</div></div></section>
       <section class="guide-sec" id="gs-9"><h2><span class="gnum">9</span>Yetkiler ve roller</h2><p class="guide-lead">Kim neyi görebilir, kim neyi değiştirebilir.</p><div class="guide-item"><h3>Rollerin varsayılan yetkileri</h3><table class="guide-kv"><tbody><tr><th>Yönetici</th><td>Her modülde tam yetki. Firma & Ekip, Yasal ve kişi kartı yönetimi yalnız bu roldedir.</td></tr><tr><th>Muhasebe</th><td>Finans ve Cari düzenler; Proje ve Satın Alma'yı görür ama değiştiremez.</td></tr><tr><th>Mühendis / Proje</th><td>Proje düzenler; Satın Alma ve Cari'yi görür. Finans girişi ve Yönetim Raporu'nu göremez.</td></tr><tr><th>Satın Alma</th><td>Satın Alma düzenler; Finans ve Proje'yi görür ama değiştiremez.</td></tr><tr><th>Rapor Kullanıcısı</th><td>Her modülü görüntüler, hiçbir şeyi değiştiremez.</td></tr></tbody></table><p>Bu varsayılanlar <strong>Ayarlar &gt; Firma &amp; Ekip</strong> ekranındaki <em>Modül Yetkileri</em> matrisinden kişi bazında değiştirilebilir. Her kullanıcı her modülde üç seviyeden birini alır: <strong>erişim yok</strong> / <strong>görüntüleme</strong> / <strong>düzenleme</strong>.</p><figure class="guide-shot"><div class="gimg"><img src="guide/21-yetki.jpg" alt="Firma & Ekip ve modül yetkileri" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Muhasebe parayı girer; satın alma ve proje ekibi aynı veriyi <strong>izleyebilir</strong> ama değiştiremez. Sistem bu ayrımı korumak üzere kurulmuştur.</div></div></section>
-      <section class="guide-sec" id="gs-10"><h2><span class="gnum">10</span>Mühendislik araçları</h2><p class="guide-lead">Tasarım ve maliyet çalışması sırasında kullanılan hesaplama araçları.</p><div class="guide-item"><h3>Ağırlık hesaplama</h3><p>Profil, sac, lama, boru, köşebent gibi ürünlerin malzeme cinsine ve ölçülerine göre ağırlığını hesaplar. Ölçüler <strong>milimetre</strong>, yoğunluk <strong>kg/dm³</strong>, sonuç <strong>kilogram</strong>dır.</p><ol class="guide-steps"><li><strong>Mühendislik &gt; Ağırlık Hesaplama</strong>.</li><li><strong>Malzeme</strong>yi seçin; yoğunluk otomatik gelir. Listede olmayan bir malzeme için "Özel" seçip yoğunluğu elle yazın.</li><li><strong>Kesit Tipi</strong>ni seçin. Sağda o kesitin şeması ve ölçü harfleri görünür.</li><li>Ölçüleri ve uzunluğu girin; sonuç anında hesaplanır.</li><li><strong>Adet</strong> girerek toplam ağırlığı görün.</li><li>İsterseniz <strong>Listeye Ekle</strong> ile birden çok kalemi biriktirin.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/25-agirlik.jpg" alt="Ağırlık hesaplama ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Malzeme, yoğunluk, kesit tipi ve adet.</li><li>Seçilen kesite göre değişen ölçü alanları.</li><li>Kesit şeması — ölçü harfleri formdaki alanlarla aynıdır.</li><li>Sonuç kartları: kesit alanı, kg/m, parça ağırlığı ve toplam.</li><li>Hesabın nasıl yapıldığını adım adım gösteren satır.</li><li>Hesap listesi; malzeme fiyatı girilirse tutar da çıkar.</li></ol><table class="guide-kv"><tbody><tr><th>Kesit tipleri</th><td>Sac/plaka · lama · kare dolu · yuvarlak dolu (mil) · boru · kutu profil (kare ve dikdörtgen) · altıgen · köşebent · U · T · I/H profil</td></tr><tr><th>Malzemeler</th><td>Çelik, paslanmaz 304/316, dökme demir, alüminyum, bakır, pirinç, bronz, çinko, kurşun, titanyum, nikel, magnezyum, PVC, PE, POM, PA6, PTFE, pleksi, cam, ahşap ve özel</td></tr></tbody></table><div class="guide-ok">Liste hazırken <strong>Listeyi Kopyala</strong> ile panoya alıp maliyet çalışmasına veya e-postaya yapıştırabilirsiniz. Malzeme fiyatı (TL/kg) girerseniz her satırın ve toplamın tutarı da hesaplanır.</div><div class="guide-note">Köşebent, U, T ve I/H profillerde köşe radyusları ve flanş eğimleri hesaba katılmaz; sonuç standart katalog değerinden yaklaşık %1-3 sapabilir. Kritik işlerde üretici kataloğundan doğrulayın.</div><div class="guide-warn">Hesap listesi kaydedilmez; ekrandan çıkınca veya sayfayı yenileyince silinir. Saklamak istediğiniz listeyi kopyalayın.</div></div><div class="guide-item"><h3>Standart Ekipmanlar — Hazır CAD Datalar ve Kataloglar</h3><p>Mühendislik başlığının altındaki <strong>Standart Ekipmanlar</strong> bölümünde iki kütüphane vardır: <strong>Hazır CAD Datalar</strong> (STEP, STP, DWG, DXF, IGES ve teknik resimler) ve <strong>Kataloglar</strong> (üretici katalogları, ölçü tabloları, PDF dokümanlar). İkisi de aynı şekilde çalışır.</p><ol class="guide-pins"><li>Menü → <strong>Mühendislik</strong> → <strong>Hazır CAD Datalar</strong>. İlk açılışta hazır başlıklar gelir: Yataklı Rulmanlar CAD, Doğuş Kalıp CAD, Alhan CAD, Emes Teker CAD, Surfence CAD.</li><li>Bir başlığa <strong>tıklayınca içine girersiniz</strong>. Üstteki yol çubuğundan (🏠 Hazır CAD Datalar › … ) istediğiniz kademeye geri dönebilir, <strong>⬆️ Üst klasör</strong> ile bir üst kademeye çıkabilirsiniz.</li><li>Yeni klasör açmak için <strong>Yeni başlık (klasör) adı</strong> kutusuna adı yazıp <strong>Klasör Oluştur</strong>a basın. İçindeyken açtığınız klasör <strong>alt klasör</strong> olur: Yataklı Rulmanlar CAD › <strong>UCF Serisi</strong> › <strong>UCF205</strong> gibi. Kademe sınırı yoktur.</li><li>Kök seviyede klasör açarak <strong>yeni bir kütüphane başlığı</strong> da ekleyebilirsiniz (örn. yeni bir tedarikçi).</li><li>Dosya eklemek için klasörün içine girin, alttaki <strong>Dosya Yükle</strong> kartından dosyayı seçin (<strong>birden fazla dosya</strong> seçebilirsiniz), istersek görünecek adı ve notu yazıp <strong>Yükle</strong>ye basın.</li><li>Mühendis dosyanın üzerindeki <strong>⬇️ İndir</strong> butonuna basınca dosya doğrudan bilgisayarına iner. PDF ve resimlerde <strong>👁</strong> butonu dosyayı yeni sekmede açar.</li><li>Üstteki <strong>arama kutusu</strong> kütüphanenin tamamında arar: klasör adı, dosya adı ve not içinde. Sonuçta dosyanın hangi klasörde olduğu da yazar.</li><li><strong>✏️</strong> adı değiştirir, <strong>🗑</strong> siler. Dolu bir klasör silinmez; önce içindekileri silmeniz istenir.</li></ol><div class="guide-ok">Dış kaynaktaki bir dosyayı kütüphaneye almak istemiyorsanız <strong>dış bağlantı adresi</strong> alanına üreticinin sayfa adresini yazıp kaydedebilirsiniz; kart 🔗 ikonuyla görünür.</div><div class="guide-note">Tek dosya sınırı <strong>50 MB</strong>. Daha büyük CAD dosyalarını ZIP yapıp yükleyin. Dosyalar firmanın bulut alanında saklanır; sadece o firmanın kullanıcıları görebilir.</div><div class="guide-warn">Klasör açma, dosya yükleme ve silme için <strong>Mühendislik modülünde düzenleme yetkisi</strong> gerekir. Görüntüleme yetkisi olan herkes dosyaları <strong>indirebilir</strong>. Silinen dosya buluttan da kalkar, geri alınamaz.</div></div></section>
+      <section class="guide-sec" id="gs-10"><h2><span class="gnum">10</span>Mühendislik araçları</h2><p class="guide-lead">Tasarım ve maliyet çalışması sırasında kullanılan hesaplama araçları.</p><div class="guide-item"><h3>Ağırlık hesaplama</h3><p>Profil, sac, lama, boru, köşebent gibi ürünlerin malzeme cinsine ve ölçülerine göre ağırlığını hesaplar. Ölçüler <strong>milimetre</strong>, yoğunluk <strong>kg/dm³</strong>, sonuç <strong>kilogram</strong>dır.</p><ol class="guide-steps"><li><strong>Mühendislik &gt; Ağırlık Hesaplama</strong>.</li><li><strong>Malzeme</strong>yi seçin; yoğunluk otomatik gelir. Listede olmayan bir malzeme için "Özel" seçip yoğunluğu elle yazın.</li><li><strong>Kesit Tipi</strong>ni seçin. Sağda o kesitin şeması ve ölçü harfleri görünür.</li><li>Ölçüleri ve uzunluğu girin; sonuç anında hesaplanır.</li><li><strong>Adet</strong> girerek toplam ağırlığı görün.</li><li>İsterseniz <strong>Listeye Ekle</strong> ile birden çok kalemi biriktirin.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/25-agirlik.jpg" alt="Ağırlık hesaplama ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Malzeme, yoğunluk, kesit tipi ve adet.</li><li>Seçilen kesite göre değişen ölçü alanları.</li><li>Kesit şeması — ölçü harfleri formdaki alanlarla aynıdır.</li><li>Sonuç kartları: kesit alanı, kg/m, parça ağırlığı ve toplam.</li><li>Hesabın nasıl yapıldığını adım adım gösteren satır.</li><li>Hesap listesi; malzeme fiyatı girilirse tutar da çıkar.</li></ol><table class="guide-kv"><tbody><tr><th>Kesit tipleri</th><td>Sac/plaka · lama · kare dolu · yuvarlak dolu (mil) · boru · kutu profil (kare ve dikdörtgen) · altıgen · köşebent · U · T · I/H profil</td></tr><tr><th>Malzemeler</th><td>Çelik, paslanmaz 304/316, dökme demir, alüminyum, bakır, pirinç, bronz, çinko, kurşun, titanyum, nikel, magnezyum, PVC, PE, POM, PA6, PTFE, pleksi, cam, ahşap ve özel</td></tr></tbody></table><div class="guide-ok">Liste hazırken <strong>Listeyi Kopyala</strong> ile panoya alıp maliyet çalışmasına veya e-postaya yapıştırabilirsiniz. Malzeme fiyatı (TL/kg) girerseniz her satırın ve toplamın tutarı da hesaplanır.</div><div class="guide-note">Köşebent, U, T ve I/H profillerde köşe radyusları ve flanş eğimleri hesaba katılmaz; sonuç standart katalog değerinden yaklaşık %1-3 sapabilir. Kritik işlerde üretici kataloğundan doğrulayın.</div><div class="guide-warn">Hesap listesi kaydedilmez; ekrandan çıkınca veya sayfayı yenileyince silinir. Saklamak istediğiniz listeyi kopyalayın.</div></div><div class="guide-item"><h3>Standart Ekipmanlar — Hazır CAD Datalar ve Kataloglar</h3><p>Mühendislik başlığının altındaki <strong>Standart Ekipmanlar</strong> bölümünde iki kütüphane vardır: <strong>Hazır CAD Datalar</strong> (STEP, STP, DWG, DXF, IGES ve teknik resimler) ve <strong>Kataloglar</strong> (üretici katalogları, ölçü tabloları, PDF dokümanlar). İkisi de aynı şekilde çalışır.</p><ol class="guide-pins"><li>Menü → <strong>Mühendislik</strong> → <strong>Hazır CAD Datalar</strong>. İlk açılışta hazır başlıklar gelir: Yataklı Rulmanlar CAD, Doğuş Kalıp CAD, Alhan CAD, Emes Teker CAD, Surfence CAD.</li><li>Bir başlığa <strong>tıklayınca içine girersiniz</strong>. Üstteki yol çubuğundan (🏠 Hazır CAD Datalar › … ) istediğiniz kademeye geri dönebilir, <strong>⬆️ Üst klasör</strong> ile bir üst kademeye çıkabilirsiniz.</li><li>Yeni klasör açmak için <strong>Yeni başlık (klasör) adı</strong> kutusuna adı yazıp <strong>Klasör Oluştur</strong>a basın. İçindeyken açtığınız klasör <strong>alt klasör</strong> olur: Yataklı Rulmanlar CAD › <strong>UCF Serisi</strong> › <strong>UCF205</strong> gibi. Kademe sınırı yoktur.</li><li>Kök seviyede klasör açarak <strong>yeni bir kütüphane başlığı</strong> da ekleyebilirsiniz (örn. yeni bir tedarikçi).</li><li>Dosya eklemek için klasörün içine girin, alttaki <strong>Dosya Yükle</strong> kartından dosyayı seçin (<strong>birden fazla dosya</strong> seçebilirsiniz), istersek görünecek adı ve notu yazıp <strong>Yükle</strong>ye basın.</li><li><strong>Elinizdeki bir klasörü olduğu gibi yüklemek için</strong> (alt klasörleriyle birlikte): hedef klasörün içine girin, "veya klasörün tamamını yükle" kutusundan bilgisayarınızdaki klasörü seçin ve <strong>📂 Klasörü Yükle</strong>ye basın. Kaç dosya ve kaç MB yükleneceği sorulur, onaylayınca klasör yapısı burada aynen oluşturulur.</li><li>Yükleme sürerken çubukta kaçıncı dosyada olduğunuz, yüzde ve tahmini kalan süre görünür. <strong>⛔ Yüklemeyi Durdur</strong> ile durdurabilirsiniz; o ana kadar yüklenenler kayıtlı kalır. Aynı klasörü aynı yerde tekrar seçerseniz yüklenmiş dosyalar atlanır, <strong>kaldığı yerden devam eder</strong> — büyük kütüphaneleri birkaç oturumda yükleyebilirsiniz.</li><li>Mühendis dosyanın üzerindeki <strong>⬇️ İndir</strong> butonuna basınca dosya doğrudan bilgisayarına iner. PDF ve resimlerde <strong>👁</strong> butonu dosyayı yeni sekmede açar.</li><li>Üstteki <strong>arama kutusu</strong> kütüphanenin tamamında arar: klasör adı, dosya adı ve not içinde. Sonuçta dosyanın hangi klasörde olduğu da yazar.</li><li><strong>✏️</strong> adı değiştirir, <strong>🗑</strong> siler. Dolu bir klasör silinmez; önce içindekileri silmeniz istenir.</li></ol><div class="guide-ok">Dış kaynaktaki bir dosyayı kütüphaneye almak istemiyorsanız <strong>dış bağlantı adresi</strong> alanına üreticinin sayfa adresini yazıp kaydedebilirsiniz; kart 🔗 ikonuyla görünür.</div><div class="guide-note">Tek dosya sınırı <strong>50 MB</strong>. Klasör yüklerken bu sınırın üstündeki dosyalar atlanır ve sonunda listelenir; onları ZIP yapıp ekleyebilirsiniz. Thumbs.db, desktop.ini gibi sistem dosyaları kendiliğinden atlanır. Dosyalar firmanın bulut alanında saklanır; sadece o firmanın kullanıcıları görebilir.</div><div class="guide-warn">Klasör açma, dosya yükleme ve silme için <strong>Mühendislik modülünde düzenleme yetkisi</strong> gerekir. Görüntüleme yetkisi olan herkes dosyaları <strong>indirebilir</strong>. Silinen dosya buluttan da kalkar, geri alınamaz.</div></div></section>
       <section class="guide-sec" id="gs-11"><h2><span class="gnum">11</span>Telefonda kullanım</h2><p class="guide-lead">Sistem telefonda da tam çalışır.</p><div class="guide-item"><h3>Mobil menü ve ekranlar</h3><ol class="guide-steps"><li>Üst soldaki <strong>☰</strong> butonuna basın; menü çekmece olarak açılır.</li><li>Modül başlığına basınca alt ekranlar açılır.</li><li>Bir ekran seçince menü kendiliğinden kapanır.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/22-mobil.jpg" alt="Telefonda menü" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Telefonda formlar tek sütuna iner, butonlar parmakla basılacak boyuttadır ve geniş tablolar kendi içinde yana kaydırılır. Sayfa asla yana taşmaz.</div></div></section>
       <section class="guide-sec" id="gs-12"><h2><span class="gnum">12</span>Uyarı mesajları ve anlamları</h2><p class="guide-lead">Sistemin verdiği uyarıların ne demek olduğu ve ne yapmanız gerektiği.</p><div class="guide-item"><h3>Sık karşılaşılan uyarılar</h3><table class="guide-kv"><tbody><tr><th>"Önce bu projeye ait teklif kaydı oluşturun"</th><td>Projeyi Onaylandı veya üretim durumuna almaya çalıştınız ama projede teklif yok. Teklif &amp; Maliyet ekranından teklif oluşturun.</td></tr><tr><th>"Teslim Edildi durumuna geçmek için teslim tarihi girilmelidir"</th><td>Projeyi düzenleyip durumu Teslim Edildi seçin; açılan alanlara teslim tarihi ve irsaliye numarasını girin.</td></tr><tr><th>"Faturalandırıldı durumuna geçmek için önce fatura kaydı girilmelidir"</th><td>Proje Finans Durumu ekranından faturayı kaydedin.</td></tr><tr><th>"Kalan alacak ... Tahsilat tamamlanmadan bu duruma geçilemez"</th><td>Henüz tahsil edilmemiş tutar var. Tahsilatı girin; durum kendiliğinden ilerler.</td></tr><tr><th>"Tahsilat tutarı faturanın kalanından fazla"</th><td>Fatura tutarı, kalan ve girdiğiniz tutar uyarıda yazar. En fazla kalan kadar girebilirsiniz.</td></tr><tr><th>"Ödeme tutarı faturanın kalan borcundan fazla"</th><td>Aynı kural tedarikçi ödemelerinde de geçerlidir.</td></tr><tr><th>"Bu faturaya bağlı ... tahsilat var. Önce tahsilatları silin"</th><td>Tahsilatı olan fatura silinemez. Önce tahsilat kayıtlarını silin.</td></tr><tr><th>"Bu tedarikçiye bağlı sipariş veya fatura var"</th><td>Kayıt kullanılıyor; silinemez.</td></tr><tr><th>"Bu kayıt henüz talep/teklif aşamasında"</th><td>Mal kabul yapmadan önce fiyatları girip durumu Sipariş Verildi yapın.</td></tr><tr><th>"Bu e-posta başka bir kişi kartında kayıtlı"</th><td>Aynı e-posta ile ikinci kart açılamaz.</td></tr><tr><th>"... yetkiniz yok"</th><td>Rolünüz bu işlemi yapmaya izin vermiyor. Yöneticinizden yetki isteyin.</td></tr></tbody></table></div></section>
       <section class="guide-sec" id="gs-13"><h2><span class="gnum">13</span>Altın kurallar</h2><p class="guide-lead">Sistemin doğru çalışması için bunlara uyun.</p><div class="guide-item"><h3>Yapılması gerekenler</h3><div class="guide-ok"><ul style="margin:0;padding-left:18px;line-height:1.85"><li>Proje tahsilatlarını <strong>Proje Finans Durumu</strong> ekranından girin, Günlük Kayıt'tan değil.</li><li>Tedarikçi ödemelerini <strong>Faturalar &amp; Ödemeler</strong> ekranından girin, Günlük Kayıt'tan değil.</li><li>Tedarikçi faturasında <strong>PROJE alanını doldurun</strong> — projenin gerçek maliyeti buna bağlıdır.</li><li>Fatura ve tahsilatta <strong>vade tarihini</strong> girin — tüm gecikme takibi buna dayanır.</li><li>Tedarikçi kartına <strong>ödeme vadesini</strong> girin — sipariş ve fatura vadesi otomatik hesaplansın.</li><li>Kişi kartınızın e-postası <strong>giriş e-postanızla aynı</strong> olsun.</li><li>Döviz işlemlerinde <strong>kuru</strong> mutlaka girin.</li></ul></div></div><div class="guide-item"><h3>Yapılmaması gerekenler</h3><div class="guide-warn"><ul style="margin:0;padding-left:18px;line-height:1.85"><li>Aynı parayı iki yerden girmeyin (proje tahsilatı + günlük gelir gibi).</li><li>KMH kullanımını ve kredi kartı borcu ödemesini gelir/gider olarak girmeyin — bunlar varlıklar arası harekettir, Banka Merkezi'nden işlenir.</li><li>İşten ayrılan kişinin kartını silmeyin; geçmiş belgeler ona bağlıdır.</li><li>Yanlış SAP No ile açılmış siparişi düzeltmeye çalışmayın — numara değişmez. Faturası kesilmemişse silip yenisini açın.</li><li>Tahsilatı "hesap kapansın diye" fazla girmeyin; sistem zaten engeller.</li></ul></div></div><div class="guide-item"><h3>Bir şey ters giderse</h3><ol class="guide-steps"><li><strong>Proje Hareket Geçmişi</strong>ne bakın (Projeler ekranının altı). Hiçbir kayıt silinmez; kim ne zaman ne yaptı orada yazar.</li><li>Yanlış kaydı silin veya düzenleyin — sistem bağlı kayıtları (gelir, banka bakiyesi, proje durumu) kendiliğinden geri alır.</li><li>Durum otomatik geri alındıysa panik yapmayın; hareket geçmişinde nedeni yazar.</li><li>Emin değilseniz kaydı silmeden önce ekran görüntüsü alın.</li></ol></div></section>
@@ -4614,7 +4627,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={weightCalc:'Mühendislik · Ağırlık Hesaplama',cadLibrary:'Standart Ekipmanlar · Hazır CAD Datalar',catalogs:'Standart Ekipmanlar · Kataloglar',guide:'Kullanım Kılavuzu',people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.18.0';
+const APP_VERSION='0.19.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -11851,6 +11864,140 @@ async function stdLibUpload(root){
   if(hata)stdLibStatus(root,(ok?ok+' dosya yüklendi. ':'')+'Hata: '+hata,'err');
   else{temizle();stdLibStatus(root,ok+' dosya "'+stdLibPathText(root,folderId)+'" içine yüklendi.','ok');}
   renderStdLib(root);
+}
+/* ──────── v0.19.0 — KLASÖRÜN TAMAMINI YÜKLEME ────────
+   Tarayıcının klasör seçici özelliğiyle (webkitdirectory) bir klasör olduğu
+   gibi yüklenir: alt klasörler sistemde aynı ağaçla yeniden oluşturulur,
+   dosyalar kendi klasörlerine gider. Yükleme sırasında durdurulabilir; aynı
+   klasör tekrar seçilirse yüklenmiş dosyalar atlanır, kalınan yerden devam
+   eder. Büyük kütüphaneler bu yüzden parça parça yüklenebilir. */
+const STD_LIB_SKIP_FILES=/^(thumbs\.db|desktop\.ini|\.ds_store|\.gitkeep)$/i;
+const STD_LIB_SAVE_EVERY=20;
+let _stdLibAbort=false;
+function stdLibCancel(){_stdLibAbort=true;}
+function stdLibProgress(root,oran,metin){
+  const wrap=document.getElementById('stdlib-'+root+'-prog');
+  const bar=document.getElementById('stdlib-'+root+'-bar');
+  const txt=document.getElementById('stdlib-'+root+'-prog-txt');
+  if(wrap)wrap.style.display=(oran===null?'none':'');
+  if(bar&&oran!==null)bar.style.width=Math.max(0,Math.min(100,oran))+'%';
+  if(txt)txt.textContent=metin||'';
+}
+/* Yol parçalarını takip ederek eksik klasörleri oluşturur, hedef klasörün
+   kimliğini döndürür. Aynı adlı klasör varsa yenisi açılmaz. */
+function stdLibEnsurePath(root,baseId,parcalar){
+  let cur=baseId||'';
+  const now=new Date().toISOString(),who=currentUser&&currentUser.email||'';
+  let yeni=0;
+  parcalar.forEach(ad=>{
+    ad=String(ad).trim();
+    if(!ad)return;
+    let f=stdLibChildren(root,cur).find(x=>stdLibTr(x.name)===stdLibTr(ad));
+    if(!f){
+      f={id:makeId('stdf'),root,parentId:cur,name:ad,note:'',createdAt:now,createdBy:who};
+      stdLibStore().folders.push(f);yeni++;
+    }
+    cur=f.id;
+  });
+  return {id:cur,yeni};
+}
+function stdLibRelParts(file){
+  const rel=String(file.webkitRelativePath||file.relativePath||'');
+  if(!rel)return {klasorler:[],ad:file.name};
+  const p=rel.split('/').filter(Boolean);
+  return {klasorler:p.slice(0,-1),ad:p[p.length-1]||file.name};
+}
+async function stdLibUploadFolder(root){
+  root=stdLibRoot(root);
+  if(!stdLibCanEdit())return denyAction('Klasör yükleme yetkisi gerekir.');
+  if(_stdLibBusy)return;
+  const inp=document.getElementById('stdlib-'+root+'-dir');
+  let files=Array.from((inp&&inp.files)||[]);
+  if(!files.length){alert('Önce bir klasör seçin. "Klasörün tamamını yükle" kutusuna basıp bilgisayarınızdaki klasörü seçin; tarayıcı klasörün içindeki tüm dosyaları sorup onayınızı ister.');return;}
+  const sb=ensureSupabase();
+  if(!sb||!currentCompanyId){alert('Dosya yükleme için bulut bağlantısı ve firma seçimi gerekir.');return;}
+  files=files.filter(f=>!STD_LIB_SKIP_FILES.test(f.name));
+  const buyukler=files.filter(f=>f.size>STD_LIB_MAX_MB*1024*1024);
+  const yuklenecek=files.filter(f=>f.size<=STD_LIB_MAX_MB*1024*1024);
+  const toplamBayt=yuklenecek.reduce((s,f)=>s+f.size,0);
+  const hedefAd=stdLibPathText(root,_stdLibAt[root]||'');
+  let mesaj='"'+hedefAd+'" içine yüklenecek:\n\n'
+    +yuklenecek.length+' dosya · '+stdLibSize(toplamBayt)+'\n'
+    +'Klasör yapısı olduğu gibi korunacak.\n';
+  if(buyukler.length)mesaj+='\n'+buyukler.length+' dosya '+STD_LIB_MAX_MB+' MB sınırının üstünde olduğu için ATLANACAK.\n';
+  if(toplamBayt>1024*1024*1024)mesaj+='\nBu büyük bir yükleme. İnternet hızınıza göre uzun sürebilir; sayfayı açık bırakın. İstediğiniz an durdurabilir, sonra aynı klasörü tekrar seçerek kaldığınız yerden devam edebilirsiniz.\n';
+  /* Her dosyanın kaydı firma verisinde (JSON) tutulur. Çok yüksek dosya
+     sayısı kaydı büyütür ve uygulamayı yavaşlatır; kullanıcı uyarılır. */
+  const mevcutDosya=stdLibStore().files.length;
+  if(mevcutDosya+yuklenecek.length>1500)mesaj+='\nDİKKAT: Kütüphanedeki dosya sayısı '+(mevcutDosya+yuklenecek.length)+' olacak. Her dosyanın kaydı firma verisinde tutulduğu için binlerce dosya uygulamayı yavaşlatabilir. Çok sayıda küçük parça yerine her seriyi ZIP yapıp tek dosya olarak yüklemeyi düşünün.\n';
+  mesaj+='\nBaşlansın mı?';
+  if(!yuklenecek.length){alert('Yüklenecek uygun dosya bulunamadı.'+(buyukler.length?' Seçilen dosyaların hepsi '+STD_LIB_MAX_MB+' MB sınırının üstünde.':''));return;}
+  if(!confirm(mesaj))return;
+  _stdLibBusy=true;_stdLibAbort=false;
+  const btn=document.getElementById('stdlib-'+root+'-dir-btn');
+  const btn2=document.getElementById('stdlib-'+root+'-upload-btn');
+  const iptal=document.getElementById('stdlib-'+root+'-cancel');
+  if(btn)btn.disabled=true;
+  if(btn2)btn2.disabled=true;
+  if(iptal)iptal.classList.remove('stdlib-gizli');
+  const taban=_stdLibAt[root]||'';
+  const now=()=>new Date().toISOString(),who=currentUser&&currentUser.email||'';
+  let ok=0,atlanan=0,hataSayi=0,yeniKlasor=0,gidenBayt=0,sonHata='';
+  const t0=Date.now();
+  for(let i=0;i<yuklenecek.length;i++){
+    if(_stdLibAbort)break;
+    const file=yuklenecek[i];
+    const {klasorler,ad}=stdLibRelParts(file);
+    const hedef=stdLibEnsurePath(root,taban,klasorler);
+    yeniKlasor+=hedef.yeni;
+    /* Aynı klasörde aynı ad ve aynı boyutta dosya varsa tekrar yüklenmez —
+       yarım kalan yükleme baştan başlatılabilsin diye. */
+    const zaten=stdLibFilesIn(root,hedef.id).some(x=>x.fileName===ad&&Number(x.size)===Number(file.size));
+    if(zaten){atlanan++;gidenBayt+=file.size;}
+    else{
+      const safeName=String(ad||'dosya').replace(/[^a-zA-Z0-9._-]+/g,'-');
+      const path=currentCompanyId+'/stdlib/'+root+'/'+Date.now()+'-'+i+'-'+safeName;
+      try{
+        const {error}=await sb.storage.from('project-files').upload(path,file,{upsert:false});
+        if(error){hataSayi++;sonHata=error.message;}
+        else{
+          stdLibStore().files.push({id:makeId('stdx'),root,folderId:hedef.id,title:ad,fileName:ad,
+            size:file.size,url:path,note:'',createdAt:now(),createdBy:who});
+          ok++;gidenBayt+=file.size;
+        }
+      }catch(e){hataSayi++;sonHata=String(e&&e.message||e);}
+      if(hataSayi>=10){sonHata=(sonHata||'')+' — arka arkaya çok fazla hata, yükleme durduruldu.';break;}
+    }
+    const oran=toplamBayt?gidenBayt*100/toplamBayt:100;
+    const gecen=(Date.now()-t0)/1000;
+    /* Tahmini süre ancak yeterli örnek toplanınca gösterilir; yoksa ilk
+       birkaç dosyaya bakıp yanıltıcı bir süre yazar. */
+    const kalan=(gecen>8&&gidenBayt>toplamBayt*0.03)?Math.round((toplamBayt-gidenBayt)/(gidenBayt/gecen)):0;
+    stdLibProgress(root,oran,(i+1)+' / '+yuklenecek.length+' dosya · %'+oran.toFixed(0)
+      +' · '+stdLibSize(gidenBayt)+' / '+stdLibSize(toplamBayt)
+      +(kalan?' · yaklaşık '+(kalan>90?Math.round(kalan/60)+' dk':kalan+' sn')+' kaldı':'')
+      +'\n'+(klasorler.length?klasorler.join(' › ')+' › ':'')+ad);
+    if(ok&&ok%STD_LIB_SAVE_EVERY===0){saveData(data);renderStdLib(root);}
+  }
+  saveData(data);
+  if(btn)btn.disabled=false;
+  if(btn2)btn2.disabled=false;
+  if(iptal)iptal.classList.add('stdlib-gizli');
+  if(inp)inp.value='';
+  _stdLibBusy=false;
+  stdLibProgress(root,null,'');
+  const ozet=[ok+' dosya yüklendi',yeniKlasor?yeniKlasor+' klasör oluşturuldu':'',
+    atlanan?atlanan+' dosya zaten vardı, atlandı':'',
+    buyukler.length?buyukler.length+' dosya '+STD_LIB_MAX_MB+' MB üstü olduğu için alınmadı':'',
+    hataSayi?hataSayi+' dosyada hata':''].filter(Boolean).join(' · ');
+  stdLibStatus(root,(_stdLibAbort?'Durduruldu. ':'')+ozet+(sonHata?' — son hata: '+sonHata:''),hataSayi?'err':'ok');
+  renderStdLib(root);
+  if(buyukler.length){
+    const ilk=buyukler.slice(0,8).map(f=>'· '+(stdLibRelParts(f).ad)+' ('+stdLibSize(f.size)+')').join('\n');
+    alert(buyukler.length+' dosya '+STD_LIB_MAX_MB+' MB sınırının üstünde olduğu için yüklenmedi:\n\n'+ilk
+      +(buyukler.length>8?'\n… ve '+(buyukler.length-8)+' dosya daha':'')
+      +'\n\nBu dosyaları ZIP yaparak veya sınırı yükselterek ekleyebilirsiniz (kurulum notuna bakın).');
+  }
 }
 async function stdLibSignedUrl(f,indir){
   const sb=ensureSupabase();

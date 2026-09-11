@@ -1,0 +1,63 @@
+NakitPilot v0.19.0 — Klasörün tamamını yükleme (alt klasörleriyle birlikte)
+
+NEDEN
+Elinizde hazır, iç içe klasörlerden oluşan bir CAD arşivi varsa (örn. Doğuş
+Kalıp klasörü) dosyaları tek tek yüklemek mümkün değildi. Artık klasörü olduğu
+gibi seçip yükleyebilirsiniz; alt klasör yapısı sistemde aynen oluşur.
+
+NASIL YAPILIR
+1. Mühendislik > Standart Ekipmanlar > Hazır CAD Datalar (veya Kataloglar).
+2. Yüklemek istediğiniz hedef başlığın içine girin (örn. "Doğuş Kalıp CAD").
+   Yükleme HER ZAMAN o an açık olan klasörün içine yapılır.
+3. Alttaki "Dosya Yükle" kartında "veya klasörün tamamını yükle" kutusuna
+   basın ve bilgisayarınızdaki klasörü seçin. Tarayıcı "bu klasördeki tüm
+   dosyaları yüklemek istediğinize emin misiniz" diye sorar, onaylayın.
+4. "📂 Klasörü Yükle" butonuna basın. Sistem kaç dosya, kaç MB yükleneceğini
+   ve hangi klasöre gideceğini gösterir; onaylayınca yükleme başlar.
+
+ÖNEMLİ: Seçtiğiniz klasörün KENDİSİ de bir alt klasör olarak oluşur.
+Örnek: "Doğuş Kalıp CAD" içindeyken bilgisayardan "DogusKalip" klasörünü
+seçerseniz sonuç: Doğuş Kalıp CAD > DogusKalip > Kalip-A > Ust Grup > ...
+
+YÜKLEME SIRASINDA
+- İlerleme çubuğu: kaçıncı dosya, yüzde, aktarılan/toplam boyut ve tahmini
+  kalan süre; altında o an yüklenen dosyanın klasör yolu.
+- "⛔ Yüklemeyi Durdur" ile istediğiniz an durdurabilirsiniz.
+- Her 20 dosyada bir kayıt yapılır, liste yenilenir.
+
+YARIM KALAN YÜKLEMEYE DEVAM
+Durdurduysanız veya internet koptuysa: aynı klasöre girip aynı klasörü tekrar
+seçin. Adı ve boyutu aynı olan dosyalar atlanır, kalanlar yüklenir. Böylece
+büyük arşivleri birkaç oturumda yükleyebilirsiniz. Özet mesajında kaç dosyanın
+"zaten vardı, atlandı" olduğu yazar.
+
+ATLANAN DOSYALAR
+- 50 MB üstü dosyalar yüklenmez; sonunda adları ve boyutlarıyla listelenir.
+  Bunları ZIP yapıp ekleyebilir veya sınırı yükseltebilirsiniz
+  (SUPABASE-NOTU-v0.19.0.txt).
+- Thumbs.db, desktop.ini, .DS_Store gibi sistem dosyaları alınmaz.
+
+HATA OLURSA
+Bir dosyada hata çıkması yüklemeyi durdurmaz; diğerleri yüklenmeye devam eder.
+Özet satırında kaç dosyada hata olduğu ve son hata mesajı yazar. Arka arkaya
+10 hata olursa yükleme kendiliğinden durur (genelde internet veya oturum
+sorunudur; sayfayı yenileyip kaldığınız yerden devam edin).
+
+DOSYA SAYISI UYARISI
+Her dosyanın kaydı (adı, klasörü, boyutu) firma verisinde tutulur. Kütüphanedeki
+toplam dosya 1500'ü geçecekse onay penceresinde uyarı çıkar. Binlerce küçük
+parça yüklemek yerine her seriyi ZIP yapıp tek dosya olarak yüklemek hem
+hızlıdır hem de sistemi yormaz.
+
+ÇOK BÜYÜK ARŞİVLER (birkaç GB)
+- Yükleme tarayıcı üzerinden yapılır; sayfa açık kalmalıdır.
+- 1 GB üstü seçimlerde ek uyarı gösterilir.
+- Tavsiye: arşivi tek seferde değil, alt klasör alt klasör yükleyin
+  (önce Kalip-A, sonra Kalip-B gibi). Hem takibi kolaydır hem kesilme riski azdır.
+- Yükleme öncesinde Supabase depolama alanınızın yeterli olduğundan emin olun;
+  ayrıntı SUPABASE-NOTU-v0.19.0.txt içinde.
+
+DÜZELTME
+Gizlenmesi gereken "Yüklemeyi Durdur" butonu, buton stilindeki
+display:flex !important kuralı yüzünden görünür kalıyordu; gizleme artık
+sınıf ile yapılıyor.

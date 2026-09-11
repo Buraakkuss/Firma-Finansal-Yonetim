@@ -1,0 +1,28 @@
+NakitPilot v0.19.0 — Kurulum notu
+
+DOSYALAR
+  index.html            (değişti — klasör yükleme, ilerleme çubuğu, kılavuz)
+  sw.js                 (değişti — APP_VERSION 0.19.0)
+  manifest.webmanifest  (değişti — start_url ?v=0.19.0)
+Diğer dosyalarda değişiklik yok. Üzerine yazmak yeterlidir; GitHub'daki
+otomatik yayın main dalına birleştikten sonra bunu kendisi yapar.
+
+SUPABASE
+Zorunlu SQL YOKTUR. Depolama alanı ve dosya boyutu sınırı için
+SUPABASE-NOTU-v0.19.0.txt dosyasını okuyun — büyük bir CAD arşivi yüklemeden
+önce bu notu mutlaka okuyun.
+
+TARAYICI
+Klasör seçme özelliği Chrome, Edge, Opera ve masaüstü Safari'de çalışır.
+Telefon tarayıcılarında klasör seçimi genellikle yoktur; telefonda tek tek
+dosya yükleme çalışmaya devam eder. Bu nedenle büyük arşivleri bilgisayardan
+yükleyin.
+
+TARAYICI ÖNBELLEĞİ
+Sürüm numarası değiştiği için sw.js yeni sürümü kendisi alır. Ekran eski
+görünürse Ctrl+F5 yapın.
+
+GERİYE DÖNÜŞ
+Bu sürüm veri yapısını değiştirmez; yalnız mevcut data.stdlib içine kayıt
+ekler. Eski index.html'e dönülürse yüklenen dosyalar Storage'da, kayıtlar
+JSON'da durmaya devam eder.

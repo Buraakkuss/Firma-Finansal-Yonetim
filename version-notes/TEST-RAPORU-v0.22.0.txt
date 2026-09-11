@@ -1,0 +1,82 @@
+NakitPilot v0.22.0 — Test raporu
+Tarih: 11 Eylül 2026
+
+ÖZET
+  SQL testleri    :  30 test çalıştı, 30 geçti, 0 kaldı.
+  Tarayıcı testleri: 757 test çalıştı, 757 geçti, 0 kaldı.
+  Yeni: e2e-14-ekip (47 test) ve SQL akış testi np-test3 (30 test).
+  Kaldırılan akışın testleri (e2e-12-uyelik, e2e-13-davet-kayit) silindi.
+
+A) SQL — YEREL POSTGRESQL 16, GERÇEK ŞEMA
+Şema sıfırdan kuruldu (auth/storage taklidi + mtpro-finans v0.3.4 + banka
+merkezi v0.6.0 + proje takip v0.5.0 + satın alma rolü v0.10.0 + v0.20 + v0.21),
+sonra v0.22.0 dosyası ÜST ÜSTE İKİ KEZ çalıştırıldı — hata yok.
+Supabase admin servisi çağrısı testte taklit edildi (istek gövdesi kaydedilir).
+
+Doğrulanan 30 davranış:
+  Kullanıcı oluşturma (8)
+    - Kullanıcı oluşuyor, e-posta küçük harfe çevriliyor.
+    - Admin servisine POST /auth/v1/admin/users atılıyor.
+    - email_confirm: true gönderiliyor (doğrulama maili beklenmiyor).
+    - Ad soyad user_metadata'ya yazılıyor.
+    - Seçilen rolle company_members kaydı açılıyor, ekip listesinde görünüyor.
+  Doğrulamalar (4)
+    - 6 karakterden kısa şifre ve geçersiz e-posta reddediliyor,
+      bu durumda kullanıcı oluşmuyor; bilinmeyen rol 'viewer' oluyor.
+  Var olan kullanıcı (4)
+    - Hesap zaten varsa yeni hesap açılmıyor, sadece ekibe ekleniyor,
+      şifresi değişmiyor, rolü güncelleniyor.
+  Yetki (3)
+    - Firmanın üyesi olmayan ve muhasebe rolündeki kullanıcı ne kullanıcı
+      oluşturabiliyor ne şifre belirleyebiliyor.
+  Şifre belirleme (5)
+    - Admin servisine PUT atılıyor, yeni şifre gövdede gidiyor,
+      kısa şifre reddediliyor, firmanın üyesi olmayan kullanıcıya şifre
+      belirlenemiyor.
+  Admin servisi hatası (2)
+    - Hata mesajı kullanıcıya iletiliyor ve hata durumunda ekibe ekleme
+      yapılmıyor.
+  Eski akışın kaldırılması (4)
+    - join_requests tablosu, np_request_join ve np_claim_invitation yok;
+      bekleyen davet kalmadı; kurulum hazır bayrağı çalışıyor.
+
+B) TARAYICI — e2e-14-ekip (47 test)
+  1) Giriş ekranı (8): Kayıt Ol sekmesi, kayıt formu ve davet bandı
+     kaldırıldı; e-posta/şifre alanları ve Şifremi Unuttum duruyor;
+     authSignup / inviteTeamMember / claimInvitationToken fonksiyonları yok.
+  2) Kullanıcı oluşturma kartı (8): kart açılıyor, eski kartlar yok,
+     kurulum kontrolü yapılıyor, beş rol listeleniyor, şifre üreteci 10 hane
+     üretiyor ve karışan karakter (O/0, l/I) kullanmıyor.
+  3) Kullanıcı oluşturma (13): e-posta küçük harfe çevrilip boşlukları
+     atılarak gönderiliyor; ad, rol ve şifre doğru gidiyor; sonuç kutusunda
+     giriş adresi, e-posta, şifre ve rol görünüyor; form temizleniyor;
+     ekip listesi yenileniyor; panoya kopyalanacak metin hazırlanıyor.
+  4) Doğrulamalar (3): geçersiz e-posta ve kısa şifre sunucuya gitmiyor.
+  5) Şifre belirleme (8): doğru kullanıcı ve şifre gönderiliyor, yeni şifre
+     ekranda gösteriliyor, kısa şifre reddediliyor, kilitli satırda da
+     (firma sahibi/siz) şifre düğmesi bulunuyor.
+  6) Kurulum yapılmamışsa (4): uyarı çıkıyor, SQL dosyasının adı yazıyor;
+     "anahtar tanımlı değil" ve "http eklentisi yok" hataları anlaşılır
+     mesaja çevriliyor.
+  7) Yetki (3): yönetici olmayan kullanıcı oluşturamıyor, uyarı alıyor.
+  Sayfada JavaScript hatası yok.
+
+C) GERİLEME (710 test — hepsi geçti)
+  ui-test 33 · e2e-1-finans 14 · e2e-2-proje 43 · e2e-3-kenar 39
+  e2e-4-satinalma 50 · e2e-5-butun 28 · e2e-6-yetki 31 · e2e-7-kisi 58
+  e2e-8-kilavuz 28 · e2e-9-muhendislik 36 · e2e-10-kutuphane 80
+  e2e-11-klasor 43 · test-v0140 65 · test-v083 7 · test-v090 25 · test-v092 18
+  test-v095 8 · test-v096 20 · test-v0100 26 · test-v0110 27 · test-v0120 31
+
+D) DOSYA DOĞRULAMASI
+  index.html script blokları ....... 1 blok, 0 hata
+  sw.js ............................ node --check temiz
+  manifest.webmanifest ............. geçerli JSON
+  Kılavuz .......................... "Yeni kullanıcı ekleme" konusu yeni akışa
+                                     göre yeniden yazıldı.
+
+E) TESTTE KAPSANMAYAN
+  Supabase admin servisine gerçek HTTP çağrısı ve http (pgsql-http) eklentisinin
+  davranışı canlı projede denenmelidir; yerel PostgreSQL'de bu eklenti yoktur,
+  testte çağrı taklit edilmiştir. Kurulumdan sonra bir deneme kullanıcısı açıp
+  gizli pencerede giriş yaparak doğrulayın.

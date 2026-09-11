@@ -221,7 +221,7 @@ BEGIN
   RETURN QUERY
   SELECT jr.id, jr.user_id, jr.email, jr.full_name, jr.phone, jr.note,
          jr.requested_role, jr.status, jr.created_at, jr.decided_at,
-         du.email, jr.decision_note
+         du.email::text, jr.decision_note
   FROM public.join_requests jr
   LEFT JOIN auth.users du ON du.id = jr.decided_by
   WHERE jr.company_id = p_company_id
@@ -420,7 +420,7 @@ BEGIN
   RETURN QUERY
   SELECT jr.id, jr.user_id, jr.email, jr.full_name, jr.phone, jr.note,
          jr.requested_role, jr.status, jr.created_at, jr.decided_at,
-         du.email, jr.decision_note, (jr.invitation_id IS NOT NULL)
+         du.email::text, jr.decision_note, (jr.invitation_id IS NOT NULL)
   FROM public.join_requests jr
   LEFT JOIN auth.users du ON du.id = jr.decided_by
   WHERE jr.company_id = p_company_id

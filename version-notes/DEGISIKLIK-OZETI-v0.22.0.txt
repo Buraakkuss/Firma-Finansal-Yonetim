@@ -1,0 +1,57 @@
+NakitPilot v0.22.0 — Ekip yönetimi yeniden kuruldu (yönetici kullanıcı açar)
+
+NEDEN DEĞİŞTİ
+Davet bağlantısı + kayıt + onay akışı Supabase'in mail gönderimine bağlıydı;
+mailler gitmediği için kimse sisteme giremiyordu. Artık mail hiç kullanılmıyor.
+
+YENİ MODEL — TEK CÜMLEYLE
+Yönetici e-posta ve şifreyi kendisi belirler, kişiye verir, kişi girer.
+
+KURULUM (bir kez)
+1. Supabase > SQL Editor'de sql/nakitpilot-ekip-kurulum-v0.22.0.sql dosyasını
+   açın. İçinde şu satır var:
+     ('service_role_key', 'BURAYA_SERVICE_ROLE_ANAHTARINIZI_YAPISTIRIN')
+   Tırnakların arasını kendi service_role anahtarınızla değiştirin.
+   Anahtarı şuradan alırsınız: Supabase > Project Settings > API Keys >
+   service_role > Reveal.
+2. Dosyanın tamamını yapıştırıp Run deyin. Sonda 6 satırlık kontrol tablosu
+   döner; hepsi true olmalıdır.
+   "http eklentisi" satırı false ise: Supabase > Database > Extensions
+   ekranından "http" eklentisini açıp SQL'i tekrar çalıştırın.
+3. Uygulamayı Ctrl+F5 ile yenileyin.
+
+ANAHTAR GÜVENLİĞİ
+service_role anahtarı veritabanında RLS ile kapalı bir tabloda durur; tarayıcıya
+ve uygulamaya asla gönderilmez. Sadece yönetici yetkisini kontrol eden
+fonksiyonlar kullanabilir. Anahtarı doldurduğunuz SQL'i kimseyle paylaşmayın.
+
+KULLANIM
+Ayarlar > Firma & Ekip > "👤 Yeni Kullanıcı Oluştur":
+  - Ad Soyad, E-posta, Rol seçin.
+  - Şifreyi yazın veya "🎲 Şifre Üret" ile üretin (10 hane, karışan harf yok).
+  - "Kullanıcıyı Oluştur" deyin.
+  - Yeşil kutuda giriş adresi + e-posta + şifre + rol çıkar.
+    "📋 Bilgileri Kopyala" ile alıp kişiye iletin.
+  - Kişi bu bilgilerle giriş yapar. Mail, doğrulama, onay YOK.
+
+ŞİFRE UNUTULURSA
+Ekip Kullanıcıları tablosunda kişinin satırındaki "🔑 Şifre Belirle" düğmesine
+basın, yeni şifreyi yazın, kişiye iletin. Şifre sıfırlama maili beklemeye gerek
+yok. (Kendi şifrenizi de bu şekilde değiştirebilirsiniz.)
+
+AYNI E-POSTA ZATEN VARSA
+Sistem yeni hesap açmaz; var olan hesabı ekibe ekler ve şifresine dokunmaz.
+Ekranda "hesap zaten vardı, ekibe eklendi, şifresi değişmedi" yazar. Şifresini
+de yenilemek isterseniz listeden "🔑 Şifre Belirle" deyin.
+
+KALDIRILANLAR
+- Giriş ekranındaki "Kayıt Ol" sekmesi ve kayıt formu.
+- Davet bağlantısı oluşturma, kopyalama, mail ile gönderme.
+- Üyelik talebi gönderme ve "Üyelik Talepleri" onay kartı.
+- Veritabanındaki join_requests tablosu ve ilgili fonksiyonlar (bekleyen
+  davetler iptal edildi; davet tablosu veri kaybı olmasın diye duruyor).
+
+GİRİŞ EKRANI
+Artık sadece: E-posta, Şifre, Giriş Yap, Şifremi Unuttum.
+Bir kullanıcı firmaya bağlı değilse "yöneticinizden sizi ekibe eklemesini
+isteyin" bilgisi ve "Yetkimi Yeniden Kontrol Et" düğmesi görür.

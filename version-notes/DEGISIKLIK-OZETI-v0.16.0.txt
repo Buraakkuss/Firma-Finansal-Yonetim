@@ -1,0 +1,48 @@
+NakitPilot v0.16.0 — Kullanım Kılavuzu
+
+SOL MENÜYE YENİ BAŞLIK: KULLANIM KILAVUZU
+Özet Paneli'nin hemen altında, her kullanıcının görebileceği bir ekran.
+
+ARAMA ÇUBUĞU
+- Sayfanın en üstünde, siz aşağı kaydırdıkça ekranda kalan bir arama kutusu.
+- Yazdığınız kelime tüm kılavuzda aranır; ilgisiz konular anında gizlenir,
+  eşleşen kelime sarı ile işaretlenir.
+- Türkçe karakter ve büyük/küçük harf farkı önemsizdir:
+  "ırsalıye" yazsanız da "İRSALİYE" yazsanız da aynı sonucu bulur.
+- Sağda "3 / 38 konu" biçiminde sayaç, altında 12 başlıklı içindekiler vardır;
+  başlığa basınca o bölüme atlar.
+- Sonuç çıkmazsa açıklayıcı bir mesaj ve örnek arama kelimeleri gösterilir.
+
+İÇERİK — 12 BÖLÜM, 38 KONU, 24 EKRAN GÖRÜNTÜSÜ
+ 1. Başlarken — ekran yapısı, menü, sistemin ne yapıp ne yapmadığı
+ 2. İlk kurulum — kişi kartı, banka hesapları, tedarikçiler ve vadeleri
+ 3. Günlük finans — gelir/gider, gelecekteki kesin kalemler, Banka Merkezi
+ 4. Proje süreci — 10 adım, görüşmeden proje kapanışına kadar
+ 5. Satın alma süreci — SAP No, talep, teklif, sipariş, mal kabul, fatura, ödeme
+ 6. Cari hesaplar — alacak ve borç yaşlandırması
+ 7. Yönetim raporu ve kârlılık
+ 8. Kişi kartları ve belgelerdeki bilgiler
+ 9. Yetkiler ve roller
+10. Telefonda kullanım
+11. Uyarı mesajları ve anlamları — 11 uyarının ne demek olduğu
+12. Altın kurallar — yapılması ve yapılmaması gerekenler
+
+NASIL ANLATILIYOR
+- Her işlem numaralı adımlar hâlinde: "1) şu ekranı aç, 2) şu alanı doldur..."
+- Gerçek ekran görüntüleri; her görselin altında numaralı açıklamalar
+  (1 şu bölüm, 2 şu buton, 3 şu tablo...) — toplam 60 işaretli açıklama.
+- Süreç akış şemaları oklarla: Görüşme → Proje → Maliyet → Teklif → Onaylandı
+  → Üretim → Teslim → Fatura → Tahsilat → Kapandı
+- Renkli kutular: yeşil "sistem şunu otomatik yapar", turuncu "ipucu",
+  kırmızı "dikkat, bunu yapmayın".
+- Uzun ekran görüntüleri kısaltılmış gösterilir; "Görselin tamamını aç"
+  bağlantısıyla tam boyutta açılır.
+- Telefonda da tam çalışır; arama ve içindekiler aynen kullanılabilir.
+
+TEKNİK
+- Kılavuz görselleri uygulama klasöründeki guide/ dizininde tutulur ve yalnız
+  kılavuz ekranı açıldığında indirilir; diğer ekranların açılış hızı etkilenmez.
+- Otomatik yayın akışına guide/ klasörü eklendi.
+
+Supabase
+- Şema değişikliği gerekmez.

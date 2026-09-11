@@ -1,0 +1,8 @@
+NakitPilot v0.16.0 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+Kullanım kılavuzu tamamen statik içeriktir; veritabanına hiçbir şey yazmaz ve
+hiçbir şey okumaz.
+
+Kılavuz görselleri uygulama dosyalarıyla birlikte sunucuya yüklenir
+(guide/ klasörü) ve tarayıcıdan doğrudan okunur. Supabase Storage kullanılmaz.

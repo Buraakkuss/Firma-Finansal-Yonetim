@@ -264,4 +264,19 @@
 - Teklif PDF'inde künye artık imza sayfasının en altında da basılıyor.
 - MT_COMPANY.phone firma santral numarası olarak güncellendi.
 
-Güncel baz sürüm: **v0.15.1**
+## v0.16.0
+- Sol menüye **Kullanım Kılavuzu** eklendi (Özet Paneli'nin altında, tüm
+  rollerde görünür).
+- Sayfanın üstünde yapışkan **arama çubuğu**: kelime yazıldıkça ilgisiz
+  konular gizlenir, eşleşen kelime vurgulanır. Türkçe karakter ve büyük/küçük
+  harf duyarsız (ırsalıye = İRSALİYE). "3 / 38 konu" sayacı ve 12 başlıklı
+  içindekiler.
+- İçerik: 12 bölüm, 38 konu, 24 ekran görüntüsü, 95 numaralı adım, 60 görsel
+  üstü işaretli açıklama, 3 akış şeması, 31 dikkat/ipucu kutusu.
+- Bölümler: başlarken · ilk kurulum · günlük finans · proje süreci (10 adım) ·
+  satın alma · cari hesaplar · yönetim raporu · kişi kartları · yetkiler ·
+  mobil · uyarı mesajlarının anlamı · altın kurallar.
+- Kılavuz görselleri `guide/` klasöründe tutulur ve yalnız kılavuz açıldığında
+  indirilir; otomatik yayın akışına bu klasör eklendi.
+
+Güncel baz sürüm: **v0.16.0**

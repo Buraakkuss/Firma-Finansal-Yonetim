@@ -1,0 +1,39 @@
+NakitPilot v0.16.0 Test Notu
+
+Kılavuz testleri — 28 senaryo, 28 başarılı:
+
+Sayfa ve menü
+  * page-guide sayfası, PAGE_TITLES kaydı ve sistem modülü bağlantısı yerinde
+  * Sol menüde "Kullanım Kılavuzu" butonu var ve doğru sayfayı açıyor
+
+İçerik
+  * 12 bölüm, 38 konu, 24 ekran görüntüsü
+  * 95 numaralı adım, 60 görsel üstü işaretli açıklama
+  * 3 akış şeması, 14 dikkat kutusu, 17 ipucu kutusu
+  * 12 başlıklı içindekiler ve "38 konu" sayacı
+
+Görseller
+  * 24 görselin tamamı yükleniyor, bozuk görsel yok
+
+Arama
+  * "irsaliye" → 3 konu bulundu, 5 yerde vurgulandı, sayaç "3 / 38 konu"
+  * "SAP" ve "vade" aramaları sonuç buluyor
+  * Büyük/küçük harf farkı önemsiz (TAHSİLAT = tahsilat)
+  * Türkçe karakter farkı önemsiz (ırsalıye = irsaliye)
+  * Sonuç yoksa açıklayıcı boş mesaj çıkıyor
+  * Temizle tüm konuları ve vurguları geri alıyor
+  * İçindekiler bağlantısı ilgili bölüme götürüyor
+
+Mobil
+  * 390x844 ekranda yatay taşma yok
+  * Arama telefonda da çalışıyor
+
+GERİLEME TESTLERİ
+  Finans 14 · Proje 43 · Kenar durumlar 39 · Satın alma 50 · Bütünleşik 28 ·
+  Yetkiler 31 · Kişi kartları 58 · v0.14 satın alma/vade 65 · arayüz 33 ·
+  motor testleri (v0.8.3–v0.12.0) 162
+
+TOPLAM 551 SENARYO BAŞARILI.
+
+Görsel kontrol: kılavuz ekranının üst bölümü, arama sonucu görünümü ve mobil
+görünüm ekran görüntüsüyle incelendi. Menü görselinin ölçeği düzeltildi.

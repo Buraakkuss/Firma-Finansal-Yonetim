@@ -1,0 +1,29 @@
+NakitPilot v0.15.1 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu; dosya yüklemeye gerek yoktur.
+- ?v=0.15.1 ile açın, görünüm eski kalırsa Ctrl + F5.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+YAPILACAK: mevcut kartlara cep numarası girin
+v0.15.0'da girdiğiniz kartlarda telefon alanına ne yazdıysanız orada duruyor.
+1) Ayarlar > Kişi Kartları.
+2) Her kartı Düzenle ile açın:
+   - "Sabit Telefon (firma)" alanına 0262 666 00 00 yazın.
+   - "Cep Telefonu" alanına kişinin kendi numarasını yazın.
+3) Kaydedin. Listede üstte cep, altında "sabit ..." görünmelidir.
+
+Neden önemli
+- Teklif ve sipariş belgelerinde sorumlu kişinin CEP numarası yazar; müşteri
+  veya tedarikçi doğrudan ilgili kişiye ulaşır.
+- Belgenin en altındaki firma künyesinde SABİT numara görünür.
+
+Kontrol (2 dakika)
+1) Bir teklif açın, Sorumlu Kişi seçin; "Hazırlayan Cep Telefonu" alanı o
+   kişinin cebiyle dolmalı.
+2) PDF/Yazdır ile bakın: sağ üstte "CEP TELEFONU" satırı, sayfanın en altında
+   "... marmarateknikmakine.com.tr · 0262 666 00 00" yazmalı.
+3) Bir siparişte "🖨 Sipariş Formu" açın: Sorumlu Kişi satırında "Cep +90 ..."
+   ve en altta aynı künye olmalı.

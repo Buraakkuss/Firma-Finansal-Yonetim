@@ -1,0 +1,32 @@
+NakitPilot v0.15.1 Test Notu
+
+Kişi kartı testleri 58 senaryoya çıktı, tamamı başarılı. Yeni eklenenler:
+
+Sabit / cep ayrımı
+  * Yeni kartta firma sabit telefonu (0262 666 00 00) hazır geliyor
+  * Üç kart sabit + cep numarasıyla kaydedildi
+  * Kişi listesinde cep üstte, sabit altta gösteriliyor
+
+Teklif belgesi
+  * Sorumlu kişi seçilince "Hazırlayan Cep Telefonu" alanı kişinin CEBİYLE doldu
+  * Başka kişi seçilince cep numarası da değişti
+  * PDF'te "CEP TELEFONU" satırı ve seçilen kişinin cep numarası var
+  * PDF künyesinde firma SABİT telefonu var
+  * Künye sırası doğru: unvan · şehir · web · sabit telefon
+  * Künye hem kapak sayfasında hem imza sayfasının altında basılıyor
+  * Kart seçilmezse cep telefonu satırı hiç basılmıyor
+
+Sipariş ve teklif talep formu
+  * "Sorumlu Kişi" / "Talep Eden" satırında "Cep +90 ..." yazıyor
+  * İmza kutusunda unvan, cep ve e-posta alt alta
+  * En alttaki künyede firma sabit telefonu ve doğru sıralama
+
+GERİLEME TESTLERİ
+  Finans 14 · Proje 43 · Kenar durumlar 39 · Satın alma 50 · Bütünleşik 28 ·
+  Yetkiler 31 · v0.14 satın alma/vade 65 · arayüz 32 ·
+  motor testleri (v0.8.3–v0.12.0) 162
+
+TOPLAM 522 SENARYO BAŞARILI.
+
+Görsel kontrol: kişi kartları ekranı, teklif PDF'inin üst bilgi tablosu ve
+imza sayfası, sipariş formu ve teklif talep formu ekran görüntüsüyle incelendi.

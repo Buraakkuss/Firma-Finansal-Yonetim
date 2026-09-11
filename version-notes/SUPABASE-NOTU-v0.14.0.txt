@@ -1,0 +1,18 @@
+NakitPilot v0.14.0 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Yeni alanlar mevcut JSON yapısının içine eklenir:
+- data.purchasing.suppliers[].paymentTermDays  (cari ödeme vadesi, gün)
+- data.purchasing.orders[].termDays            (siparişe özel vade, opsiyonel)
+- data.purchasing.orders[].quoteDueDate        (teklif son tarihi)
+- data.purchasing.orders[].status              "Teklif İstendi" değerini de alabilir
+
+Eski kayıtlarda bu alanlar bulunmaz; okuma tarafında null/boş kabul edilir ve
+davranış eskisi gibi kalır (vade yazılmaz, sipariş formu basılır).
+
+Genel şart metinleri veritabanında tutulmaz; index.html içindeki
+MT_PO_TERMS, MT_RFQ_TERMS ve MT_PO_TERM_VALUES sabitlerinden gelir.
+
+Bu alanların hiçbiri Banka Merkezi'nin normalize tablo senkronizasyonuna dahil
+değildir; trg_company_data_banking_sync tetikleyicisi etkilenmez.

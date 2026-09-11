@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.13.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.13.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.13.0">
-  <title>NakitPilot Marmara Teknik — v0.13.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.14.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.14.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.14.0">
+  <title>NakitPilot Marmara Teknik — v0.14.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2544,7 +2544,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.13.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.14.0</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -3470,7 +3470,9 @@
             <div class="form-group span-2"><label>Telefon</label><input id="sup-phone" placeholder="+90 ..."></div>
             <div class="form-group span-4"><label>E-posta</label><input id="sup-mail" placeholder="ornek@tedarikci.com"></div>
             <div class="form-group span-8"><label>Adres</label><input id="sup-address" placeholder="Adres"></div>
-            <div class="form-group span-9"><label>Not</label><input id="sup-note" placeholder="Ödeme vadesi, çalışma şartı vb."></div>
+            <div class="form-group span-3"><label>Ödeme Vadesi (gün)</label><input type="number" id="sup-term" min="0" step="1" placeholder="Örn. 30"></div>
+            <div class="form-group span-9"><label>Not</label><input id="sup-note" placeholder="Çalışma şartı, teslim yeri vb."></div>
+            <div class="form-group span-12" style="margin-top:-4px"><div class="section-sub" style="margin:0">Ödeme vadesi, bu tedarikçiden alınan siparişlerde ve kesilen faturalarda otomatik kullanılır. Sipariş formunda "fatura tarihinden N gün" olarak yazılır. Boş bırakılırsa vade yazılmaz.</div></div>
             <div class="form-action span-3"><button class="btn btn-primary" onclick="saveSupplier()">💾 Tedarikçiyi Kaydet</button></div>
           </div>
         </div>
@@ -3485,14 +3487,17 @@
           <input type="hidden" id="po-edit-id">
           <div class="pro-grid pro-grid-12">
             <div class="form-group span-3"><label>SAP No</label><input id="po-code" readonly style="font-weight:700;opacity:.8" placeholder="Kayıtta verilir"></div>
-            <div class="form-group span-4"><label>Tedarikçi</label><select id="po-supplier"></select></div>
+            <div class="form-group span-4"><label>Tedarikçi</label><select id="po-supplier" onchange="onPOSupplierChange()"></select></div>
             <div class="form-group span-5"><label>Proje</label><select id="po-project" onchange="updatePOCodePreview()"></select></div>
             <div class="form-group span-2"><label>Sipariş Tarihi</label><input type="date" id="po-date"></div>
             <div class="form-group span-2"><label>Beklenen Teslim</label><input type="date" id="po-expected"></div>
             <div class="form-group span-2"><label>Para Birimi</label><select id="po-currency" onchange="renderPOLines()"><option value="TRY">TL</option><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
             <div class="form-group span-2"><label>Kur</label><input type="number" id="po-rate" min="0" step="0.0001" value="1"></div>
-            <div class="form-group span-3"><label>Durum</label><select id="po-status"><option>Talep</option><option>Onay Bekliyor</option><option>Sipariş Verildi</option><option>Kısmi Teslim</option><option>Teslim Alındı</option><option>Faturalandı</option><option>İptal</option></select></div>
+            <div class="form-group span-3"><label>Durum</label><select id="po-status" onchange="onPOStatusChange()"><option>Talep</option><option>Teklif İstendi</option><option>Onay Bekliyor</option><option>Sipariş Verildi</option><option>Kısmi Teslim</option><option>Teslim Alındı</option><option>Faturalandı</option><option>İptal</option></select></div>
+            <div class="form-group span-2"><label>Ödeme Vadesi (gün)</label><input type="number" id="po-term" min="0" step="1" placeholder="Cariden"></div>
+            <div class="form-group span-2"><label>Teklif Son Tarihi</label><input type="date" id="po-quote-due"></div>
             <div class="form-group span-5"><label>Not</label><input id="po-note" placeholder="Teslim yeri, şart, referans"></div>
+            <div class="form-group span-12" style="margin-top:-4px"><div class="section-sub" id="po-mode-hint" style="margin:0"></div></div>
             <div class="form-group span-12">
               <label>Sipariş Kalemleri</label>
               <div class="table-wrap"><table class="cost-items-table"><thead><tr>
@@ -3519,16 +3524,17 @@
           <div class="section-sub">Fatura kaydedildiğinde, vade tarihiyle birlikte otomatik olarak <strong>Gelecekteki Kesin Gider</strong> kalemi oluşur ve nakit akışı projeksiyonuna girer. Projeye bağlanan faturalar projenin gerçek maliyetini oluşturur.</div>
           <input type="hidden" id="pinv-edit-id">
           <div class="pro-grid pro-grid-12">
-            <div class="form-group span-4"><label>Tedarikçi</label><select id="pinv-supplier"></select></div>
+            <div class="form-group span-4"><label>Tedarikçi</label><select id="pinv-supplier" onchange="applyPurInvoiceTerm()"></select></div>
             <div class="form-group span-4"><label>Sipariş (SAP No)</label><select id="pinv-order" onchange="onPurInvoiceOrderChange()"></select></div>
             <div class="form-group span-4"><label>Proje</label><select id="pinv-project"></select></div>
             <div class="form-group span-3"><label>Fatura No</label><input id="pinv-no" placeholder="Tedarikçi fatura numarası"></div>
-            <div class="form-group span-2"><label>Fatura Tarihi</label><input type="date" id="pinv-date"></div>
+            <div class="form-group span-2"><label>Fatura Tarihi</label><input type="date" id="pinv-date" onchange="applyPurInvoiceTerm()"></div>
             <div class="form-group span-2"><label>Tutar (KDV hariç)</label><input type="number" id="pinv-amount" min="0" step="0.01" placeholder="0.00"></div>
             <div class="form-group span-2"><label>Para Birimi</label><select id="pinv-currency" onchange="onPurInvoiceCurrencyChange()"><option value="TRY">TL</option><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
             <div class="form-group span-1"><label>Kur</label><input type="number" id="pinv-rate" min="0" step="0.0001" value="1"></div>
             <div class="form-group span-2"><label>KDV %</label><input type="number" id="pinv-vat" min="0" step="0.1" value="20"></div>
-            <div class="form-group span-3"><label>Vade Tarihi</label><input type="date" id="pinv-due"></div>
+            <div class="form-group span-3"><label>Vade Tarihi</label><input type="date" id="pinv-due" onchange="onPurInvoiceDueManual()"></div>
+            <div class="form-group span-12" style="margin-top:-4px"><div class="section-sub" id="pinv-term-hint" style="margin:0"></div></div>
             <div class="form-group span-6"><label>Açıklama</label><input id="pinv-note" placeholder="Örn. Sac malzeme alımı"></div>
             <div class="form-action span-3"><button class="btn btn-primary" onclick="savePurchaseInvoice()">🧾 Faturayı Kaydet</button></div>
             <div class="form-action span-2"><button class="btn" onclick="clearPurInvoiceForm()">Temizle</button></div>
@@ -4326,7 +4332,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.13.0';
+const APP_VERSION='0.14.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -10974,6 +10980,53 @@ function relinkOrderInvoices(order,oldProjectId){
   });
   return moved;
 }
+/* ──────── v0.14.0 — CARİ VADESİ ────────
+   Vade tedarikçi (cari) kartında gün olarak tanımlanır. Sipariş kendi
+   vadesini taşımıyorsa tedarikçinin vadesi kullanılır. Vade, fatura
+   tarihinden itibaren işler; sipariş formunda tahmini vade tarihi yazılır. */
+function supplierTermDays(supplierId){
+  const sp=supplierById(supplierId);
+  if(!sp)return null;
+  const v=sp.paymentTermDays;
+  if(v===null||v===undefined||v==='')return null;
+  const num=Math.round(n(v));
+  return num>=0?num:null;
+}
+function poTermDays(o){
+  if(!o)return null;
+  if(o.termDays!==null&&o.termDays!==undefined&&o.termDays!=='')return Math.max(0,Math.round(n(o.termDays)));
+  return supplierTermDays(o.supplierId);
+}
+function addDaysYmd(ymd,days){
+  if(!ymd)return '';
+  const d=new Date(ymd+'T00:00:00');
+  if(isNaN(d))return '';
+  d.setDate(d.getDate()+Math.round(n(days)));
+  return d.toISOString().slice(0,10);
+}
+function poDueEstimate(o){
+  const t=poTermDays(o);
+  if(t===null)return '';
+  return addDaysYmd(o.date||todayYmd(),t);
+}
+function poTermLabel(o){
+  const t=poTermDays(o);
+  if(t===null)return 'Cari kartında vade tanımlı değil';
+  if(t===0)return 'Peşin';
+  const est=poDueEstimate(o);
+  return 'Fatura tarihinden '+t+' gün'+(est?(' · tahmini vade '+dmy(est)):'');
+}
+
+/* ──────── v0.14.0 — TALEP / TEKLİF İSTEME ────────
+   Satın alma önce fiyatsız talep açar, tedarikçiden teklif ister. Teklif
+   gelince aynı SAP siparişi düzenlenir, tutarlar girilir ve form sipariş
+   olarak yeniden basılır. SAP No bu süreçte değişmez. */
+const PO_REQUEST_STATUSES=['Talep','Teklif İstendi'];
+function poIsRequest(o){
+  if(!o)return false;
+  if(PO_REQUEST_STATUSES.includes(String(o.status||'')))return true;
+  return poTotal(o)<=0;
+}
 function poProjectLabel(o){
   const p=mtpro().projects.find(x=>String(x.id)===String(o&&o.projectId));
   return p?(p.code||'Proje'):'Genel Satın Alma';
@@ -10993,7 +11046,8 @@ function poReceivedRatio(o){
 }
 function poStatusClass(st){
   return st==='İptal'?'red':st==='Teslim Alındı'?'green':st==='Faturalandı'?'blue'
-    :st==='Kısmi Teslim'?'orange':st==='Sipariş Verildi'?'blue':'gray';
+    :st==='Kısmi Teslim'?'orange':st==='Sipariş Verildi'?'blue'
+    :st==='Teklif İstendi'?'orange':'gray';
 }
 
 /* ── Tedarikçi faturası ── */
@@ -11105,7 +11159,7 @@ function removePurchasePaymentExpense(pm){
 
 /* ──────── SATIN ALMA: TEDARİKÇİ ──────── */
 function clearSupplierForm(){
-  ['sup-name','sup-tax','sup-contact','sup-phone','sup-mail','sup-address','sup-note'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['sup-name','sup-tax','sup-contact','sup-phone','sup-mail','sup-address','sup-note','sup-term'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   const e=document.getElementById('sup-edit-id');if(e)e.value='';
 }
 function saveSupplier(){
@@ -11121,6 +11175,7 @@ function saveSupplier(){
     mail:(document.getElementById('sup-mail').value||'').trim(),
     address:(document.getElementById('sup-address').value||'').trim(),
     note:(document.getElementById('sup-note').value||'').trim(),
+    paymentTermDays:(function(){const v=(document.getElementById('sup-term')||{}).value;return v===''||v==null?null:Math.max(0,Math.round(n(v)));})(),
     active:true, updatedAt:new Date().toISOString(), updatedBy:(currentUser&&currentUser.email)||''
   };
   const arr=purchasing().suppliers;
@@ -11133,6 +11188,8 @@ function editSupplier(id){
   document.getElementById('sup-edit-id').value=x.id;
   [['sup-name','name'],['sup-tax','taxNo'],['sup-contact','contact'],['sup-phone','phone'],['sup-mail','mail'],['sup-address','address'],['sup-note','note']]
     .forEach(([el,k])=>{const e=document.getElementById(el);if(e)e.value=x[k]||'';});
+  const tm=document.getElementById('sup-term');
+  if(tm)tm.value=(x.paymentTermDays===null||x.paymentTermDays===undefined||x.paymentTermDays==='')?'':String(x.paymentTermDays);
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function deleteSupplier(id){
@@ -11147,13 +11204,14 @@ function renderSuppliers(){
   const el=document.getElementById('supplier-table');if(!el)return;
   const rows=purchasing().suppliers.slice().sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'tr'));
   if(!rows.length){el.innerHTML='<div class="empty">Henüz tedarikçi eklenmemiş.</div>';return;}
-  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Tedarikçi</th><th>Yetkili</th><th>İletişim</th><th>Vergi No</th><th style="text-align:right">Açık Borç</th><th></th></tr></thead><tbody>'
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Tedarikçi</th><th>Yetkili</th><th>İletişim</th><th>Vergi No</th><th>Vade</th><th style="text-align:right">Açık Borç</th><th></th></tr></thead><tbody>'
     +rows.map(x=>{
       const borc=purchasing().invoices.filter(i=>String(i.supplierId)===String(x.id)).reduce((s,i)=>s+Math.max(0,purInvoiceRemaining(i)),0);
       return '<tr><td><strong>'+htmlEsc(x.name||'')+'</strong>'+(x.note?('<div style="font-size:11px;color:var(--text-muted)">'+htmlEsc(x.note)+'</div>'):'')+'</td>'
         +'<td>'+htmlEsc(x.contact||'')+'</td>'
         +'<td>'+htmlEsc(x.phone||'')+(x.mail?('<div style="font-size:11px;color:var(--text-muted)">'+htmlEsc(x.mail)+'</div>'):'')+'</td>'
         +'<td>'+htmlEsc(x.taxNo||'')+'</td>'
+        +'<td>'+(supplierTermDays(x.id)===null?'<span style="color:var(--text-muted)">—</span>':('<strong>'+supplierTermDays(x.id)+'</strong> gün'))+'</td>'
         +'<td style="text-align:right;font-weight:700;color:'+(borc>0.01?'var(--expense)':'var(--text-muted)')+'">'+fmtTL(borc)+'</td>'
         +'<td><div class="project-action-row">'+(purCanEdit()?'<button class="btn btn-sm" onclick="editSupplier(&quot;'+htmlEsc(x.id)+'&quot;)">Düzenle</button><button class="btn btn-sm btn-del" onclick="deleteSupplier(&quot;'+htmlEsc(x.id)+'&quot;)">🗑</button>':'')+'</div></td></tr>';
     }).join('')+'</tbody></table></div>';
@@ -11202,11 +11260,12 @@ function renderPOLines(){
 }
 function clearPurchaseOrderForm(){
   _poLines=[];renderPOLines();
-  ['po-note'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['po-note','po-term','po-quote-due'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   const e=document.getElementById('po-edit-id');if(e)e.value='';
   const d=document.getElementById('po-date');if(d)d.value=todayYmd();
   const x=document.getElementById('po-expected');if(x)x.value='';
   const st=document.getElementById('po-status');if(st)st.value='Talep';
+  onPOSupplierChange();onPOStatusChange();
   const pr=document.getElementById('po-project');if(pr)pr.value='';
   updatePOCodePreview();
 }
@@ -11225,16 +11284,47 @@ function updatePOCodePreview(){
   el.value=nextPurchaseOrderCode(prj);
   el.title='Kayıtta bu numara verilecek ve bir daha değişmeyecek.';
 }
+/* Tedarikçi seçilince cari vadesi vade alanına ipucu olarak yazılır. */
+function onPOSupplierChange(){
+  const term=document.getElementById('po-term');
+  if(!term)return;
+  const sid=(document.getElementById('po-supplier')||{}).value||'';
+  const t=supplierTermDays(sid);
+  term.placeholder=(t===null)?'Cari kartında vade yok':('Cariden: '+t+' gün');
+  onPOStatusChange();
+}
+/* Durum "Talep" veya "Teklif İstendi" iken fiyat zorunlu değildir;
+   satın alma önce teklif ister, fiyat gelince aynı SAP siparişi düzenlenir. */
+function onPOStatusChange(){
+  const hint=document.getElementById('po-mode-hint');
+  const st=(document.getElementById('po-status')||{}).value||'Talep';
+  const qd=document.getElementById('po-quote-due');
+  const isReq=PO_REQUEST_STATUSES.includes(st);
+  if(qd&&qd.parentElement)qd.parentElement.style.opacity=isReq?'1':'0.55';
+  if(!hint)return;
+  const sid=(document.getElementById('po-supplier')||{}).value||'';
+  const t=supplierTermDays(sid);
+  const vadeTxt=(t===null)?'Cari kartında ödeme vadesi tanımlı değil; formda vade yazmaz.':('Ödeme vadesi: fatura tarihinden '+t+' gün (cari kartından).');
+  hint.innerHTML=isReq
+    ? '<strong>Talep modu:</strong> Fiyat girmeden kaydedebilirsiniz. "🖨 Form" butonu <strong>Teklif Talep Formu</strong> basar; tutar sütunları tedarikçinin doldurması için boş gelir. Teklif geldiğinde bu siparişi Düzenle ile açıp birim fiyatları girin, durumu "Sipariş Verildi" yapın ve formu sipariş olarak yeniden basın. <strong>SAP No değişmez.</strong> '+htmlEsc(vadeTxt)
+    : '<strong>Sipariş modu:</strong> Birim fiyatlar zorunludur. "🖨 Form" butonu genel şartları da içeren <strong>Satın Alma Sipariş Formu</strong> basar. '+htmlEsc(vadeTxt);
+}
 function savePurchaseOrder(){
   if(!purCanEdit())return purDeny();
   const supplierId=(document.getElementById('po-supplier')||{}).value||'';
   if(!supplierId){alert('Tedarikçi seçin.');return;}
   if(!_poLines.length){alert('En az bir kalem ekleyin.');return;}
-  if(poLinesTotal()<=0){alert('Kalem tutarlarını girin.');return;}
+  if(!_poLines.some(l=>String(l.desc||'').trim())){alert('En az bir kalemin malzeme / hizmet açıklamasını yazın.');return;}
+  const status=(document.getElementById('po-status')||{}).value||'Talep';
+  const isRequest=PO_REQUEST_STATUSES.includes(status);
+  if(!isRequest&&poLinesTotal()<=0){
+    alert('Sipariş vermek için birim fiyatları girin.\n\nFiyat henüz belli değilse durumu "Talep" veya "Teklif İstendi" bırakın; tedarikçiye teklif talep formu gönderebilirsiniz.');
+    return;
+  }
   const editId=(document.getElementById('po-edit-id')||{}).value||'';
   const cur=(document.getElementById('po-currency')||{}).value||'TRY';
   const rate=cur==='TRY'?1:(parseDecimalInput((document.getElementById('po-rate')||{}).value)||0);
-  if(cur!=='TRY'&&rate<=1){alert(CURRENCY_LABELS[cur]+' siparişte kayıt kuru zorunludur.');return;}
+  if(cur!=='TRY'&&poLinesTotal()>0&&rate<=1){alert(CURRENCY_LABELS[cur]+' siparişte kayıt kuru zorunludur.');return;}
   const arr=purchasing().orders;
   const i=arr.findIndex(x=>String(x.id)===String(editId));
   const projectId=(document.getElementById('po-project')||{}).value||'';
@@ -11246,8 +11336,10 @@ function savePurchaseOrder(){
     supplierId, projectId:projectId,
     date:(document.getElementById('po-date')||{}).value||todayYmd(),
     expectedDate:(document.getElementById('po-expected')||{}).value||'',
-    currency:cur, rate:rate,
-    status:(document.getElementById('po-status')||{}).value||'Talep',
+    currency:cur, rate:(rate||1),
+    status:status,
+    termDays:(function(){const v=(document.getElementById('po-term')||{}).value;return v===''||v==null?null:Math.max(0,Math.round(n(v)));})(),
+    quoteDueDate:(document.getElementById('po-quote-due')||{}).value||'',
     note:((document.getElementById('po-note')||{}).value||'').trim(),
     lines:_poLines.map(l=>Object.assign({},l)),
     updatedAt:new Date().toISOString(), updatedBy:(currentUser&&currentUser.email)||''
@@ -11264,7 +11356,10 @@ function savePurchaseOrder(){
   saveData(data);
   const savedId=rec.id;
   clearPurchaseOrderForm();renderPurchaseOrders();renderProjectActivity();
-  alert('Sipariş kaydedildi.\nSAP No: '+rec.code+'\nProje: '+poProjectLabel(rec)+(moved?('\n'+moved+' fatura yeni projenin gerçek maliyetine taşındı.'):'')+'\n\nSipariş formunu yazdırmak için listedeki "Form" butonunu kullanın.');
+  alert((isRequest?'Talep kaydedildi.':'Sipariş kaydedildi.')+'\nSAP No: '+rec.code+'\nProje: '+poProjectLabel(rec)+'\nÖdeme vadesi: '+poTermLabel(rec)+(moved?('\n'+moved+' fatura yeni projenin gerçek maliyetine taşındı.'):'')
+    +'\n\n'+(isRequest
+      ? 'Listedeki "🖨 Teklif Formu" butonu ile fiyatsız teklif talep formunu tedarikçiye gönderebilirsiniz. Teklif gelince bu kaydı Düzenle ile açıp fiyatları girin ve durumu "Sipariş Verildi" yapın; SAP No değişmez.'
+      : 'Listedeki "🖨 Sipariş Formu" butonu genel şartları da içeren sipariş formunu basar.'));
   return savedId;
 }
 function editPurchaseOrder(id){
@@ -11276,6 +11371,9 @@ function editPurchaseOrder(id){
   set('po-date',o.date||'');set('po-expected',o.expectedDate||'');
   set('po-currency',o.currency||'TRY');set('po-rate',o.rate||1);
   set('po-status',o.status||'Talep');set('po-note',o.note||'');
+  set('po-term',(o.termDays===null||o.termDays===undefined||o.termDays==='')?'':String(o.termDays));
+  set('po-quote-due',o.quoteDueDate||'');
+  onPOSupplierChange();onPOStatusChange();
   _poLines=poLines(o).map(l=>Object.assign({},l));renderPOLines();
   updatePOCodePreview();
   window.scrollTo({top:0,behavior:'smooth'});
@@ -11322,6 +11420,7 @@ function syncPurchaseSelects(){
 function renderPurchaseOrders(){
   syncPurchaseSelects();
   updatePOCodePreview();
+  onPOSupplierChange();
   const el=document.getElementById('po-table');if(!el)return;
   const rows=purchasing().orders.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
   if(!rows.length){el.innerHTML='<div class="empty">Henüz satın alma siparişi yok.</div>';return;}
@@ -11330,16 +11429,18 @@ function renderPurchaseOrders(){
       const prj=mtpro().projects.find(x=>String(x.id)===String(o.projectId));
       const ratio=Math.round(poReceivedRatio(o)*100);
       const late=o.expectedDate&&daysUntil(o.expectedDate)<0&&ratio<100;
-      return '<tr><td><strong>'+htmlEsc(o.code||'')+'</strong></td>'
+      const term=poTermDays(o);
+      return '<tr><td><strong>'+htmlEsc(o.code||'')+'</strong>'
+        +'<div style="font-size:11px;color:var(--text-muted)">'+(term===null?'vade tanımsız':(term===0?'peşin':'vade '+term+' gün'))+'</div></td>'
         +'<td>'+htmlEsc(supplierName(o.supplierId))+'</td>'
         +'<td>'+(prj?('<strong>'+htmlEsc(prj.code||'')+'</strong>'):'<span class="project-badge gray">Genel</span>')+'</td>'
         +'<td>'+htmlEsc(dmy(o.date))+'</td>'
         +'<td'+(late?' style="color:var(--expense);font-weight:600"':'')+'>'+htmlEsc(dmy(o.expectedDate))+(late?' ⚠':'')+'</td>'
-        +'<td style="text-align:right">'+fmtCurrency(poTotal(o),o.currency)+(o.currency!=='TRY'?('<div style="font-size:11px;color:var(--text-muted)">'+fmtTL(poTotalTL(o))+'</div>'):'')+'</td>'
+        +'<td style="text-align:right">'+(poTotal(o)<=0?'<span style="color:var(--text-muted)">teklif bekleniyor</span>':(fmtCurrency(poTotal(o),o.currency)+(o.currency!=='TRY'?('<div style="font-size:11px;color:var(--text-muted)">'+fmtTL(poTotalTL(o))+'</div>'):'')))+'</td>'
         +'<td><span class="project-badge '+poStatusClass(o.status)+'">'+htmlEsc(o.status||'')+'</span></td>'
         +'<td>%'+ratio+'</td>'
         +'<td><div class="project-action-row">'
-          +'<button class="btn btn-sm" onclick="printPurchaseOrder(&quot;'+htmlEsc(o.id)+'&quot;)">🖨 Form</button>'
+          +'<button class="btn btn-sm" onclick="printPurchaseOrder(&quot;'+htmlEsc(o.id)+'&quot;)">'+(poIsRequest(o)?'🖨 Teklif Formu':'🖨 Sipariş Formu')+'</button>'
           +(purCanEdit()?'<button class="btn btn-sm" onclick="editPurchaseOrder(&quot;'+htmlEsc(o.id)+'&quot;)">Düzenle</button>':'')
           +(purCanEdit()&&ratio<100?'<button class="btn btn-sm btn-primary" onclick="receiveAllGoods(&quot;'+htmlEsc(o.id)+'&quot;)">Mal Kabul</button>':'')
           +(purCanEdit()?'<button class="btn btn-sm btn-del" onclick="deletePurchaseOrder(&quot;'+htmlEsc(o.id)+'&quot;)">🗑</button>':'')
@@ -11347,19 +11448,89 @@ function renderPurchaseOrders(){
     }).join('')+'</tbody></table></div>';
 }
 
+/* ──────── v0.14.0 — SATIN ALMA GENEL ŞARTLARI ────────
+   Sipariş formunun arkasına basılan, alıcıyı (Marmara Teknik) koruyan
+   standart ticari şartlar. Gecikme cezası oranı, garanti süresi ve teyit
+   süresi gibi sayılar buradan değiştirilebilir. Bu metin genel ticari
+   uygulamaya göre hazırlanmıştır; firmanızın hukuk danışmanınca gözden
+   geçirilmesi tavsiye edilir. */
+const MT_PO_TERM_VALUES={confirmDays:2, latePenaltyPerMil:1, latePenaltyCapPct:10, warrantyMonths:24, inspectionDays:10, forceMajeureDays:30, jurisdiction:'Gebze / Kocaeli'};
+const MT_PO_TERMS=[
+  ['Siparişin geçerliliği','Bu sipariş yalnızca üzerinde yazılı SAP No ile geçerlidir. Sipariş üzerinde yazılı olmayan hiçbir kalem, bedel veya şart Alıcı’yı bağlamaz. Sipariş üzerinde yapılacak her değişiklik Alıcı’nın yazılı onayına tabidir.'],
+  ['Teyit','Tedarikçi, siparişi aldıktan sonra '+MT_PO_TERM_VALUES.confirmDays+' iş günü içinde yazılı olarak teyit etmekle yükümlüdür. Bu süre içinde yazılı itiraz edilmezse sipariş şartları aynen kabul edilmiş sayılır.'],
+  ['Fiyat','Sipariş üzerindeki birim fiyatlar sabit ve kesindir. Yazılı onay olmaksızın kur farkı, fiyat farkı, nakliye, ambalaj, sigorta, yükleme-boşaltma veya benzeri ad altında ek bedel talep edilemez.'],
+  ['Teslim','Mal veya hizmet, sipariş üzerinde yazılı tarihte ve yazılı teslim yerinde teslim edilir. Teslim tarihi esaslı unsurdur. Kısmi teslimat Alıcı’nın yazılı onayına tabidir.'],
+  ['Gecikme','Teslimin gecikmesi halinde Alıcı, geciken her takvim günü için sipariş bedelinin ‰'+MT_PO_TERM_VALUES.latePenaltyPerMil+'’i (binde '+MT_PO_TERM_VALUES.latePenaltyPerMil+') oranında, toplamda sipariş bedelinin %'+MT_PO_TERM_VALUES.latePenaltyCapPct+'’unu geçmemek üzere gecikme cezası uygulama hakkını saklı tutar. Ceza uygulanması Alıcı’nın fazlaya ilişkin zarar ve fesih haklarını ortadan kaldırmaz.'],
+  ['Muayene ve kabul','Teslim edilen mal, Alıcı tarafından '+MT_PO_TERM_VALUES.inspectionDays+' iş günü içinde miktar ve kalite yönünden muayene edilir. Fatura kesilmiş olması kabul anlamına gelmez. Uygun bulunmayan mal iade edilir; iade, değişim ve nakliye masrafları Tedarikçi’ye aittir.'],
+  ['Garanti','Tedarikçi, teslim tarihinden itibaren '+MT_PO_TERM_VALUES.warrantyMonths+' ay süreyle malın ayıpsız, sipariş ve teknik şartnameye uygun olduğunu garanti eder. Bu süre içinde ortaya çıkan ayıplı mal, Alıcı’nın tercihine göre ücretsiz onarılır veya değiştirilir.'],
+  ['Belgeler','Malzeme kalite belgeleri, test ve muayene raporları, menşe ve uygunluk belgeleri teslimatla birlikte verilir. Belgesiz teslimat, kabul edilmiş sayılmaz ve vade başlangıcını durdurur.'],
+  ['Fatura','Fatura, sipariş üzerindeki SAP No, kalem açıklamaları ve miktarlarla birebir uyumlu düzenlenir. Uyumsuz veya eksik bilgili fatura iade edilir ve ödeme vadesi başlamaz.'],
+  ['Ödeme','Ödeme, sipariş formunda belirtilen cari vadeye göre yapılır. Vade, usulüne uygun düzenlenmiş faturanın Alıcı’ya ulaştığı tarihte başlar. Alıcı, muaccel alacaklarını Tedarikçi’ye olan borçlarından mahsup etme hakkını saklı tutar.'],
+  ['Mülkiyet ve hasar','Malın mülkiyeti ve hasar riski, teslim ve Alıcı tarafından kabul ile birlikte Alıcı’ya geçer. Bu tarihe kadar her türlü hasar ve kayıp Tedarikçi’ye aittir.'],
+  ['Gizlilik','Alıcı tarafından verilen teknik resim, şartname, numune, kalıp, proje ve ticari bilgiler gizlidir; üçüncü kişilerle paylaşılamaz, başka iş için kullanılamaz, referans olarak gösterilemez.'],
+  ['Fikri mülkiyet','Alıcı’nın sağladığı teknik resim, model, kalıp ve tasarımlar üzerindeki tüm haklar Alıcı’ya aittir ve talep halinde derhal iade edilir.'],
+  ['Devir ve taşeron','Tedarikçi, bu siparişten doğan hak ve yükümlülüklerini Alıcı’nın yazılı onayı olmadan üçüncü kişilere devredemez, alacağını temlik edemez ve işi taşerona veremez.'],
+  ['Mevzuat ve İSG','Tedarikçi, yürürlükteki mevzuata, iş sağlığı ve güvenliği ile çevre kurallarına uymakla yükümlüdür. Alıcı sahasında yapılacak çalışmalarda Alıcı’nın İSG kurallarına uyulur; doğacak zarar ve idari yaptırımlardan Tedarikçi sorumludur.'],
+  ['Fesih','Tedarikçi’nin teslimde temerrüde düşmesi, sipariş şartlarına aykırı davranması veya ödeme güçlüğüne düşmesi halinde Alıcı, siparişi tazminat ödemeksizin tek taraflı iptal etme hakkına sahiptir.'],
+  ['Mücbir sebep','Tarafların iradesi dışındaki mücbir sebep halleri yazılı olarak ve gecikmeksizin bildirilir. Mücbir sebep '+MT_PO_TERM_VALUES.forceMajeureDays+' günden uzun sürerse Alıcı siparişi tazminatsız iptal edebilir.'],
+  ['Uygulanacak hukuk','Bu siparişe Türk hukuku uygulanır. Doğacak uyuşmazlıklarda '+MT_PO_TERM_VALUES.jurisdiction+' Mahkemeleri ve İcra Daireleri yetkilidir.'],
+  ['Öncelik','Bu genel şartlar, Tedarikçi’nin kendi genel satış veya teklif şartlarına üstündür. Tedarikçi’nin aksi yöndeki matbu şartları, Alıcı yazılı olarak kabul etmedikçe geçersizdir.']
+];
+const MT_RFQ_TERMS=[
+  ['Bu belge sipariş değildir','Bu form yalnızca fiyat teklifi talebidir. Alıcı’ya herhangi bir satın alma, ödeme veya sipariş yükümlülüğü getirmez.'],
+  ['Teklifte bulunması gerekenler','Birim fiyat, para birimi, KDV durumu, teslim süresi, teslim yeri, ödeme vadesi, teklif geçerlilik süresi, marka ve menşei açıkça belirtilmelidir.'],
+  ['Fiyat kapsamı','Nakliye, ambalaj, sigorta ve benzeri masrafların fiyata dahil olup olmadığı teklifte ayrıca yazılmalıdır. Belirtilmeyen masraflar fiyata dahil kabul edilir.'],
+  ['Alternatif teklif','Talep edilen ürüne muadil öneriniz varsa teknik bilgileriyle birlikte ayrı bir kalem olarak sunulmalıdır.'],
+  ['Gizlilik','Bu talep ekinde paylaşılan teknik resim, şartname ve proje bilgileri gizlidir; üçüncü kişilerle paylaşılamaz ve başka amaçla kullanılamaz.'],
+  ['Seçim hakkı','Alıcı, teklifleri değerlendirmekte, kısmen kabul etmekte veya hiçbirini kabul etmemekte serbesttir. Teklif hazırlama giderleri Tedarikçi’ye aittir.'],
+  ['Sipariş halinde','Sipariş verilmesi halinde Alıcı’nın Satın Alma Genel Şartları geçerli olacaktır. Sipariş, ancak SAP No taşıyan yazılı sipariş formu ile kurulur.']
+];
+
 /* ──────── v0.13.0 — SATIN ALMA SİPARİŞ FORMU (A4 / PDF) ────────
    Sipariş kaydedildikten sonra tedarikçiye gönderilecek kurumsal form.
    Üstte SAP no ve proje kodu birlikte yazar; tedarikçi faturayı SAP no'ya
    keser, biz maliyeti proje kodundan takip ederiz. */
-function purchaseOrderDocHtml(o){
+function purchaseOrderDocHtml(o,forceMode){
+  const rfq=forceMode?forceMode==='rfq':poIsRequest(o);
   const sup=supplierById(o.supplierId)||{};
   const prj=mtpro().projects.find(x=>String(x.id)===String(o.projectId))||null;
   const cur=o.currency||'TRY';
   const lines=poLines(o);
   const total=poTotal(o);
+  const terms=rfq?MT_RFQ_TERMS:MT_PO_TERMS;
   const infoRow=(a,b,c,d)=>'<tr><th>'+a+'</th><td>'+b+'</td><th>'+c+'</th><td>'+d+'</td></tr>';
   const logo=MT_LOGO_DATA?('<img class="po-logo" src="'+MT_LOGO_DATA+'" alt="'+htmlEsc(MT_COMPANY.name)+'">')
     :('<div class="po-mark">MT</div><div><div class="po-name">'+htmlEsc(MT_COMPANY.name)+'</div><div class="po-sub">'+htmlEsc(MT_COMPANY.tagline)+'</div></div>');
+  const vade=rfq?'Teklifinizde belirtiniz':htmlEsc(poTermLabel(o));
+  const head=rfq?'TEKLİF TALEP FORMU':'SATIN ALMA SİPARİŞ FORMU';
+  const lineHead=rfq
+    ? '<tr><th style="width:34px">#</th><th>Malzeme / Hizmet</th><th style="width:70px" class="num">Miktar</th><th style="width:70px">Birim</th><th style="width:110px" class="num">Birim Fiyat</th><th style="width:120px" class="num">Tutar</th></tr>'
+    : '<tr><th style="width:34px">#</th><th>Malzeme / Hizmet</th><th style="width:70px" class="num">Miktar</th><th style="width:70px">Birim</th><th style="width:100px" class="num">Birim Fiyat</th><th style="width:110px" class="num">Tutar</th></tr>';
+  const lineRows = lines.length
+    ? lines.map((l,i)=>'<tr><td>'+(i+1)+'</td><td>'+htmlEsc(l.desc||'')+'</td>'
+        +'<td class="num">'+formatNumberTr(n(l.qty),2)+'</td><td>'+htmlEsc(l.unit||'')+'</td>'
+        +(rfq
+          ? '<td class="fill"></td><td class="fill"></td>'
+          : '<td class="num">'+fmtCurrency(n(l.unitPrice),cur)+'</td><td class="num">'+fmtCurrency(poLineAmount(l),cur)+'</td>')
+        +'</tr>').join('')
+    : '<tr><td colspan="6">Kalem girilmemiş.</td></tr>';
+  const totalRows = rfq
+    ? '<tr class="po-total"><td colspan="5" class="num">TOPLAM</td><td class="fill"></td></tr>'
+    : '<tr class="po-total"><td colspan="5" class="num">TOPLAM</td><td class="num">'+fmtCurrency(total,cur)+'</td></tr>'
+      +(cur!=='TRY'?('<tr class="po-total"><td colspan="5" class="num">TL KARŞILIĞI</td><td class="num">'+fmtTL(poTotalTL(o))+'</td></tr>'):'');
+  const intro = rfq
+    ? '<div class="po-note"><b>Sayın '+htmlEsc(sup.name||'Yetkili')+',</b>Aşağıdaki kalemler için fiyat teklifinizi rica ederiz. Lütfen birim fiyat, teslim süresi, ödeme vadesi ve teklif geçerlilik sürenizi belirterek '+(o.quoteDueDate?('<strong>'+htmlEsc(dmy(o.quoteDueDate))+'</strong> tarihine kadar '):'')+'tarafımıza iletiniz. Yazışmalarınızda <strong>'+htmlEsc(o.code||'')+'</strong> talep numarasını kullanınız.</div>'
+    : '<div class="po-note" style="min-height:0"><b>Faturalandırma</b>Lütfen faturayı <strong>'+htmlEsc(o.code||'')+'</strong> sipariş numarası ile düzenleyiniz. Fatura kalemleri ve miktarları bu form ile birebir aynı olmalıdır.</div>';
+  const signs = rfq
+    ? '<div class="po-sign"><div>Talep Eden<br><br>'+htmlEsc(o.updatedBy||(currentUser&&currentUser.email)||'')+'</div><div>Tedarikçi Teklif Veren / Kaşe</div></div>'
+    : '<div class="po-sign"><div>Sipariş Veren<br><br>'+htmlEsc(o.updatedBy||(currentUser&&currentUser.email)||'')+'</div><div>Onaylayan</div><div>Tedarikçi Kaşe / İmza</div></div>';
+  const termsHtml='<div class="po-terms"><div class="po-terms-title">'
+    +(rfq?'TEKLİF TALEP ŞARTLARI':'SATIN ALMA GENEL ŞARTLARI')+'</div><ol>'
+    +terms.map(t=>'<li><b>'+htmlEsc(t[0])+'.</b> '+htmlEsc(t[1])+'</li>').join('')
+    +'</ol><div class="po-terms-foot">'
+    +(rfq?'Teklif gönderilmesi, bu şartların okunduğu ve kabul edildiği anlamına gelir.'
+         :'Siparişin teyit edilmesi veya malın sevk edilmesi, bu genel şartların kabul edildiği anlamına gelir.')
+    +'</div></div>';
   return '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+htmlEsc(o.code||'Sipariş')+'</title><style>'
     +'@page{size:A4;margin:16mm 14mm 18mm}'
     +'*{box-sizing:border-box}'
@@ -11376,11 +11547,18 @@ function purchaseOrderDocHtml(o){
     +'th{background:#f3f7fa;font-weight:600;color:#3c4c5c;white-space:nowrap}'
     +'.po-lines th{background:#2E4F6E;color:#fff;border-color:#2E4F6E}'
     +'.num{text-align:right;white-space:nowrap}'
+    +'.fill{background:#fbfdfe}'
     +'.po-total{background:#f3f7fa;font-weight:700}'
     +'.po-note{border:1px solid #d7e0e7;padding:10px;margin-bottom:14px;min-height:46px}'
     +'.po-note b{display:block;margin-bottom:4px;color:#3c4c5c}'
-    +'.po-sign{display:flex;gap:14px;margin-top:22px}'
+    +'.po-sign{display:flex;gap:14px;margin-top:18px}'
     +'.po-sign div{flex:1;border:1px solid #d7e0e7;padding:10px;height:82px;font-size:11px;color:#5b6b7a}'
+    +'.po-terms{margin-top:22px;page-break-before:always;break-before:page}'
+    +'.po-terms-title{font-size:13px;text-align:center;letter-spacing:.12em;font-weight:700;margin:0 0 12px;padding:8px 0;border-top:2px solid #2E4F6E;border-bottom:2px solid #2E4F6E;color:#2E4F6E}'
+    +'.po-terms ol{margin:0;padding-left:18px;font-size:10.5px;line-height:1.5;text-align:justify}'
+    +'.po-terms li{margin-bottom:6px}'
+    +'.po-terms li b{color:#2E4F6E}'
+    +'.po-terms-foot{margin-top:12px;padding:8px 10px;border:1px solid #d7e0e7;background:#f8fbfd;font-size:10.5px;font-weight:600;color:#3c4c5c;text-align:center}'
     +'.po-foot{margin-top:20px;padding-top:10px;border-top:1px solid #e6ecf1;font-size:10.5px;color:#5b6b7a;text-align:center}'
     +'.po-badge{display:inline-block;background:#eef4f9;border:1px solid #cfe0ee;color:#2E4F6E;border-radius:6px;padding:2px 8px;font-weight:700}'
     +'.print-btn{position:fixed;top:12px;right:12px;padding:10px 16px;border-radius:10px;border:none;background:#2E4F6E;color:#fff;font-weight:600;cursor:pointer;font-family:inherit}'
@@ -11389,11 +11567,13 @@ function purchaseOrderDocHtml(o){
     +'<button class="print-btn" onclick="window.print()">Yazdır / PDF</button>'
     +'<div class="po-doc">'
     +'<div class="po-brand">'+logo+'</div>'
-    +'<div class="po-title">SATIN ALMA SİPARİŞ FORMU</div>'
+    +'<div class="po-title">'+head+'</div>'
     +'<table>'
-    +infoRow('SAP No','<span class="po-badge">'+htmlEsc(o.code||'')+'</span>','Sipariş Tarihi',htmlEsc(dmy(o.date)))
-    +infoRow('Proje',(prj?('<strong>'+htmlEsc(prj.code||'')+'</strong>'+(prj.title?(' · '+htmlEsc(prj.title)):'')):'Genel Satın Alma (projesiz)'),'Beklenen Teslim',htmlEsc(dmy(o.expectedDate))||'—')
-    +infoRow('Durum',htmlEsc(o.status||''),'Para Birimi',htmlEsc(CURRENCY_LABELS[cur]||cur)+(cur!=='TRY'?(' · Kur '+formatNumberTr(n(o.rate)||1,4)):''))
+    +infoRow(rfq?'Talep No':'SAP No','<span class="po-badge">'+htmlEsc(o.code||'')+'</span>',rfq?'Talep Tarihi':'Sipariş Tarihi',htmlEsc(dmy(o.date)))
+    +infoRow('Proje',(prj?('<strong>'+htmlEsc(prj.code||'')+'</strong>'+(prj.title?(' · '+htmlEsc(prj.title)):'')):'Genel Satın Alma (projesiz)'),rfq?'İstenen Teslim':'Beklenen Teslim',htmlEsc(dmy(o.expectedDate))||'—')
+    +infoRow('Ödeme Vadesi',vade,'Para Birimi',(rfq?'Teklifinizde belirtiniz':htmlEsc(CURRENCY_LABELS[cur]||cur)+(cur!=='TRY'?(' · Kur '+formatNumberTr(n(o.rate)||1,4)):'')))
+    +(rfq&&o.quoteDueDate?('<tr><th>Teklif Son Tarihi</th><td colspan="3"><strong>'+htmlEsc(dmy(o.quoteDueDate))+'</strong></td></tr>'):'')
+    +(rfq?'':('<tr><th>Durum</th><td colspan="3">'+htmlEsc(o.status||'')+'</td></tr>'))
     +'</table>'
     +'<table>'
     +'<tr><th style="width:120px">Tedarikçi</th><td colspan="3"><strong>'+htmlEsc(sup.name||'')+'</strong></td></tr>'
@@ -11401,36 +11581,28 @@ function purchaseOrderDocHtml(o){
     +infoRow('E-posta',htmlEsc(sup.mail||'—'),'Vergi No',htmlEsc(sup.taxNo||'—'))
     +(sup.address?('<tr><th>Adres</th><td colspan="3">'+htmlEsc(sup.address)+'</td></tr>'):'')
     +'</table>'
-    +'<table class="po-lines"><thead><tr><th style="width:34px">#</th><th>Malzeme / Hizmet</th>'
-    +'<th style="width:70px" class="num">Miktar</th><th style="width:70px">Birim</th>'
-    +'<th style="width:100px" class="num">Birim Fiyat</th><th style="width:110px" class="num">Tutar</th></tr></thead><tbody>'
-    +(lines.length?lines.map((l,i)=>'<tr><td>'+(i+1)+'</td><td>'+htmlEsc(l.desc||'')+'</td>'
-      +'<td class="num">'+formatNumberTr(n(l.qty),2)+'</td><td>'+htmlEsc(l.unit||'')+'</td>'
-      +'<td class="num">'+fmtCurrency(n(l.unitPrice),cur)+'</td>'
-      +'<td class="num">'+fmtCurrency(poLineAmount(l),cur)+'</td></tr>').join('')
-      :'<tr><td colspan="6">Kalem girilmemiş.</td></tr>')
-    +'<tr class="po-total"><td colspan="5" class="num">TOPLAM</td><td class="num">'+fmtCurrency(total,cur)+'</td></tr>'
-    +(cur!=='TRY'?('<tr class="po-total"><td colspan="5" class="num">TL KARŞILIĞI</td><td class="num">'+fmtTL(poTotalTL(o))+'</td></tr>'):'')
-    +'</tbody></table>'
+    +(rfq?intro:'')
+    +'<table class="po-lines"><thead>'+lineHead+'</thead><tbody>'+lineRows+totalRows+'</tbody></table>'
     +'<div class="po-note"><b>Not / Teslim Şartı</b>'+htmlEsc(o.note||'—')+'</div>'
-    +'<div class="po-note" style="min-height:0"><b>Faturalandırma</b>Lütfen faturayı <strong>'+htmlEsc(o.code||'')+'</strong> sipariş numarası ile düzenleyiniz.</div>'
-    +'<div class="po-sign"><div>Sipariş Veren<br><br>'+htmlEsc(o.updatedBy||(currentUser&&currentUser.email)||'')+'</div><div>Onaylayan</div><div>Tedarikçi Kaşe / İmza</div></div>'
+    +(rfq?'':intro)
+    +signs
+    +termsHtml
     +'<div class="po-foot">'+htmlEsc(MT_COMPANY.legal)+' · '+htmlEsc(MT_COMPANY.city)+' · '+htmlEsc(MT_COMPANY.phone)+' · '+htmlEsc(MT_COMPANY.mail)+' · '+htmlEsc(MT_COMPANY.web)+'</div>'
     +'</div></body></html>';
 }
-function printPurchaseOrder(id){
+function printPurchaseOrder(id,mode){
   const o=purchasing().orders.find(x=>String(x.id)===String(id));
   if(!o)return;
   const w=window.open('','_blank');
   if(!w){alert('Form penceresi açılamadı. Tarayıcı açılır pencere iznini kontrol edin.');return;}
-  w.document.open();w.document.write(purchaseOrderDocHtml(o));w.document.close();
+  w.document.open();w.document.write(purchaseOrderDocHtml(o,mode));w.document.close();
 }
 
 /* ──────── SATIN ALMA: TEDARİKÇİ FATURASI VE ÖDEME ──────── */
-/* Fatura bir SAP siparişine bağlanınca tedarikçi ve proje otomatik dolar. */
+/* Fatura bir SAP siparişine bağlanınca tedarikçi, proje, kur ve VADE dolar. */
 function onPurInvoiceOrderChange(){
   const oid=(document.getElementById('pinv-order')||{}).value||'';
-  if(!oid)return;
+  if(!oid){applyPurInvoiceTerm();return;}
   const o=purchasing().orders.find(x=>String(x.id)===String(oid));if(!o)return;
   const sup=document.getElementById('pinv-supplier');
   if(sup&&o.supplierId)sup.value=o.supplierId;
@@ -11439,6 +11611,28 @@ function onPurInvoiceOrderChange(){
   const cur=document.getElementById('pinv-currency');
   if(cur&&o.currency){cur.value=o.currency;onPurInvoiceCurrencyChange();
     const r=document.getElementById('pinv-rate');if(r&&o.currency!=='TRY')r.value=o.rate||'';}
+  applyPurInvoiceTerm(o);
+}
+/* Vade tarihi, cari kartındaki (veya siparişteki) vade gününden hesaplanır.
+   Kullanıcı vade tarihini elle yazmışsa üzerine yazılmaz. */
+function applyPurInvoiceTerm(order){
+  const due=document.getElementById('pinv-due');
+  const hint=document.getElementById('pinv-term-hint');
+  if(!due)return;
+  const sid=(document.getElementById('pinv-supplier')||{}).value||'';
+  const t=order?poTermDays(order):supplierTermDays(sid);
+  const date=(document.getElementById('pinv-date')||{}).value||todayYmd();
+  if(hint){
+    hint.textContent=(t===null)
+      ? 'Bu carinin kartında ödeme vadesi tanımlı değil. Vade tarihini elle girin.'
+      : (t===0?'Cari vadesi: peşin.':'Cari vadesi '+t+' gün. Fatura tarihine göre vade '+dmy(addDaysYmd(date,t))+' olarak hesaplandı.');
+  }
+  if(due.dataset&&due.dataset.manual==='1')return;
+  due.value=(t===null)?'':addDaysYmd(date,t);
+}
+function onPurInvoiceDueManual(){
+  const due=document.getElementById('pinv-due');
+  if(due&&due.dataset)due.dataset.manual='1';
 }
 function onPurInvoiceCurrencyChange(){
   const c=(document.getElementById('pinv-currency')||{}).value||'TRY';
@@ -11459,9 +11653,10 @@ function onPurPaymentCurrencyChange(){
 function clearPurInvoiceForm(){
   ['pinv-no','pinv-note'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   const a=document.getElementById('pinv-amount');if(a)a.value='';
-  const d=document.getElementById('pinv-due');if(d)d.value='';
+  const d=document.getElementById('pinv-due');if(d){d.value='';if(d.dataset)d.dataset.manual='';}
   const e=document.getElementById('pinv-edit-id');if(e)e.value='';
   const dt=document.getElementById('pinv-date');if(dt)dt.value=todayYmd();
+  applyPurInvoiceTerm();
 }
 function savePurchaseInvoice(){
   if(!purCanEdit())return purDeny();
@@ -11504,6 +11699,7 @@ function editPurchaseInvoice(id){
   const x=purchasing().invoices.find(v=>String(v.id)===String(id));if(!x)return;
   syncPurchaseSelects();
   const set=(el,v)=>{const e=document.getElementById(el);if(e)e.value=v;};
+  const dd=document.getElementById('pinv-due');if(dd&&dd.dataset)dd.dataset.manual='1';
   set('pinv-edit-id',x.id);set('pinv-supplier',x.supplierId||'');set('pinv-order',x.orderId||'');
   set('pinv-project',x.projectId||'');set('pinv-no',x.no||'');set('pinv-date',x.date||'');
   set('pinv-amount',x.amount||'');set('pinv-currency',x.currency||'TRY');set('pinv-rate',x.rate||1);

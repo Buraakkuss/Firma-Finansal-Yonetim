@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.8.3">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.8.3" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.8.3">
-  <title>NakitPilot Marmara Teknik — v0.8.3</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.9.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.9.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.9.0">
+  <title>NakitPilot Marmara Teknik — v0.9.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -1249,6 +1249,7 @@
   }
   .project-kpi.status-ready,
   .project-kpi.status-delivered,
+  .project-kpi.status-collected,
   .project-kpi.status-closed {
     --kpi-color:#167A4B;
     --kpi-bg:#ECFDF3;
@@ -1520,6 +1521,8 @@
   .project-status-select.status-ready,
   .project-form-status.status-delivered,
   .project-status-select.status-delivered,
+  .project-form-status.status-collected,
+  .project-status-select.status-collected,
   .project-form-status.status-closed,
   .project-status-select.status-closed {
     color:#167A4B !important;
@@ -1819,6 +1822,20 @@
     --status-bg:#E0F2FE;
     --status-border:#7DD3FC;
   }
+  .status-collected {
+    --status-color:#047857;
+    --status-bg:#D1FAE5;
+    --status-border:#6EE7B7;
+  }
+  .status-extra-box { border:1px solid var(--border-strong); background:var(--bg-secondary); border-radius:10px; padding:10px 12px; margin-top:2px; }
+  .status-extra-title { font-size:11px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; }
+  .cost-items-table { font-size:12px; }
+  .cost-items-table th { font-size:10.5px; text-transform:uppercase; letter-spacing:0.03em; color:var(--text-muted); white-space:nowrap; }
+  .cost-items-table td { padding:4px 5px; vertical-align:middle; }
+  .cost-items-table input, .cost-items-table select { width:100%; padding:5px 7px; font-size:12px; font-family:inherit; border:1px solid var(--border); border-radius:6px; background:var(--bg-card); color:var(--text); }
+  .cost-items-table .ci-amount { font-weight:700; white-space:nowrap; }
+  .cost-items-bar { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; }
+  .cost-items-total { font-weight:700; }
   .status-closed {
     --status-color:#334155;
     --status-bg:#F1F5F9;
@@ -2510,7 +2527,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.8.3</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.9.0</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -3224,7 +3241,8 @@
             <div class="form-group span-4"><label>Müşteri</label><input id="prj-customer" placeholder="Müşteri / firma"></div>
             <div class="form-group span-5"><label>Proje Adı / Konu</label><input id="prj-title" placeholder="Proje konusu"></div>
             <div class="form-group span-3"><label>Sorumlu</label><input id="prj-owner" placeholder="Sorumlu kişi"></div>
-            <div class="form-group span-3"><label>Durum</label><select id="prj-status" class="project-form-status" onchange="applyProjectStatusVisual(this)"></select></div>
+            <div class="form-group span-3"><label>Durum</label><select id="prj-status" class="project-form-status" onchange="applyProjectStatusVisual(this);renderProjectStatusExtra()"></select></div>
+            <div class="span-12" id="prj-status-extra" style="display:none"></div>
             <div class="form-group span-3"><label id="prj-date-label">Planlanan Teslim</label><input type="date" id="prj-due" data-date-mode="delivery"></div>
             <div class="form-group span-3"><label>Teklif Tutarı</label><input type="number" id="prj-offer" min="0" step="0.01" placeholder="0.00"></div>
             <div class="form-group span-2"><label>Para Birimi</label><select id="prj-currency"><option value="TRY">TL</option><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
@@ -3237,6 +3255,11 @@
         <div class="card" id="project-list-card">
           <div class="card-title" style="justify-content:space-between;gap:10px;flex-wrap:wrap"><span>📁 Proje Listesi</span><div class="project-toolbar"><div class="form-group"><label>Durum</label><select id="prj-filter-status" onchange="renderProjects()"><option value="all">Tüm durumlar</option></select></div><div class="form-group"><label>Ara</label><input id="prj-search" oninput="renderProjects()" placeholder="Kod, müşteri, konu"></div></div></div>
           <div class="table-wrap"><table><thead><tr><th>Kod</th><th>Müşteri / Proje</th><th>Sorumlu</th><th>Durum</th><th>Teslim</th><th>Teklif</th><th>Finans</th><th></th></tr></thead><tbody id="prj-body"></tbody></table><div id="prj-empty" class="empty" style="display:none">Henüz proje yok.</div></div>
+        </div>
+        <div class="card" id="project-activity-card">
+          <div class="card-title">🕘 Proje Hareket Geçmişi</div>
+          <div class="section-sub">Statü değişiklikleri, maliyet ve teklif kayıtları burada tarih ve kullanıcı bilgisiyle saklanır. Hiçbir kayıt silinmez.</div>
+          <div id="project-activity-body"></div>
         </div>
       </div>
 
@@ -3251,6 +3274,18 @@
             <div class="form-group span-5"><label>Proje Konusu</label><input id="cost-project-subject" placeholder="Proje seçince otomatik gelir" readonly></div>
             <div class="form-group span-3"><label>Çalışma Adı</label><select id="cost-title-select" onchange="onCostTitleSelectionChange()"></select><input type="hidden" id="cost-title"><div class="cost-title-help">Önceki çalışmayı seçerek düzenleyebilir veya yeni çalışma ekleyebilirsin.</div></div>
 
+            <div class="form-group span-12">
+              <label>Maliyet Kalemleri <span style="color:var(--text-hint)">(opsiyonel — kalem girersen Toplam Maliyet otomatik hesaplanır)</span></label>
+              <div class="table-wrap"><table class="cost-items-table"><thead><tr>
+                <th style="width:150px">Grup</th><th>Açıklama</th><th style="width:70px">Adet</th><th style="width:80px">Birim</th>
+                <th style="width:90px">Ağırlık kg</th><th style="width:110px">Birim Fiyat</th><th style="width:115px">Tutar</th>
+                <th style="width:140px">Tedarikçi</th><th style="width:34px"></th>
+              </tr></thead><tbody id="cost-items-body"></tbody></table></div>
+              <div class="cost-items-bar">
+                <button type="button" class="btn btn-sm" onclick="addCostItemRow()">+ Kalem Ekle</button>
+                <span class="cost-items-total" id="cost-items-total"></span>
+              </div>
+            </div>
             <div class="form-group span-3"><label>Toplam Maliyet</label><input type="number" id="cost-material" min="0" step="0.01" oninput="updateCostPreview()" placeholder="0.00"></div>
             <div class="form-group span-2"><label>Adam-Gün</label><input type="number" id="cost-labor-days" min="0" step="0.1" oninput="updateCostPreview()" placeholder="0"></div>
             <div class="form-group span-2"><label>Adam-Gün Birim</label><input type="number" id="cost-labor-rate" min="0" step="0.01" value="0" oninput="updateCostPreview()"></div>
@@ -4065,7 +4100,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.8.3';
+const APP_VERSION='0.9.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -8472,8 +8507,8 @@ function clearAiAssistant(){
 
 
 /* ──────── PROJECT TRACKING / MT PRO v0.5.22 ──────── */
-const PROJECT_STATUSES=['Fiyat Teklifi Bekliyor','Onay Bekliyor','Beklemeye Alındı','Reddedildi','Onaylandı','Tasarımda','Malzeme Tedarik Sürecinde','Üretimde','Montajda','Test / Kontrolde','Teslime Hazır','Teslim Edildi','Faturalandırıldı','Kapandı'];
-const PRODUCTION_STATUSES=['Onaylandı','Tasarımda','Malzeme Tedarik Sürecinde','Üretimde','Montajda','Test / Kontrolde','Teslime Hazır','Teslim Edildi','Faturalandırıldı','Kapandı'];
+const PROJECT_STATUSES=['Fiyat Teklifi Bekliyor','Onay Bekliyor','Beklemeye Alındı','Reddedildi','Onaylandı','Tasarımda','Malzeme Tedarik Sürecinde','Üretimde','Montajda','Test / Kontrolde','Teslime Hazır','Teslim Edildi','Faturalandırıldı','Tahsilat Tamamlandı','Kapandı'];
+const PRODUCTION_STATUSES=['Onaylandı','Tasarımda','Malzeme Tedarik Sürecinde','Üretimde','Montajda','Test / Kontrolde','Teslime Hazır','Teslim Edildi','Faturalandırıldı','Tahsilat Tamamlandı','Kapandı'];
 const PROJECT_STAGE_KEYS=['design','supply','production','assembly','test','delivery'];
 const PROJECT_STAGE_LABELS={design:'Tasarım',supply:'Malzeme Tedarik',production:'Üretim',assembly:'Montaj',test:'Test / Kontrol',delivery:'Teslim'};
 const PROJECT_PAGES=['projectMeetings','projects','projectCosts','projectProduction','projectFiles','projectFinance'];
@@ -8500,6 +8535,34 @@ function mtpro(){
   if(!data.mtpro||typeof data.mtpro!=='object')data.mtpro={meetings:[],projects:[],costs:[],quotes:[],files:[],activity:[]};
   ['meetings','projects','costs','quotes','files','activity'].forEach(k=>{if(!Array.isArray(data.mtpro[k]))data.mtpro[k]=[];});
   return data.mtpro;
+}
+/* v0.9.0 — Proje hareket geçmişi. Statü, maliyet ve teklif değişiklikleri
+   tarih ve kullanıcı bilgisiyle saklanır; hiçbir kayıt silinmez. */
+const PROJECT_ACTIVITY_LIMIT=2000;
+function logProjectActivity(projectId,type,text,meta){
+  try{
+    const arr=mtpro().activity;
+    arr.push({id:makeId('act'),projectId:String(projectId||''),type:String(type||'note'),
+      text:String(text||''),meta:meta||null,at:new Date().toISOString(),
+      by:(currentUser&&currentUser.email)?currentUser.email:''});
+    if(arr.length>PROJECT_ACTIVITY_LIMIT)arr.splice(0,arr.length-PROJECT_ACTIVITY_LIMIT);
+  }catch(e){console.warn('Proje hareketi kaydedilemedi:',e);}
+}
+function projectActivityFor(projectId){
+  return mtpro().activity.filter(a=>!projectId||String(a.projectId)===String(projectId))
+    .slice().sort((a,b)=>String(b.at||'').localeCompare(String(a.at||'')));
+}
+function projectActivityIcon(t){
+  return t==='status'?'🔄':t==='cost'?'🧮':t==='quote'?'🧾':t==='approve'?'✅':t==='create'?'📄':t==='delete'?'🗑️':'•';
+}
+function renderProjectActivity(){
+  const el=document.getElementById('project-activity-body');if(!el)return;
+  const rows=projectActivityFor('').slice(0,40);
+  if(!rows.length){el.innerHTML='<div class="empty">Henüz proje hareketi yok. Statü, maliyet ve teklif değişiklikleri burada birikir.</div>';return;}
+  const codeOf=(id)=>{const p=mtpro().projects.find(x=>String(x.id)===String(id));return p?p.code:'';};
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th style="width:150px">Tarih</th><th style="width:120px">Proje</th><th>Hareket</th><th style="width:190px">Kullanıcı</th></tr></thead><tbody>'
+    +rows.map(a=>`<tr><td>${htmlEsc(new Date(a.at).toLocaleString('tr-TR'))}</td><td><strong>${htmlEsc(codeOf(a.projectId))}</strong></td><td>${projectActivityIcon(a.type)} ${htmlEsc(a.text)}</td><td style="font-size:11px;color:var(--text-muted)">${htmlEsc(a.by)}</td></tr>`).join('')
+    +'</tbody></table></div>';
 }
 function projectCanEdit(){return canProjectEdit();}
 function projectFinanceCanEdit(){return canProjectFinanceEdit();}
@@ -8529,6 +8592,7 @@ function projectStatusClass(status){
   if(s==='Teslime Hazır')return 'status-ready';
   if(s==='Teslim Edildi')return 'status-delivered';
   if(s==='Faturalandırıldı')return 'status-invoiced';
+  if(s==='Tahsilat Tamamlandı')return 'status-collected';
   if(s==='Kapandı')return 'status-closed';
   return 'status-neutral';
 }
@@ -8576,7 +8640,7 @@ function approvedQuoteForProject(projectId){
   return (mtpro().quotes||[]).find(q=>String(q.id)===String(p.approvedQuoteId))||null;
 }
 function requiresApprovedQuoteForStatus(status){
-  return ['Onaylandı','Tasarımda','Malzeme Tedarik Sürecinde','Üretimde','Montajda','Test / Kontrolde','Teslime Hazır','Teslim Edildi','Faturalandırıldı','Kapandı'].includes(String(status||''));
+  return ['Onaylandı','Tasarımda','Malzeme Tedarik Sürecinde','Üretimde','Montajda','Test / Kontrolde','Teslime Hazır','Teslim Edildi','Faturalandırıldı','Tahsilat Tamamlandı','Kapandı'].includes(String(status||''));
 }
 function applyApprovedQuoteToProject(p,q,status){
   if(!p)return;
@@ -8588,6 +8652,7 @@ function applyApprovedQuoteToProject(p,q,status){
     p.currency=q.currency;
     p.selectedCostId=q.costId;
     p.approvedQuoteAt=p.approvedQuoteAt||new Date().toISOString();
+    logProjectActivity(p.id,'approve','Onaylanan teklif: '+(q.code||'')+' · '+projectMoney(q.amount,q.currency)+(status?(' · durum: '+status):''),{quoteId:q.id,amount:q.amount,currency:q.currency});
   }
   p.updatedAt=new Date().toISOString();
 }
@@ -8625,6 +8690,60 @@ function confirmApprovedQuoteSelection(){
   closeModal('modal-approved-quote');
   _approveQuoteProjectId=null;
   renderProjects();syncProjectSelects();renderProductionTimeline();
+}
+/* v0.9.0 — Statü geçiş kuralları: kayıt eksikken sonraki aşamaya geçilemez,
+   geri alma iz bırakır. */
+const PROJECT_STATUS_REQUIREMENTS={
+  'Beklemeye Alındı':{field:'holdUntil',label:'takip tarihi'},
+  'Reddedildi':{field:'rejectReason',label:'ret nedeni'},
+  'Teslim Edildi':{field:'deliveryDate',label:'teslim tarihi'}
+};
+function projectStatusIndex(st){const i=PROJECT_STATUSES.indexOf(String(st||''));return i<0?0:i;}
+function statusExtraFieldFor(status){
+  if(status==='Teslim Edildi')return {fields:[{id:'prj-delivery-date',key:'deliveryDate',label:'Teslim Tarihi',type:'date'},{id:'prj-waybill',key:'waybillNo',label:'İrsaliye No',type:'text'},{id:'prj-shipment',key:'shipmentType',label:'Sevk Şekli',type:'text'}]};
+  if(status==='Beklemeye Alındı')return {fields:[{id:'prj-hold-until',key:'holdUntil',label:'Takip Tarihi',type:'date'},{id:'prj-hold-note',key:'holdNote',label:'Bekletme Nedeni',type:'text'}]};
+  if(status==='Reddedildi')return {fields:[{id:'prj-reject-reason',key:'rejectReason',label:'Ret Nedeni',type:'text'},{id:'prj-reject-competitor',key:'rejectCompetitor',label:'Rakip / Not (opsiyonel)',type:'text'}]};
+  return null;
+}
+function projectTransitionCheck(p,next){
+  const cur=String(p&&p.status||'Fiyat Teklifi Bekliyor'), to=String(next||'');
+  if(cur===to)return {ok:true};
+  if(!PROJECT_STATUSES.includes(to))return {ok:false,msg:'Geçersiz durum.'};
+  const need=PROJECT_STATUS_REQUIREMENTS[to];
+  if(need && !String((p&&p[need.field])||'').trim())
+    return {ok:false,msg:'"'+to+'" durumuna geçmek için '+need.label+' girilmelidir. Projeyi düzenleyip durumu seçtiğinizde açılan alanı doldurun.'};
+  if(to==='Teslim Edildi' && !String((p&&p.waybillNo)||'').trim())
+    return {ok:false,msg:'"Teslim Edildi" durumuna geçmek için irsaliye numarası girilmelidir.'};
+  if(projectStatusIndex(to)<projectStatusIndex(cur) && !['Beklemeye Alındı','Reddedildi'].includes(to))
+    return {ok:true,back:true,msg:'Proje "'+cur+'" durumundan "'+to+'" durumuna geri alınıyor. Bu hareket geçmişe kaydedilecek. Devam edilsin mi?'};
+  return {ok:true};
+}
+function applyProjectStatusChange(p,next,source){
+  const chk=projectTransitionCheck(p,next);
+  if(!chk.ok){alert(chk.msg);return false;}
+  if(chk.back && !confirm(chk.msg))return false;
+  const prev=p.status||'';
+  if(prev===next)return true;
+  p.status=next;p.updatedAt=new Date().toISOString();
+  logProjectActivity(p.id,'status','Durum değişti: '+(prev||'—')+' → '+next,{from:prev,to:next,source:source||''});
+  return true;
+}
+function renderProjectStatusExtra(){
+  const wrap=document.getElementById('prj-status-extra');if(!wrap)return;
+  const status=(document.getElementById('prj-status')||{}).value||'';
+  const spec=statusExtraFieldFor(status);
+  if(!spec){wrap.innerHTML='';wrap.style.display='none';return;}
+  const editId=(document.getElementById('prj-code').dataset.editId)||'';
+  const p=editId?mtpro().projects.find(x=>String(x.id)===String(editId)):null;
+  wrap.style.display='';
+  wrap.innerHTML='<div class="status-extra-box"><div class="status-extra-title">"'+htmlEsc(status)+'" için gerekli bilgiler</div><div class="pro-grid pro-grid-12">'
+    +spec.fields.map(f=>'<div class="form-group span-4"><label>'+htmlEsc(f.label)+'</label><input type="'+f.type+'" id="'+f.id+'" value="'+htmlEsc((p&&p[f.key])||'')+'"></div>').join('')
+    +'</div></div>';
+}
+function collectProjectStatusExtra(rec){
+  const spec=statusExtraFieldFor(rec.status);
+  if(!spec)return;
+  spec.fields.forEach(f=>{const el=document.getElementById(f.id);if(el)rec[f.key]=(el.value||'').trim();});
 }
 function projectKpiFilterArg(v){return String(v||'all').replace(/'/g,'').replace(/"/g,'');}
 function setProjectQuickFilter(filter){
@@ -8760,18 +8879,24 @@ function saveProject(){
   const dateEl=document.getElementById('prj-due');
   const dateMode=(dateEl&&dateEl.dataset.dateMode)==='quote'?'quote':'delivery';
   const wantedStatus=document.getElementById('prj-status').value||'Fiyat Teklifi Bekliyor';
-  Object.assign(rec,{customer,title,owner:document.getElementById('prj-owner').value.trim(),status:wantedStatus,offerAmount:parseDecimalInput(document.getElementById('prj-offer').value)||0,currency:document.getElementById('prj-currency').value||'TRY',rate:parseDecimalInput(document.getElementById('prj-rate').value)||1,note:document.getElementById('prj-note').value.trim(),updatedAt:new Date().toISOString()});
+  Object.assign(rec,{customer,title,owner:document.getElementById('prj-owner').value.trim(),offerAmount:parseDecimalInput(document.getElementById('prj-offer').value)||0,currency:document.getElementById('prj-currency').value||'TRY',rate:parseDecimalInput(document.getElementById('prj-rate').value)||1,note:document.getElementById('prj-note').value.trim(),updatedAt:new Date().toISOString()});
   if(dateMode==='quote')rec.quoteDueDate=(dateEl&&dateEl.value)||'';
   else rec.dueDate=(dateEl&&dateEl.value)||'';
   if(!rec.quoteDueDate && rec.status==='Fiyat Teklifi Bekliyor')rec.quoteDueDate='';
-  if(!p)mtpro().projects.push(rec);
+  if(!rec.status)rec.status=previousStatus||'Fiyat Teklifi Bekliyor';
+  if(!p){mtpro().projects.push(rec);logProjectActivity(rec.id,'create','Proje oluşturuldu: '+(rec.code||''),{customer,title});}
+  // v0.9.0 — Durum ek alanları (ret nedeni, takip tarihi, teslim/irsaliye) geçiş
+  // kuralından ÖNCE okunmalı; aksi halde kural henüz girilmemiş sayar.
+  const statusBefore=rec.status; rec.status=wantedStatus; collectProjectStatusExtra(rec); rec.status=statusBefore;
   if(requiresApprovedQuoteForStatus(wantedStatus) && !rec.approvedQuoteId){
     const rows=quotesForProject(rec.id);
-    if(rows.length){rec.status=previousStatus;saveData(data);clearProjectForm();renderProjects();syncProjectSelects();openApprovedQuoteModal(rec.id,wantedStatus);return;}
+    if(rows.length){rec.status=previousStatus;saveData(data);clearProjectForm();renderProjects();renderProjectActivity();syncProjectSelects();openApprovedQuoteModal(rec.id,wantedStatus);return;}
     alert('Projeyi Onaylandı veya üretim aşamasına almak için önce bu projeye ait teklif kaydı oluşturun.');
     rec.status=previousStatus||'Fiyat Teklifi Bekliyor';
+  }else if(!applyProjectStatusChange(rec,wantedStatus,'form')){
+    saveData(data);renderProjects();renderProjectActivity();syncProjectSelects();return;
   }
-  saveData(data);clearProjectForm();renderProjects();syncProjectSelects();
+  saveData(data);clearProjectForm();renderProjects();renderProjectActivity();syncProjectSelects();
 }
 function updateProjectStatus(id,status){
   if(!projectCanEdit())return denyAction('Proje durumu güncelleme yetkisi gerekir.');
@@ -8781,7 +8906,8 @@ function updateProjectStatus(id,status){
     if(!rows.length){alert('Projeyi Onaylandı veya üretim aşamasına almak için önce bu projeye ait teklif kaydı oluşturun.');renderProjects();return;}
     openApprovedQuoteModal(id,status);return;
   }
-  p.status=status;p.updatedAt=new Date().toISOString();saveData(data);renderProjects();syncProjectSelects();renderProductionTimeline();
+  if(!applyProjectStatusChange(p,status,'liste')){renderProjects();return;}
+  saveData(data);renderProjects();renderProjectActivity();syncProjectSelects();renderProductionTimeline();
 }
 function deleteProject(id){if(!projectCanEdit())return denyAction('Proje silme yetkisi gerekir.');if(!confirm('Proje silinsin mi? Bağlı maliyet ve teklif çalışmaları da silinir.'))return;mtpro().projects=mtpro().projects.filter(p=>String(p.id)!==String(id));mtpro().costs=mtpro().costs.filter(c=>String(c.projectId)!==String(id));mtpro().quotes=mtpro().quotes.filter(q=>String(q.projectId)!==String(id));saveData(data);renderProjects();syncProjectSelects();}
 function quoteDueState(p){
@@ -8916,6 +9042,7 @@ function updateCostTitleOptions(selected){
   if(titleEl && sel.value==='__new__') titleEl.value=nextCostTitle(pid);
 }
 function clearCostFieldsForProject(){
+  _costItems=[];renderCostItems();
   ['cost-edit-id','cost-material','cost-labor-days','cost-display-amount','cost-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   const lr=document.getElementById('cost-labor-rate');if(lr&&!lr.value)lr.value='0';
   const titleEl=document.getElementById('cost-title');if(titleEl)titleEl.value=nextCostTitle(document.getElementById('cost-project')?.value||'');
@@ -8938,8 +9065,66 @@ function onCostProjectChange(){
   updateCostPreview();
   renderProjectCosts();
 }
+/* v0.9.0 — Kalem bazlı maliyet. Kalem girilmezse eski tek tutarlı çalışma
+   aynen korunur; eski kayıtlar bozulmaz. */
+const COST_ITEM_GROUPS=['Malzeme','Satın Alma','İmalat','Motor / Redüktör','Rulman','Pnömatik','Elektrik / Otomasyon','Sac / Profil','Dış Hizmet','Diğer'];
+let _costItems=[];
+function costItemAmount(it){return n(it&&it.qty)*n(it&&it.unitPrice);}
+function costItemsTotal(list){return (list||_costItems).reduce((sum,it)=>sum+costItemAmount(it),0);}
+function costItemsWeight(list){return (list||_costItems).reduce((sum,it)=>sum+n(it&&it.weight)*n(it&&it.qty),0);}
+function addCostItemRow(){
+  _costItems.push({id:makeId('ci'),group:'Malzeme',desc:'',qty:1,unit:'ad',weight:0,unitPrice:0,supplier:''});
+  renderCostItems();
+  const rows=document.querySelectorAll('#cost-items-body tr');
+  const last=rows[rows.length-1]; const inp=last&&last.querySelector('input[data-field="desc"]');
+  if(inp)inp.focus();
+}
+function removeCostItem(id){
+  _costItems=_costItems.filter(x=>String(x.id)!==String(id));
+  renderCostItems();updateCostPreview();
+}
+function onCostItemChange(id,field,value){
+  const it=_costItems.find(x=>String(x.id)===String(id));if(!it)return;
+  it[field]=['qty','weight','unitPrice'].includes(field)?(parseDecimalInput(value)||0):value;
+  const cur=(document.getElementById('cost-currency')||{}).value||'TRY';
+  const amtEl=document.getElementById('ci-amt-'+id);
+  if(amtEl)amtEl.textContent=projectMoney(costItemAmount(it),cur);
+  updateCostPreview();
+}
+function updateCostItemsTotalLabel(){
+  const el=document.getElementById('cost-items-total');if(!el)return;
+  const cur=(document.getElementById('cost-currency')||{}).value||'TRY';
+  if(!_costItems.length){el.textContent='';return;}
+  const w=costItemsWeight();
+  el.innerHTML=_costItems.length+' kalem · Toplam '+projectMoney(costItemsTotal(),cur)+(w>0?(' · '+w.toLocaleString('tr-TR',{maximumFractionDigits:2})+' kg'):'');
+}
+function renderCostItems(){
+  const body=document.getElementById('cost-items-body');if(!body)return;
+  const cur=(document.getElementById('cost-currency')||{}).value||'TRY';
+  if(!_costItems.length){
+    body.innerHTML='<tr><td colspan="9" style="padding:10px;color:var(--text-muted);font-size:12px">Kalem yok. İstersen yukarıdaki <strong>Toplam Maliyet</strong> alanına tek tutar da girebilirsin.</td></tr>';
+    updateCostItemsTotalLabel();return;
+  }
+  body.innerHTML=_costItems.map(it=>{
+    const g=COST_ITEM_GROUPS.map(x=>'<option value="'+htmlEsc(x)+'"'+(x===it.group?' selected':'')+'>'+htmlEsc(x)+'</option>').join('');
+    const cid=htmlEsc(String(it.id));
+    return '<tr>'
+      +'<td><select onchange="onCostItemChange(&quot;'+cid+'&quot;,&quot;group&quot;,this.value)">'+g+'</select></td>'
+      +'<td><input data-field="desc" value="'+htmlEsc(it.desc||'')+'" placeholder="Kalem açıklaması" oninput="onCostItemChange(&quot;'+cid+'&quot;,&quot;desc&quot;,this.value)"></td>'
+      +'<td><input type="number" min="0" step="0.01" value="'+htmlEsc(String(it.qty==null?0:it.qty))+'" oninput="onCostItemChange(&quot;'+cid+'&quot;,&quot;qty&quot;,this.value)"></td>'
+      +'<td><input value="'+htmlEsc(it.unit||'')+'" placeholder="ad" oninput="onCostItemChange(&quot;'+cid+'&quot;,&quot;unit&quot;,this.value)"></td>'
+      +'<td><input type="number" min="0" step="0.01" value="'+htmlEsc(String(it.weight==null?0:it.weight))+'" oninput="onCostItemChange(&quot;'+cid+'&quot;,&quot;weight&quot;,this.value)"></td>'
+      +'<td><input type="number" min="0" step="0.01" value="'+htmlEsc(String(it.unitPrice==null?0:it.unitPrice))+'" oninput="onCostItemChange(&quot;'+cid+'&quot;,&quot;unitPrice&quot;,this.value)"></td>'
+      +'<td class="ci-amount" id="ci-amt-'+cid+'">'+projectMoney(costItemAmount(it),cur)+'</td>'
+      +'<td><input value="'+htmlEsc(it.supplier||'')+'" placeholder="Tedarikçi" oninput="onCostItemChange(&quot;'+cid+'&quot;,&quot;supplier&quot;,this.value)"></td>'
+      +'<td><button type="button" class="btn btn-sm btn-del" title="Kalemi sil" onclick="removeCostItem(&quot;'+cid+'&quot;)">✕</button></td>'
+      +'</tr>';
+  }).join('');
+  updateCostItemsTotalLabel();
+}
 function costCalc(){
-  const material=parseDecimalInput(document.getElementById('cost-material')?.value)||0;
+  // Kalem girilmişse toplam maliyet kalemlerden hesaplanır, elle girilen tutar yok sayılır.
+  const material=_costItems.length?costItemsTotal():(parseDecimalInput(document.getElementById('cost-material')?.value)||0);
   const purchase=0;
   const days=parseDecimalInput(document.getElementById('cost-labor-days')?.value)||0;
   const rate=parseDecimalInput(document.getElementById('cost-labor-rate')?.value)||0;
@@ -8954,7 +9139,7 @@ function costCalc(){
   // Pazarlık payı indirim değildir; müşteriye sunulan teklifin üzerine eklenen indirim tamponudur.
   const discountAmt=offerBefore*discount/100;
   const calculatedOffer=offerBefore+discountAmt;
-  return{material,purchase,days,rate,labor,total:subtotal,baseCost:material+purchase,profit,profitAmt,discount,discountAmt,offer:calculatedOffer,calculatedOffer,displayOfferAmount};
+  return{material,purchase,days,rate,labor,total:subtotal,baseCost:material+purchase,profit,profitAmt,discount,discountAmt,offer:calculatedOffer,calculatedOffer,displayOfferAmount,items:_costItems.map(it=>Object.assign({},it)),itemsWeight:costItemsWeight()};
 }
 function projectCostComputedOffer(c){
   if(!c)return 0;
@@ -9022,6 +9207,12 @@ function openQuoteModalFromCost(costId){
 }
 function updateCostPreview(){
   const c=costCalc(),cur=document.getElementById('cost-currency')?.value||'TRY';
+  const matEl=document.getElementById('cost-material');
+  if(matEl){
+    if(_costItems.length){matEl.value=Math.round(c.baseCost*100)/100;matEl.readOnly=true;matEl.style.opacity='0.7';matEl.title='Kalemlerden hesaplanıyor';}
+    else {matEl.readOnly=false;matEl.style.opacity='1';matEl.title='';}
+  }
+  updateCostItemsTotalLabel();
   const laborEl=document.getElementById('cost-labor-total');if(laborEl)laborEl.value=projectMoney(c.labor,cur);
   const profitEl=document.getElementById('cost-profit-total');if(profitEl)profitEl.value=projectMoney(c.profitAmt,cur);
   const discEl=document.getElementById('cost-discount-total');if(discEl)discEl.value=projectMoney(c.discountAmt,cur);
@@ -9054,6 +9245,9 @@ function saveCostStudy(){
   if(idx>=0)arr[idx]=Object.assign({},arr[idx],rec);else arr.push(rec);
   const p=mtpro().projects.find(x=>String(x.id)===String(pid));
   if(p){p.offerAmount=projectCostDisplayOffer(rec);p.calculatedOfferAmount=projectCostComputedOffer(rec);p.currency=rec.currency;p.selectedCostId=rec.id;p.updatedAt=new Date().toISOString();}
+  logProjectActivity(pid,'cost',(editId?'Maliyet çalışması güncellendi: ':'Maliyet çalışması oluşturuldu: ')+title
+    +' · maliyet '+projectMoney(rec.baseCost,rec.currency)+' · nihai '+projectMoney(projectCostDisplayOffer(rec),rec.currency)
+    +((rec.items&&rec.items.length)?(' · '+rec.items.length+' kalem'):''),{costId:rec.id,items:(rec.items||[]).length});
   const syncedQuote=syncActiveQuoteFromCost(rec.id);
   saveData(data);renderProjectCosts();renderProjects();syncProjectSelects();
   document.getElementById('cost-project').value=pid;
@@ -9074,6 +9268,8 @@ function editCostStudy(id){
   updateCostProjectSubjectOnly();
   updateCostTitleOptions(c.id);
   const titleEl=document.getElementById('cost-title');if(titleEl)titleEl.value=c.title||'';
+  _costItems=Array.isArray(c.items)?c.items.map(it=>Object.assign({},it)):[];
+  renderCostItems();
   document.getElementById('cost-material').value=c.baseCost!==undefined?c.baseCost:(c.material||0);
   document.getElementById('cost-labor-days').value=c.days||0;
   document.getElementById('cost-labor-rate').value=c.rate||0;
@@ -9497,8 +9693,8 @@ function renderProjectFinance(){syncProjectSelects();const sel=document.getEleme
 function renderProjectModulePage(id){
   mtpro();syncProjectSelects();
   if(id==='projectMeetings'){const d=document.getElementById('mtg-date');if(d&&!d.value)d.value=todayYmd();renderProjectMeetings();}
-  if(id==='projects'){fillProjectForm(null);renderProjects();}
-  if(id==='projectCosts')renderProjectCosts();
+  if(id==='projects'){fillProjectForm(null);renderProjects();renderProjectStatusExtra();renderProjectActivity();}
+  if(id==='projectCosts'){renderCostItems();renderProjectCosts();}
   if(id==='projectProduction')renderProductionTimeline();
   if(id==='projectFiles')renderProjectFiles();
   if(id==='projectFinance'){const ad=document.getElementById('pfin-advance-date');if(ad&&!ad.value)ad.value=todayYmd();renderProjectFinance();}

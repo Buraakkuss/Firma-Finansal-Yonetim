@@ -1,0 +1,37 @@
+NakitPilot v0.9.6 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu olduğu için dosya yüklemeye gerek yoktur.
+- Uygulamayı ?v=0.9.6 ile açın; görünüm eski kalırsa Ctrl + F5 (Mac: Cmd + Shift + R).
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Yeni akış: para nasıl ilerliyor
+
+1) Teklif onaylanır.
+2) Proje Finans Durumu > Proje Ödeme Planı Oluştur ile avans ve kalan ödeme
+   kalemleri oluşturulur. Bunlar finans modülünde GELECEKTEKİ KESİN GELİR olarak
+   görünür ve nakit akışı projeksiyonuna girer.
+3) İş teslim edilir, fatura kesilir (Fatura Kaydı kartı).
+4) Para geldiğinde Tahsilat Kaydı kartından girilir:
+   - Faturayı seçin
+   - TAHSİL EDİLEN HESAP alanından paranın girdiği banka hesabını seçin
+   - Varsa ÖDEME PLANI KALEMİ alanından ilgili taksiti seçin
+5) Kaydettiğinizde sistem otomatik olarak:
+   - Tamamlanmış Gelir kaydı oluşturur
+   - Seçilen banka hesabının bakiyesini artırır
+   - Ödeme planındaki beklenen gelir kalemini kapatır
+   - Fatura kalan alacağını düşürür
+   - Tüm faturalar kapandıysa projeyi "Tahsilat Tamamlandı" yapar
+
+Önemli
+- Artık proje tahsilatlarını Günlük Kayıt ekranından AYRICA girmeyin.
+  İki kez girerseniz gelir iki kez sayılır. Tahsilat sadece Proje Finans
+  Durumu ekranından girilir.
+- Tahsilat silerseniz bağlı gelir kaydı da otomatik geri alınır.
+
+Eski kayıtlar
+- v0.9.6 öncesinde girilmiş tahsilatlar finans modülüne işlenmemiştir.
+  Tahsilat tablosunda "Finansa işlenmemiş" etiketiyle görünürler.
+  Düzenleyip kaydettiğinizde gelir kaydı oluşur.

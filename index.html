@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.9.5">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.9.5" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.9.5">
-  <title>NakitPilot Marmara Teknik — v0.9.5</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.9.6">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.9.6" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.9.6">
+  <title>NakitPilot Marmara Teknik — v0.9.6</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2527,7 +2527,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.9.5</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.9.6</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -3397,7 +3397,9 @@
             <div class="form-group span-2"><label>Tutar</label><input type="number" id="col-amount" min="0" step="0.01" placeholder="0.00"></div>
             <div class="form-group span-2"><label>Para Birimi</label><select id="col-currency" onchange="onCollectionCurrencyChange()"><option value="TRY">TL</option><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
             <div class="form-group span-2"><label>Kur</label><input type="number" id="col-rate" min="0" step="0.0001" value="1"></div>
-            <div class="form-group span-7"><label>Açıklama</label><input id="col-note" placeholder="Örn. Banka havalesi, Garanti TL hesabı"></div>
+            <div class="form-group span-4"><label>Tahsil Edilen Hesap</label><select id="col-account"></select></div>
+            <div class="form-group span-4"><label>Ödeme Planı Kalemi <span style="color:var(--text-hint)">(opsiyonel)</span></label><select id="col-fixed-link"></select></div>
+            <div class="form-group span-4"><label>Açıklama</label><input id="col-note" placeholder="Örn. Banka havalesi"></div>
             <div class="form-action span-3"><button class="btn btn-primary" onclick="saveProjectCollection()">💵 Tahsilatı Kaydet</button></div>
             <div class="form-action span-2"><button class="btn" onclick="clearCollectionForm()">Temizle</button></div>
           </div>
@@ -4176,7 +4178,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.9.5';
+const APP_VERSION='0.9.6';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -10174,7 +10176,8 @@ function createProjectPaymentPlan(){
   const total=parseDecimalInput(document.getElementById('pfin-total').value)||Number(p.offerAmount||0);const cur=document.getElementById('pfin-currency').value||p.currency||'TRY';const rate=parseDecimalInput(document.getElementById('pfin-rate').value)||Number(p.rate||1)||1;const advPct=parseDecimalInput(document.getElementById('pfin-advance').value)||0;const advDate=document.getElementById('pfin-advance-date').value||todayYmd();const balDate=document.getElementById('pfin-balance-date').value||p.dueDate||advDate;if(total<=0){alert('Teklif tutarı girin.');return;}
   p.offerAmount=total;p.currency=cur;p.rate=rate;p.paymentPlan=[];
   function addPay(label,amt,date){if(amt<=0)return;const id=makeId('fix');const rec=withMoneyMeta({id,description:`${p.code} ${label}`,amount:amt,category:'PROJE TAHSİLATI',fixedType:'income',period:'oneoff',budgetType:'oneoff',startDate:date,endDate:null},'pfin');rec.currency=cur;rec.rate=rate;rec.amountTry=amt*rate;data.fixed.push(rec);p.paymentPlan.push({label,amount:amt,currency:cur,rate,date,fixedId:id});}
-  addPay('AVANS',total*advPct/100,advDate);addPay('KALAN ÖDEME',total*(100-advPct)/100,balDate);p.status=p.status==='Fiyat Teklifi Bekliyor'?'Onaylandı':p.status;p.paymentNote=document.getElementById('pfin-note').value.trim();saveData(data);populateIncomeFixedLinkSelect();renderProjectFinance();renderProjects();alert('Proje ödeme planı finans modülüne aktarıldı.');
+  addPay('AVANS',total*advPct/100,advDate);addPay('KALAN ÖDEME',total*(100-advPct)/100,balDate);if(p.status==='Fiyat Teklifi Bekliyor')applyProjectStatusChange(p,'Onaylandı','ödeme planı');
+  p.paymentNote=document.getElementById('pfin-note').value.trim();saveData(data);populateIncomeFixedLinkSelect();renderProjectFinance();renderProjects();alert('Proje ödeme planı finans modülüne aktarıldı.');
 }
 /* ──────── v0.9.2 — FATURA VE TAHSİLAT TAKİBİ ────────
    Fatura ve tahsilat kayıtları projeye bağlıdır. Kalan alacak fatura toplamı
@@ -10305,6 +10308,73 @@ function deleteProjectInvoice(id){
   logProjectActivity(p.id,'delete','Fatura silindi: '+(inv.no||'')+' · '+fmtCurrency(inv.amount,inv.currency),{invoiceId:id});
   saveData(data);renderProjectFinance();renderProjects();renderProjectActivity();
 }
+/* ──────── v0.9.6 — PROJE ↔ FİNANS KÖPRÜSÜ ────────
+   Proje tahsilatı yalnız projede kalmaz: şirket defterine Tamamlanmış Gelir
+   olarak yazılır, seçilen banka hesabına/kasaya işler ve varsa ödeme planındaki
+   beklenen gelir kalemini kapatır. Böylece aynı para iki kez sayılmaz
+   (iş kuralı 12 ve 14) ve nakit akışı projeksiyonu gerçeğe döner. */
+function collectionPaymentOptions(currency,selected){
+  return paymentMethodOptions('income',currency||'TRY',selected||'cash');
+}
+function projectPlanFixedItems(p){
+  const ids=((p&&p.paymentPlan)||[]).map(x=>String(x.fixedId||'')).filter(Boolean);
+  return (data.fixed||[]).filter(f=>ids.includes(String(f.id)));
+}
+function fillCollectionSelectors(p){
+  const cur=(document.getElementById('col-currency')||{}).value||'TRY';
+  const acc=document.getElementById('col-account');
+  if(acc){
+    const keep=acc.value||'cash';
+    acc.innerHTML=collectionPaymentOptions(cur,keep);
+    if(!Array.from(acc.options).some(o=>o.value===keep))acc.value='cash';
+  }
+  const link=document.getElementById('col-fixed-link');
+  if(link){
+    const keep=link.value||'';
+    const rows=projectPlanFixedItems(p);
+    link.innerHTML='<option value="">Ödeme planına bağlama</option>'
+      +rows.map(f=>'<option value="'+htmlEsc(String(f.id))+'"'+(String(f.id)===String(keep)?' selected':'')+'>'+htmlEsc(f.description||'')+' · '+fmtTL(amountTL(f))+'</option>').join('');
+  }
+}
+/* Tahsilat kaydından şirket gelir kaydını üretir veya günceller. */
+function syncCollectionIncome(p,col,inv){
+  if(!Array.isArray(data.income))data.income=[];
+  const idx=data.income.findIndex(r=>String(r.collectionId||'')===String(col.id));
+  const method=col.account||'cash';
+  const amt=n(col.amount), rate=n(col.rate)||1;
+  const rec={
+    id: idx>=0 ? data.income[idx].id : makeId('inc'),
+    date: col.date,
+    description: withProjectCode(col.note||('Tahsilat'+(inv&&inv.no?(' · fatura '+inv.no):'')),p.code),
+    amount: amt, currency: col.currency||'TRY', rate: rate,
+    amountTry: Math.round(amt*rate*100)/100,
+    category: 'PROJE TAHSİLATI',
+    paymentAccount: method,
+    paymentAllocations: [{id:makeId('alloc'),method:method,amount:amt,currency:safeCurrency(col.currency||'TRY'),rate:1,accountAmount:amt}],
+    projectId: p.id, projectCode: p.code||'',
+    invoiceId: inv?inv.id:'', collectionId: col.id,
+    createdBy: (currentUser&&currentUser.email)||'',
+    createdAt: idx>=0 ? (data.income[idx].createdAt||new Date().toISOString()) : new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  if(col.fixedLinkId){
+    const f=(data.fixed||[]).find(x=>String(x.id)===String(col.fixedLinkId));
+    rec.fixedLinkId=String(col.fixedLinkId);
+    rec.fixedLinkName=f?(f.description||''):'';
+    rec.fixedLinkCloseMode=col.fixedLinkCloseMode==='full'?'full':'partial';
+    if(col.date)rec.fixedLinkMonth=String(col.date).slice(0,7);
+  }
+  if(idx>=0)data.income[idx]=rec; else data.income.push(rec);
+  col.incomeId=rec.id;
+  return rec;
+}
+/* Tahsilat silinince şirket gelir kaydı da geri alınır (iş kuralı 10). */
+function removeCollectionIncome(col){
+  if(!col||!Array.isArray(data.income))return 0;
+  const before=data.income.length;
+  data.income=data.income.filter(r=>String(r.collectionId||'')!==String(col.id));
+  return before-data.income.length;
+}
 function saveProjectCollection(){
   if(!projectFinanceCanEdit())return denyAction('Tahsilat kaydı için yönetici veya muhasebe yetkisi gerekir.');
   const p=selectedFinanceProject();if(!p){alert('Proje seçin.');return;}
@@ -10323,14 +10393,28 @@ function saveProjectCollection(){
   const rec={id:editId||makeId('col'),invoiceId,date,amount,currency:cur,rate,
     note:withProjectCode((document.getElementById('col-note').value||'').trim(),p.code),
     projectCode:p.code||'',
+    account:(document.getElementById('col-account')||{}).value||'cash',
+    fixedLinkId:(document.getElementById('col-fixed-link')||{}).value||'',
+    fixedLinkCloseMode:'partial',
     updatedAt:new Date().toISOString(),updatedBy:(currentUser&&currentUser.email)||''};
+  // Bu tahsilat faturanın kalanını kapatıyorsa ödeme planı kalemi de tamamen kapanır.
+  if(rec.fixedLinkId){
+    const already=invoiceCollectedTotal(p,invoiceId)-(editId?(function(){const o=projectCollections(p).find(x=>String(x.id)===String(editId));return o?invoiceTL(o):0;})():0);
+    if((already+amount*rate)>=invoiceTL(inv)-0.01)rec.fixedLinkCloseMode='full';
+  }
   if(!Array.isArray(p.collections))p.collections=[];
   const idx=p.collections.findIndex(x=>String(x.id)===String(editId));
   if(idx>=0)p.collections[idx]=Object.assign({},p.collections[idx],rec);
   else {rec.createdAt=new Date().toISOString();p.collections.push(rec);}
-  logProjectActivity(p.id,'collection',(editId?'Tahsilat güncellendi: ':'Tahsilat kaydedildi: ')+fmtCurrency(amount,cur)+' · fatura '+(inv.no||''),{collectionId:rec.id,invoiceId});
+  const incomeRec=syncCollectionIncome(p,idx>=0?p.collections[idx]:p.collections[p.collections.length-1],inv);
+  logProjectActivity(p.id,'collection',(editId?'Tahsilat güncellendi: ':'Tahsilat kaydedildi: ')+fmtCurrency(amount,cur)
+    +' · fatura '+(inv.no||'')+' · '+paymentMethodLabel(rec.account)
+    +' · şirket gelirine işlendi',{collectionId:rec.id,invoiceId,incomeId:incomeRec.id});
   syncProjectCollectionStatus(p);
   saveData(data);clearCollectionForm();renderProjectFinance();renderProjects();renderProjectActivity();
+  if(typeof renderHistory==='function')renderHistory();
+  if(typeof populateIncomeFixedLinkSelect==='function')populateIncomeFixedLinkSelect();
+  if(typeof renderBankingDashboard==='function')renderBankingDashboard();
 }
 function clearCollectionForm(){
   const a=document.getElementById('col-amount');if(a)a.value='';
@@ -10348,6 +10432,9 @@ function editProjectCollection(id){
   document.getElementById('col-amount').value=c.amount||'';
   document.getElementById('col-currency').value=c.currency||'TRY';
   document.getElementById('col-rate').value=c.rate||1;
+  fillCollectionSelectors(p);
+  const accEl=document.getElementById('col-account');if(accEl)accEl.value=c.account||'cash';
+  const lnkEl=document.getElementById('col-fixed-link');if(lnkEl)lnkEl.value=c.fixedLinkId||'';
   document.getElementById('col-note').value=c.note||'';
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -10356,9 +10443,13 @@ function deleteProjectCollection(id){
   const p=selectedFinanceProject();if(!p)return;
   const c=projectCollections(p).find(x=>String(x.id)===String(id));if(!c)return;
   if(!confirm('Tahsilat kaydı silinsin mi?'))return;
+  const removed=removeCollectionIncome(c);
   p.collections=projectCollections(p).filter(x=>String(x.id)!==String(id));
-  logProjectActivity(p.id,'delete','Tahsilat silindi: '+fmtCurrency(c.amount,c.currency),{collectionId:id});
+  logProjectActivity(p.id,'delete','Tahsilat silindi: '+fmtCurrency(c.amount,c.currency)
+    +(removed?' · şirket gelir kaydı da geri alındı':''),{collectionId:id});
   saveData(data);renderProjectFinance();renderProjects();renderProjectActivity();
+  if(typeof renderHistory==='function')renderHistory();
+  if(typeof renderBankingDashboard==='function')renderBankingDashboard();
 }
 function onInvoiceCurrencyChange(){
   const c=(document.getElementById('inv-currency')||{}).value||'TRY';
@@ -10368,6 +10459,7 @@ function onInvoiceCurrencyChange(){
 }
 function onCollectionCurrencyChange(){
   const c=(document.getElementById('col-currency')||{}).value||'TRY';
+  fillCollectionSelectors(selectedFinanceProject());
   const r=document.getElementById('col-rate');if(!r)return;
   if(c==='TRY'){r.value='1';r.readOnly=true;r.style.opacity='0.65';}
   else{r.readOnly=false;r.style.opacity='1';if(!parseFloat(r.value)||parseFloat(r.value)<=1)r.value='';}
@@ -10412,6 +10504,7 @@ function renderProjectInvoicing(){
   renderPaymentAlerts();
   const p=selectedFinanceProject();
   applyProjectCodeDefaults(p);
+  fillCollectionSelectors(p);
   const invWrap=document.getElementById('invoice-table');
   const colWrap=document.getElementById('collection-table');
   const colSel=document.getElementById('col-invoice');
@@ -10448,12 +10541,15 @@ function renderProjectInvoicing(){
   if(!cols.length){
     colWrap.innerHTML='<div class="empty">Bu projede henüz tahsilat kaydı yok.</div>';
   }else{
-    colWrap.innerHTML='<div class="table-wrap"><table><thead><tr><th>Tarih</th><th>Fatura</th><th style="text-align:right">Tutar</th><th>Açıklama</th><th></th></tr></thead><tbody>'
+    colWrap.innerHTML='<div class="table-wrap"><table><thead><tr><th>Tarih</th><th>Fatura</th><th style="text-align:right">Tutar</th><th>Açıklama / Hesap</th><th>Finans</th><th></th></tr></thead><tbody>'
       +cols.map(c=>{
         const inv=projectInvoices(p).find(x=>String(x.id)===String(c.invoiceId));
         return '<tr><td>'+htmlEsc(dmy(c.date))+'</td><td>'+htmlEsc(inv?(inv.no||''):'—')+'</td>'
           +'<td style="text-align:right;font-weight:700;color:var(--income)">'+fmtCurrency(c.amount,c.currency)+(c.currency!=='TRY'?('<div style="font-size:11px;color:var(--text-muted);font-weight:400">'+fmtTL(invoiceTL(c))+'</div>'):'')+'</td>'
-          +'<td>'+htmlEsc(c.note||'')+'</td>'
+          +'<td>'+htmlEsc(c.note||'')+'<div style="font-size:11px;color:var(--text-muted)">'+htmlEsc(paymentMethodLabel(c.account||'cash'))+'</div></td>'
+          +'<td>'+((data.income||[]).some(r=>String(r.collectionId||'')===String(c.id))
+              ?'<span class="project-badge green">Gelire işlendi</span>'
+              :'<span class="project-badge gray">Finansa işlenmemiş</span>')+'</td>'
           +'<td><div class="project-action-row">'+(projectFinanceCanEdit()?'<button class="btn btn-sm" onclick="editProjectCollection(&quot;'+htmlEsc(c.id)+'&quot;)">Düzenle</button><button class="btn btn-sm btn-del" onclick="deleteProjectCollection(&quot;'+htmlEsc(c.id)+'&quot;)">🗑</button>':'')+'</div></td></tr>';
       }).join('')
       +'</tbody></table></div>';

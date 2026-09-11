@@ -128,4 +128,12 @@
 - Fatura ve tahsilat açıklamaları proje koduyla ön doldurulur; kayıtta kod yoksa
   başa eklenir, varsa tekrar eklenmez. Kayıtlara ayrıca projectCode alanı yazılır.
 
-Güncel baz sürüm: **v0.9.5**
+## v0.9.6
+- Proje ile finans modülü birbirine bağlandı. Proje tahsilatı artık şirketin
+  gelir defterine yazılıyor, seçilen banka hesabına işliyor ve ödeme planındaki
+  beklenen gelir kalemini kapatıyor.
+- Tahsilat formuna "Tahsil Edilen Hesap" ve "Ödeme Planı Kalemi" alanları eklendi.
+- Tahsilat düzenlenince bağlı gelir güncelleniyor, silinince geri alınıyor.
+- Ödeme planı oluşturulurken durum değişikliği artık geçiş kurallarından geçiyor.
+
+Güncel baz sürüm: **v0.9.6**

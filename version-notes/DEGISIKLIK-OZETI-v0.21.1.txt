@@ -1,0 +1,42 @@
+NakitPilot v0.21.1 — Küçük düzeltmeler (davet + şifre sıfırlama mesajları)
+
+1) DAVETLİ ADRESİN HESABI ZATEN VARSA
+   Davet bağlantısını açan kişi, o e-posta ile daha önce hesap açılmışsa
+   "Bu e-posta ile zaten bir hesap var" uyarısı alıyordu ama ne yapacağı net
+   değildi. Artık mesaj şunu söylüyor:
+   "Aşağıdan o hesabın şifresiyle giriş yapın — giriş yaptığınız anda davet
+    uygulanacak ve kaydınız yöneticinin onayına düşecek."
+   Ekran giriş sekmesine geçiyor, e-posta doluyor ve imleç şifre alanına gidiyor.
+
+2) ŞİFRE SIFIRLAMA BAŞARI MESAJI DAHA DÜRÜST
+   İstek Supabase'e ulaştığında "mail gönderildi" demek yanıltıcıydı: Supabase'in
+   YERLEŞİK mail gönderimi yalnız proje üyelerinin adresine ve saatte birkaç mail
+   sınırıyla çalışır; başka adreslere hiç gitmez. Mesaj artık bunu söylüyor ve
+   yöneticiyi doğru yere yönlendiriyor:
+   Supabase → Project Settings → Authentication → SMTP Settings.
+
+MAİL HİÇ GELMİYORSA (yönetici için kesin çözüm)
+   Supabase'in yerleşik mail servisi üretim için değildir. Kendi alan adınızın
+   mail sunucusunu tanımlayın:
+     Supabase → Project Settings → Authentication → SMTP Settings → Enable
+       Host     : mail.marmarateknikmakine.com.tr (hosting panelinizdeki sunucu)
+       Port     : 465 (SSL) veya 587 (STARTTLS)
+       Username : info@marmarateknikmakine.com.tr
+       Password : o posta kutusunun şifresi
+       Sender   : info@marmarateknikmakine.com.tr / NakitPilot
+     Kaydettikten sonra Authentication → Rate Limits bölümünde saatlik mail
+     sınırını yükseltin (örn. 30).
+   Ayrıca Authentication → URL Configuration bölümünde Site URL ve Redirect URLs
+   listesinde uygulamanın adresi bulunmalıdır:
+       https://www.marmarateknikmakine.com.tr/finans-yonetim/
+       https://www.marmarateknikmakine.com.tr/finans-yonetim/**
+
+SMTP KURULMADAN ÇALIŞTIRMANIN YOLU (mail gerektirmeyen akış)
+   a. Supabase → Authentication → Providers → Email → "Confirm email" KAPALI
+      olsun. Davet bağlantısı zaten adresin doğruluğunu garanti ettiği için
+      doğrulama mailine gerek kalmaz; kişi kayıt olur olmaz talebi yöneticiye
+      düşer.
+   b. Şifresini bilmeyen/unutmuş kullanıcı için: Supabase → Authentication →
+      Users → Add user → Create new user ile e-posta ve şifreyi siz belirleyip
+      "Auto Confirm User" seçeneğini işaretleyin; şifreyi kişiye verin.
+      Bu yolla hiç mail göndermeden kullanıcı sisteme girebilir.

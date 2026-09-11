@@ -2,7 +2,7 @@
 
 Marmara Teknik için çok firmalı web tabanlı finans ve proje takip uygulaması.
 <<<<<<< HEAD
-Güncel sürüm: **v0.21.0**. Tek HTML (vanilla JS + CSS) + Supabase.
+Güncel sürüm: **v0.21.1**. Tek HTML (vanilla JS + CSS) + Supabase.
 =======
 Güncel sürüm: **v0.18.0**. Tek HTML (vanilla JS + CSS) + Supabase.
 >>>>>>> origin/main

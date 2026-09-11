@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.16.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.16.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.16.0">
-  <title>NakitPilot Marmara Teknik — v0.16.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.17.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.17.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.17.0">
+  <title>NakitPilot Marmara Teknik — v0.17.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2621,7 +2621,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.16.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.17.0</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -2650,6 +2650,12 @@
         <button class="nav-btn" onclick="showPage('projectProduction',this)">Üretim Takibi</button>
         <button class="nav-btn" onclick="showPage('projectFiles',this)">Proje Dosyaları</button>
         <button class="nav-btn" onclick="showPage('projectFinance',this)">Proje Finans Durumu</button>
+      </div>
+      <button class="nav-btn nav-parent" id="nav-parent-engineering" data-navgroup="engineering" onclick="toggleNavGroup('engineering')" type="button">
+        <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18"/><path d="M6 21V9l6-5 6 5v12"/><path d="M10 21v-6h4v6"/></svg>Mühendislik</span><span class="chev">›</span>
+      </button>
+      <div class="nav-sub-group" id="navgroup-engineering">
+        <button class="nav-btn" onclick="showPage('weightCalc',this)">Ağırlık Hesaplama</button>
       </div>
       <button class="nav-btn nav-parent" id="nav-parent-purchase" data-navgroup="purchase" onclick="toggleNavGroup('purchase')" type="button">
         <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h6M9 16h6"/></svg>Satın Alma</span><span class="chev">›</span>
@@ -3513,6 +3519,45 @@
 
       <!-- AI ASSISTANT -->
       <!-- CARİ: ALACAKLAR -->
+      <!-- MÜHENDİSLİK: AĞIRLIK HESAPLAMA -->
+      <div id="page-weightCalc" class="page form-page-clean pro-layout-page">
+        <div class="card">
+          <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Ağırlık Hesaplama</div>
+          <div class="section-sub">Profil, sac, lama, boru, köşebent gibi ürünlerin malzeme cinsine ve ölçülerine göre ağırlığını hesaplar. Ölçüler <strong>milimetre</strong>, yoğunluk <strong>kg/dm³</strong>, sonuç <strong>kilogram</strong> olarak verilir.</div>
+          <div class="pro-grid pro-grid-12">
+            <div class="form-group span-4"><label>Malzeme</label><select id="eng-material" onchange="onEngMaterialChange()"></select></div>
+            <div class="form-group span-2"><label>Yoğunluk (kg/dm³)</label><input type="number" id="eng-density" min="0" step="0.01" oninput="engCalc()"></div>
+            <div class="form-group span-4"><label>Kesit Tipi</label><select id="eng-section" onchange="onEngSectionChange()"></select></div>
+            <div class="form-group span-2"><label>Adet</label><input type="number" id="eng-qty" min="1" step="1" value="1" oninput="engCalc()"></div>
+          </div>
+          <div class="two-col" style="align-items:start;gap:18px;margin-top:6px">
+            <div>
+              <div id="eng-fields"></div>
+            </div>
+            <div style="text-align:center;padding:10px 0">
+              <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px">Kesit Şeması</div>
+              <div id="eng-svg"></div>
+            </div>
+          </div>
+          <div class="project-kpi-grid" id="eng-result" style="margin-top:10px"></div>
+          <div id="eng-detail" style="margin-top:12px"></div>
+          <div class="pro-grid pro-grid-12" style="margin-top:6px">
+            <div class="form-action span-3"><button class="btn btn-primary" onclick="engAddRow()">➕ Listeye Ekle</button></div>
+            <div class="form-group span-3"><label>Malzeme Fiyatı (TL/kg)</label><input type="number" id="eng-price" min="0" step="0.01" placeholder="Opsiyonel" oninput="renderEngList()"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📋 Hesap Listesi</div>
+          <div class="section-sub">Birden fazla kalemi listeye ekleyip toplam ağırlığı görebilirsiniz. Malzeme fiyatı girerseniz tutar da hesaplanır. Liste yalnız bu ekran açıkken durur, kaydedilmez.</div>
+          <div class="pro-grid pro-grid-12" style="margin-bottom:4px">
+            <div class="form-action span-3"><button class="btn" onclick="engCopyList()">📄 Listeyi Kopyala</button></div>
+            <div class="form-action span-2"><button class="btn btn-del" onclick="engClearList()">Listeyi Temizle</button></div>
+            <div class="form-group span-7" style="display:flex;align-items:flex-end"><div class="section-sub" id="eng-list-total" style="margin:0"></div></div>
+          </div>
+          <div id="eng-list"></div>
+        </div>
+      </div>
+
       <!-- KULLANIM KILAVUZU -->
       <div id="page-guide" class="page form-page-clean pro-layout-page">
         <div class="guide-search-bar">
@@ -3524,6 +3569,7 @@
           <div class="guide-toc" id="guide-toc"></div>
         </div>
         <div id="guide-body">
+      
       <section class="guide-sec" id="gs-1"><h2><span class="gnum">1</span>Başlarken</h2><p class="guide-lead">Ekranın yapısı, menü ve temel kavramlar.</p><div class="guide-item"><h3>Ekran nasıl bölünmüş?</h3><p>Sol tarafta <strong>menü</strong>, üstte <strong>başlık çubuğu</strong>, ortada <strong>çalışma alanı</strong> vardır. Menüdeki başlıklara basınca o modülün ekranları açılır; aynı anda tek başlık açık kalır.</p><figure class="guide-shot"><div class="gimg"><img src="guide/02-menu.jpg" alt="Sol menü" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Özet Paneli — firmanın genel durumu. Uygulama buradan açılır.</li><li>Kullanım Kılavuzu — şu an okuduğunuz ekran.</li><li>Modül başlıkları — Finans, Proje Takip, Satın Alma, Cari Hesaplar, Raporlar, Ayarlar, Yönetim.</li><li>Başlığa basınca alt ekranlar açılır; başka başlık açılınca önceki kapanır.</li></ol><div class="guide-note">Yetkiniz olmayan modül menüde <strong>hiç görünmez</strong>. Menüde bir başlık yoksa o modüle erişiminiz yok demektir; yöneticinizden isteyin.</div></div><div class="guide-item"><h3>Bu sistem ne yapar, ne yapmaz</h3><p>NakitPilot bir <strong>takip ve kontrol</strong> sistemidir.</p><div class="guide-ok"><strong>Yapar:</strong> Proje sürecini baştan sona izler, para giriş-çıkışını banka bazında tutar, alacak-borç yaşlandırması yapar, teklif ve satın alma belgesi üretir, kârlılığı hesaplar.</div><div class="guide-warn"><strong>Yapmaz:</strong> Fatura kesmez, e-fatura göndermez, irsaliye düzenlemez. Bu işler <strong>Logo İşbaşı</strong>'nda yapılır. Buraya Logo'da kesilen faturanın <strong>numarası ve tutarı</strong> takip için girilir.</div><p>Yani akış şudur: Logo'da faturayı kesersiniz → NakitPilot'a fatura numarasını girersiniz → para gelince tahsilatı girip fatura ile eşleştirirsiniz → proje kapanır ve kayıtta kalır.</p></div><div class="guide-item"><h3>Menüdeki modüller ne işe yarar</h3><table class="guide-kv"><tbody><tr><th>Özet Paneli</th><td>Firmanın nakit durumu, nakit akışı projeksiyonu, vadesi geçen tahsilatlar ve uyarılar.</td></tr><tr><th>Finans</th><td>Gerçekleşmiş gelir/gider kaydı, gelecekteki kesin kalemler, tahminler, Banka Merkezi.</td></tr><tr><th>Proje Takip</th><td>Müşteri görüşmesi, proje, maliyet, teklif, üretim, dosyalar ve proje finans durumu.</td></tr><tr><th>Satın Alma</th><td>Tedarikçiler, satın alma talepleri ve siparişleri, tedarikçi faturaları ve ödemeler.</td></tr><tr><th>Cari Hesaplar</th><td>Müşteri alacakları ve tedarikçi borçları, vade yaşlandırmasıyla.</td></tr><tr><th>Raporlar</th><td>Yönetici paneli (kârlılık), dönemsel raporlar, 5 yıllık plan.</td></tr><tr><th>Ayarlar</th><td>Kişi kartları, kategori yönetimi, firma & ekip, yasal, ayarlar, iletişim.</td></tr><tr><th>Yönetim</th><td>Uygulama yöneticisine özel panel.</td></tr></tbody></table></div></section>
       <section class="guide-sec" id="gs-2"><h2><span class="gnum">2</span>İlk kurulum</h2><p class="guide-lead">Sistemi kullanmaya başlamadan önce bir kez yapılacaklar. Sırayla gidin.</p><div class="guide-item"><h3>Adım 1 — Kendi kişi kartınızı oluşturun</h3><p>Teklif ve sipariş belgelerinde görünecek iletişim bilgileri buradan gelir.</p><ol class="guide-steps"><li><strong>Ayarlar &gt; Kişi Kartları</strong> ekranını açın.</li><li><strong>Ad Soyad</strong> ve <strong>Unvan</strong> yazın.</li><li><strong>E-posta</strong> alanına <u>uygulamaya giriş yaptığınız e-postayı</u> yazın. Bu çok önemlidir: belgelerde varsayılan olarak sizin bilgilerinizin gelmesi buna bağlıdır.</li><li><strong>Sabit Telefon</strong> firmanın santral numarasıdır, hazır gelir. <strong>Cep Telefonu</strong> alanına kendi numaranızı yazın.</li><li><strong>Kişiyi Kaydet</strong>. Listede kartınızın yanında <em>"bu kart sizin"</em> yazmalıdır.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/20-kisi-kartlari.jpg" alt="Kişi kartları ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Kart bilgileri — ad, unvan, e-posta.</li><li>Sabit telefon (firma santralı) ve cep telefonu ayrı alanlardır.</li><li>Kişi listesi — belgelerde "Sorumlu Kişi" olarak bu kişiler seçilebilir.</li><li>"bu kart sizin" rozeti, e-postanızın giriş e-postanızla eşleştiğini gösterir.</li></ol><div class="guide-warn">Rozet görünmüyorsa e-posta yanlıştır. Düzeltmeden devam etmeyin, yoksa her belgede kişiyi elle seçmeniz gerekir.</div></div><div class="guide-item"><h3>Adım 2 — Diğer arkadaşların kartlarını girin</h3><p>Arkadaşınız izinde veya sahadayken onun adına teklif/sipariş verebilmeniz için kartının sistemde olması gerekir.</p><div class="guide-note">Kendi kartınızı her zaman düzenleyebilirsiniz. <strong>Başkasının kartını yalnız yönetici</strong> düzenler veya siler.</div></div><div class="guide-item"><h3>Adım 3 — Banka hesaplarını tanımlayın</h3><ol class="guide-steps"><li><strong>Finans &gt; Banka Merkezi</strong> ekranını açın.</li><li>Önce <strong>bankayı</strong> ekleyin (Ziraat, Garanti vb.).</li><li>Sonra her banka için <strong>hesapları</strong> ekleyin: hesap adı, para birimi (TL / EUR / USD), IBAN ve <strong>açılış bakiyesi</strong>.</li><li>Kredi kartı, KMH (kredili mevduat) ve yatırım hesaplarınız varsa onları da tanımlayın.</li></ol><div class="guide-warn">Açılış bakiyesini doğru girin. Bundan sonraki tüm bakiye hesapları bu rakamın üzerine işler.</div></div><div class="guide-item"><h3>Adım 4 — Tedarikçileri ve ödeme vadelerini girin</h3><ol class="guide-steps"><li><strong>Satın Alma &gt; Tedarikçiler</strong> ekranını açın.</li><li>Tedarikçi adı, vergi no, yetkili kişi, telefon, e-posta ve adresi girin.</li><li><strong>Ödeme Vadesi (gün)</strong> alanına o firmayla çalışma vadenizi yazın: 45 gün vadeliyse 45, peşinse 0.</li><li>Kaydedin. Listedeki <em>Vade</em> sütununda gün sayısı görünmelidir.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/12-tedarikciler.jpg" alt="Tedarikçi listesi" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Tedarikçi kayıt formu.</li><li>Ödeme vadesi — sipariş ve fatura ekranlarında otomatik kullanılır.</li><li>Listede her tedarikçinin açık borcu ve vadesi görünür.</li></ol><div class="guide-note">Vadeyi girmezseniz sipariş formunda vade satırı yazmaz ve fatura vadesi otomatik hesaplanmaz.</div></div></section>
       <section class="guide-sec" id="gs-3"><h2><span class="gnum">3</span>Günlük finans işlemleri</h2><p class="guide-lead">Para giren-çıkan her hareketin kaydı ve banka bakiyeleri.</p><div class="guide-item"><h3>Gerçekleşmiş gelir veya gider girme</h3><p>Parası fiilen hareket etmiş işlemler buraya girilir.</p><ol class="guide-steps"><li><strong>Finans &gt; Tamamlanmış Gelir/Gider</strong> ekranını açın.</li><li>Tarih, açıklama ve tutarı yazın.</li><li><strong>Para Birimi</strong> TL değilse <strong>Kur</strong> alanını doldurun. TL karşılığı bu kurdan hesaplanır.</li><li>Kategori seçin.</li><li><strong>Ödeme Hesabı</strong> alanından paranın girdiği/çıktığı yeri seçin: nakit kasa, banka hesabı, kredi kartı veya KMH.</li><li><strong>+ Gelir Ekle</strong> veya <strong>+ Gider Ekle</strong> butonuna basın.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/03-gunluk.jpg" alt="Tamamlanmış gelir/gider ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-warn">Proje tahsilatlarını <u>buradan girmeyin</u>. Onlar <strong>Proje Finans Durumu</strong> ekranından girilir ve buraya otomatik düşer. İki kez girerseniz gelir iki kat görünür.</div></div><div class="guide-item"><h3>Gelecekteki kesin gelir/gider nedir</h3><p>Tarihi ve tutarı belli, henüz parası hareket etmemiş kalemlerdir: kira, maaş, kredi taksiti, kesilmiş ama vadesi gelmemiş tedarikçi faturası.</p><p>Bu kalemler <strong>nakit akışı projeksiyonuna</strong> girer; Özet Paneli'ndeki gelecek aylar grafiği bunlara göre çizilir.</p><figure class="guide-shot"><div class="gimg"><img src="guide/23-gelecekteki.jpg" alt="Gelecekteki kesin gelir/gider ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Tedarikçi faturası girdiğinizde buraya <strong>otomatik</strong> bir gider kalemi oluşur. Elle girmenize gerek yoktur.</div></div><div class="guide-item"><h3>Banka Merkezi'nde ne var</h3><p>Tüm hesapların bakiyesi, hareketleri, kredi kartı borçları, KMH kullanımı ve net varlık buradadır.</p><figure class="guide-shot"><div class="gimg"><img src="guide/04-banka.jpg" alt="Banka Merkezi" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Net finansal varlık — banka + kasa eksi kart ve KMH borçları.</li><li>Banka ve hesap kartları; tıklayınca hesabın hareket dökümü açılır.</li><li>Hesaplar arası transfer, kart ödemesi ve KMH işlemleri buradan yapılır.</li></ol><div class="guide-warn">KMH kullanımı ve kredi kartı borcu ödemesi <strong>gider değildir</strong>; varlıklar arası harekettir ve Banka Merkezi'nden işlenir. Sadece KMH faizi ve banka komisyonu gerçek giderdir.</div></div></section>
@@ -3533,11 +3579,12 @@
       <section class="guide-sec" id="gs-7"><h2><span class="gnum">7</span>Yönetim raporu ve kârlılık</h2><p class="guide-lead">İşletme sahibinin tek bakışta durumu gördüğü ekran.</p><div class="guide-item"><h3>Yönetici Paneli</h3><figure class="guide-shot"><div class="gimg"><img src="guide/19-yonetici.jpg" alt="Yönetici paneli" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Özet kartlar: teklif aşaması, onay bekleyen, üretimdeki, geciken proje sayıları.</li><li>Tahsil edilecek ve ödenecek tutarlar, teklif onay oranı ve onaylanan ciro.</li><li>Proje kârlılığı tablosu.</li><li>Geciken projeler listesi — teslim tarihi geçmiş ve kapanmamış projeler.</li></ol><table class="guide-kv"><tbody><tr><th>Satış</th><td>Projenin onaylanan teklif tutarı.</td></tr><tr><th>Tahmini Maliyet</th><td>Projenin seçili maliyet çalışmasından gelir.</td></tr><tr><th>Gerçek Maliyet</th><td>Projeye bağlanan <strong>tedarikçi faturalarından</strong> gelir.</td></tr><tr><th>Gerçek Kâr</th><td>Satış eksi gerçek maliyet.</td></tr><tr><th>Marj</th><td>Gerçek kârın satışa oranı.</td></tr><tr><th>Kalan Alacak</th><td>Faturalanmış ama henüz tahsil edilmemiş tutar.</td></tr></tbody></table><div class="guide-warn">Bir projede <strong>"ölçülemiyor"</strong> yazıyorsa o projeye hiç tedarikçi faturası bağlanmamıştır. Gerçek maliyet bilinmediği için kâr da hesaplanamaz. Maliyetin doğru çıkması için tedarikçi faturalarında <strong>PROJE alanını mutlaka doldurun</strong>.</div></div><div class="guide-item"><h3>Raporlar ekranı</h3><p>Seçtiğiniz tarih aralığında nakit akışı, kategori dağılımı, aylık tablo ve risk durumu. Excel, CSV ve görsel rapor olarak indirilebilir.</p><figure class="guide-shot"><div class="gimg"><img src="guide/24-raporlar.jpg" alt="Raporlar ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note"><strong>Kasa Portföyü</strong> yalnız nakit kasayı kapsar, <u>banka hesaplarını içermez</u>. Banka dâhil toplam için Özet Paneli'ne veya Banka Merkezi'ne bakın.</div></div><div class="guide-item"><h3>Özet Paneli</h3><figure class="guide-shot"><div class="gimg"><img src="guide/01-ozet.jpg" alt="Özet paneli" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Net finansal varlık ve banka/kart/KMH dağılımı.</li><li>Dönem kartları: gelir, gider, beklenen kalemler, tahmini net.</li><li>Gelir-gider grafiği ve gider kategori dağılımı.</li><li>Nakit akışı projeksiyonu — gelecek ayların tahmini portföyü.</li><li>Tahsilat vade uyarıları — vadesi geçen ve 7 gün içinde dolacak faturalar.</li></ol></div></section>
       <section class="guide-sec" id="gs-8"><h2><span class="gnum">8</span>Kişi kartları ve belgelerdeki bilgiler</h2><p class="guide-lead">Teklif ve sipariş belgelerinde kimin bilgisi görünecek.</p><div class="guide-item"><h3>Belgelerde sorumlu kişi nasıl seçilir</h3><p>Hem teklif penceresinde hem satın alma sipariş formunda <strong>Sorumlu Kişi</strong> alanı vardır.</p><ol class="guide-steps"><li>Belgeyi açtığınızda <strong>varsayılan olarak sizin kartınız</strong> seçili gelir.</li><li>Arkadaşınız yerinde değilse ve onun adına belge düzenliyorsanız listeden onun kartını seçin.</li><li>Ad, <strong>cep telefonu</strong> ve e-posta üçü birden o kişininkiyle değişir.</li><li>İsterseniz bu alanları elle de düzenleyebilirsiniz.</li></ol><table class="guide-kv"><tbody><tr><th>Belgede görünen numara</th><td>Kişinin <strong>cep telefonu</strong>. Girilmemişse kartın sabit numarası yazılır.</td></tr><tr><th>Belgenin en altındaki künye</th><td>Firma unvanı · şehir · web adresi · <strong>firma sabit telefonu</strong>.</td></tr><tr><th>Kart seçilmezse</th><td>Firma varsayılan bilgileri basılır (eski davranış).</td></tr></tbody></table><div class="guide-note">Bir kişi herhangi bir teklif veya siparişte sorumlu olarak geçiyorsa <strong>kartı silinemez</strong>. Kişi işten ayrıldıysa kartı silmeyin; not alanına düşün ki geçmiş belgeler bozulmasın.</div></div></section>
       <section class="guide-sec" id="gs-9"><h2><span class="gnum">9</span>Yetkiler ve roller</h2><p class="guide-lead">Kim neyi görebilir, kim neyi değiştirebilir.</p><div class="guide-item"><h3>Rollerin varsayılan yetkileri</h3><table class="guide-kv"><tbody><tr><th>Yönetici</th><td>Her modülde tam yetki. Firma & Ekip, Yasal ve kişi kartı yönetimi yalnız bu roldedir.</td></tr><tr><th>Muhasebe</th><td>Finans ve Cari düzenler; Proje ve Satın Alma'yı görür ama değiştiremez.</td></tr><tr><th>Mühendis / Proje</th><td>Proje düzenler; Satın Alma ve Cari'yi görür. Finans girişi ve Yönetim Raporu'nu göremez.</td></tr><tr><th>Satın Alma</th><td>Satın Alma düzenler; Finans ve Proje'yi görür ama değiştiremez.</td></tr><tr><th>Rapor Kullanıcısı</th><td>Her modülü görüntüler, hiçbir şeyi değiştiremez.</td></tr></tbody></table><p>Bu varsayılanlar <strong>Ayarlar &gt; Firma &amp; Ekip</strong> ekranındaki <em>Modül Yetkileri</em> matrisinden kişi bazında değiştirilebilir. Her kullanıcı her modülde üç seviyeden birini alır: <strong>erişim yok</strong> / <strong>görüntüleme</strong> / <strong>düzenleme</strong>.</p><figure class="guide-shot"><div class="gimg"><img src="guide/21-yetki.jpg" alt="Firma & Ekip ve modül yetkileri" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Muhasebe parayı girer; satın alma ve proje ekibi aynı veriyi <strong>izleyebilir</strong> ama değiştiremez. Sistem bu ayrımı korumak üzere kurulmuştur.</div></div></section>
-      <section class="guide-sec" id="gs-10"><h2><span class="gnum">10</span>Telefonda kullanım</h2><p class="guide-lead">Sistem telefonda da tam çalışır.</p><div class="guide-item"><h3>Mobil menü ve ekranlar</h3><ol class="guide-steps"><li>Üst soldaki <strong>☰</strong> butonuna basın; menü çekmece olarak açılır.</li><li>Modül başlığına basınca alt ekranlar açılır.</li><li>Bir ekran seçince menü kendiliğinden kapanır.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/22-mobil.jpg" alt="Telefonda menü" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Telefonda formlar tek sütuna iner, butonlar parmakla basılacak boyuttadır ve geniş tablolar kendi içinde yana kaydırılır. Sayfa asla yana taşmaz.</div></div></section>
-      <section class="guide-sec" id="gs-11"><h2><span class="gnum">11</span>Uyarı mesajları ve anlamları</h2><p class="guide-lead">Sistemin verdiği uyarıların ne demek olduğu ve ne yapmanız gerektiği.</p><div class="guide-item"><h3>Sık karşılaşılan uyarılar</h3><table class="guide-kv"><tbody><tr><th>"Önce bu projeye ait teklif kaydı oluşturun"</th><td>Projeyi Onaylandı veya üretim durumuna almaya çalıştınız ama projede teklif yok. Teklif &amp; Maliyet ekranından teklif oluşturun.</td></tr><tr><th>"Teslim Edildi durumuna geçmek için teslim tarihi girilmelidir"</th><td>Projeyi düzenleyip durumu Teslim Edildi seçin; açılan alanlara teslim tarihi ve irsaliye numarasını girin.</td></tr><tr><th>"Faturalandırıldı durumuna geçmek için önce fatura kaydı girilmelidir"</th><td>Proje Finans Durumu ekranından faturayı kaydedin.</td></tr><tr><th>"Kalan alacak ... Tahsilat tamamlanmadan bu duruma geçilemez"</th><td>Henüz tahsil edilmemiş tutar var. Tahsilatı girin; durum kendiliğinden ilerler.</td></tr><tr><th>"Tahsilat tutarı faturanın kalanından fazla"</th><td>Fatura tutarı, kalan ve girdiğiniz tutar uyarıda yazar. En fazla kalan kadar girebilirsiniz.</td></tr><tr><th>"Ödeme tutarı faturanın kalan borcundan fazla"</th><td>Aynı kural tedarikçi ödemelerinde de geçerlidir.</td></tr><tr><th>"Bu faturaya bağlı ... tahsilat var. Önce tahsilatları silin"</th><td>Tahsilatı olan fatura silinemez. Önce tahsilat kayıtlarını silin.</td></tr><tr><th>"Bu tedarikçiye bağlı sipariş veya fatura var"</th><td>Kayıt kullanılıyor; silinemez.</td></tr><tr><th>"Bu kayıt henüz talep/teklif aşamasında"</th><td>Mal kabul yapmadan önce fiyatları girip durumu Sipariş Verildi yapın.</td></tr><tr><th>"Bu e-posta başka bir kişi kartında kayıtlı"</th><td>Aynı e-posta ile ikinci kart açılamaz.</td></tr><tr><th>"... yetkiniz yok"</th><td>Rolünüz bu işlemi yapmaya izin vermiyor. Yöneticinizden yetki isteyin.</td></tr></tbody></table></div></section>
-      <section class="guide-sec" id="gs-12"><h2><span class="gnum">12</span>Altın kurallar</h2><p class="guide-lead">Sistemin doğru çalışması için bunlara uyun.</p><div class="guide-item"><h3>Yapılması gerekenler</h3><div class="guide-ok"><ul style="margin:0;padding-left:18px;line-height:1.85"><li>Proje tahsilatlarını <strong>Proje Finans Durumu</strong> ekranından girin, Günlük Kayıt'tan değil.</li><li>Tedarikçi ödemelerini <strong>Faturalar &amp; Ödemeler</strong> ekranından girin, Günlük Kayıt'tan değil.</li><li>Tedarikçi faturasında <strong>PROJE alanını doldurun</strong> — projenin gerçek maliyeti buna bağlıdır.</li><li>Fatura ve tahsilatta <strong>vade tarihini</strong> girin — tüm gecikme takibi buna dayanır.</li><li>Tedarikçi kartına <strong>ödeme vadesini</strong> girin — sipariş ve fatura vadesi otomatik hesaplansın.</li><li>Kişi kartınızın e-postası <strong>giriş e-postanızla aynı</strong> olsun.</li><li>Döviz işlemlerinde <strong>kuru</strong> mutlaka girin.</li></ul></div></div><div class="guide-item"><h3>Yapılmaması gerekenler</h3><div class="guide-warn"><ul style="margin:0;padding-left:18px;line-height:1.85"><li>Aynı parayı iki yerden girmeyin (proje tahsilatı + günlük gelir gibi).</li><li>KMH kullanımını ve kredi kartı borcu ödemesini gelir/gider olarak girmeyin — bunlar varlıklar arası harekettir, Banka Merkezi'nden işlenir.</li><li>İşten ayrılan kişinin kartını silmeyin; geçmiş belgeler ona bağlıdır.</li><li>Yanlış SAP No ile açılmış siparişi düzeltmeye çalışmayın — numara değişmez. Faturası kesilmemişse silip yenisini açın.</li><li>Tahsilatı "hesap kapansın diye" fazla girmeyin; sistem zaten engeller.</li></ul></div></div><div class="guide-item"><h3>Bir şey ters giderse</h3><ol class="guide-steps"><li><strong>Proje Hareket Geçmişi</strong>ne bakın (Projeler ekranının altı). Hiçbir kayıt silinmez; kim ne zaman ne yaptı orada yazar.</li><li>Yanlış kaydı silin veya düzenleyin — sistem bağlı kayıtları (gelir, banka bakiyesi, proje durumu) kendiliğinden geri alır.</li><li>Durum otomatik geri alındıysa panik yapmayın; hareket geçmişinde nedeni yazar.</li><li>Emin değilseniz kaydı silmeden önce ekran görüntüsü alın.</li></ol></div></section>
-        </div>
-        <div class="guide-empty" id="guide-empty" style="display:none">Aradığınız kelime kılavuzda bulunamadı. Daha kısa bir kelime deneyin (örneğin <strong>vade</strong>, <strong>SAP</strong>, <strong>tahsilat</strong>).</div>
+      <section class="guide-sec" id="gs-10"><h2><span class="gnum">10</span>Mühendislik araçları</h2><p class="guide-lead">Tasarım ve maliyet çalışması sırasında kullanılan hesaplama araçları.</p><div class="guide-item"><h3>Ağırlık hesaplama</h3><p>Profil, sac, lama, boru, köşebent gibi ürünlerin malzeme cinsine ve ölçülerine göre ağırlığını hesaplar. Ölçüler <strong>milimetre</strong>, yoğunluk <strong>kg/dm³</strong>, sonuç <strong>kilogram</strong>dır.</p><ol class="guide-steps"><li><strong>Mühendislik &gt; Ağırlık Hesaplama</strong>.</li><li><strong>Malzeme</strong>yi seçin; yoğunluk otomatik gelir. Listede olmayan bir malzeme için "Özel" seçip yoğunluğu elle yazın.</li><li><strong>Kesit Tipi</strong>ni seçin. Sağda o kesitin şeması ve ölçü harfleri görünür.</li><li>Ölçüleri ve uzunluğu girin; sonuç anında hesaplanır.</li><li><strong>Adet</strong> girerek toplam ağırlığı görün.</li><li>İsterseniz <strong>Listeye Ekle</strong> ile birden çok kalemi biriktirin.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/25-agirlik.jpg" alt="Ağırlık hesaplama ekranı" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><ol class="guide-pins"><li>Malzeme, yoğunluk, kesit tipi ve adet.</li><li>Seçilen kesite göre değişen ölçü alanları.</li><li>Kesit şeması — ölçü harfleri formdaki alanlarla aynıdır.</li><li>Sonuç kartları: kesit alanı, kg/m, parça ağırlığı ve toplam.</li><li>Hesabın nasıl yapıldığını adım adım gösteren satır.</li><li>Hesap listesi; malzeme fiyatı girilirse tutar da çıkar.</li></ol><table class="guide-kv"><tbody><tr><th>Kesit tipleri</th><td>Sac/plaka · lama · kare dolu · yuvarlak dolu (mil) · boru · kutu profil (kare ve dikdörtgen) · altıgen · köşebent · U · T · I/H profil</td></tr><tr><th>Malzemeler</th><td>Çelik, paslanmaz 304/316, dökme demir, alüminyum, bakır, pirinç, bronz, çinko, kurşun, titanyum, nikel, magnezyum, PVC, PE, POM, PA6, PTFE, pleksi, cam, ahşap ve özel</td></tr></tbody></table><div class="guide-ok">Liste hazırken <strong>Listeyi Kopyala</strong> ile panoya alıp maliyet çalışmasına veya e-postaya yapıştırabilirsiniz. Malzeme fiyatı (TL/kg) girerseniz her satırın ve toplamın tutarı da hesaplanır.</div><div class="guide-note">Köşebent, U, T ve I/H profillerde köşe radyusları ve flanş eğimleri hesaba katılmaz; sonuç standart katalog değerinden yaklaşık %1-3 sapabilir. Kritik işlerde üretici kataloğundan doğrulayın.</div><div class="guide-warn">Hesap listesi kaydedilmez; ekrandan çıkınca veya sayfayı yenileyince silinir. Saklamak istediğiniz listeyi kopyalayın.</div></div></section>
+      <section class="guide-sec" id="gs-11"><h2><span class="gnum">11</span>Telefonda kullanım</h2><p class="guide-lead">Sistem telefonda da tam çalışır.</p><div class="guide-item"><h3>Mobil menü ve ekranlar</h3><ol class="guide-steps"><li>Üst soldaki <strong>☰</strong> butonuna basın; menü çekmece olarak açılır.</li><li>Modül başlığına basınca alt ekranlar açılır.</li><li>Bir ekran seçince menü kendiliğinden kapanır.</li></ol><figure class="guide-shot"><div class="gimg"><img src="guide/22-mobil.jpg" alt="Telefonda menü" loading="lazy"><div class="gfade"></div></div><details><summary>Görselin tamamını aç / kapat</summary></details></figure><div class="guide-note">Telefonda formlar tek sütuna iner, butonlar parmakla basılacak boyuttadır ve geniş tablolar kendi içinde yana kaydırılır. Sayfa asla yana taşmaz.</div></div></section>
+      <section class="guide-sec" id="gs-12"><h2><span class="gnum">12</span>Uyarı mesajları ve anlamları</h2><p class="guide-lead">Sistemin verdiği uyarıların ne demek olduğu ve ne yapmanız gerektiği.</p><div class="guide-item"><h3>Sık karşılaşılan uyarılar</h3><table class="guide-kv"><tbody><tr><th>"Önce bu projeye ait teklif kaydı oluşturun"</th><td>Projeyi Onaylandı veya üretim durumuna almaya çalıştınız ama projede teklif yok. Teklif &amp; Maliyet ekranından teklif oluşturun.</td></tr><tr><th>"Teslim Edildi durumuna geçmek için teslim tarihi girilmelidir"</th><td>Projeyi düzenleyip durumu Teslim Edildi seçin; açılan alanlara teslim tarihi ve irsaliye numarasını girin.</td></tr><tr><th>"Faturalandırıldı durumuna geçmek için önce fatura kaydı girilmelidir"</th><td>Proje Finans Durumu ekranından faturayı kaydedin.</td></tr><tr><th>"Kalan alacak ... Tahsilat tamamlanmadan bu duruma geçilemez"</th><td>Henüz tahsil edilmemiş tutar var. Tahsilatı girin; durum kendiliğinden ilerler.</td></tr><tr><th>"Tahsilat tutarı faturanın kalanından fazla"</th><td>Fatura tutarı, kalan ve girdiğiniz tutar uyarıda yazar. En fazla kalan kadar girebilirsiniz.</td></tr><tr><th>"Ödeme tutarı faturanın kalan borcundan fazla"</th><td>Aynı kural tedarikçi ödemelerinde de geçerlidir.</td></tr><tr><th>"Bu faturaya bağlı ... tahsilat var. Önce tahsilatları silin"</th><td>Tahsilatı olan fatura silinemez. Önce tahsilat kayıtlarını silin.</td></tr><tr><th>"Bu tedarikçiye bağlı sipariş veya fatura var"</th><td>Kayıt kullanılıyor; silinemez.</td></tr><tr><th>"Bu kayıt henüz talep/teklif aşamasında"</th><td>Mal kabul yapmadan önce fiyatları girip durumu Sipariş Verildi yapın.</td></tr><tr><th>"Bu e-posta başka bir kişi kartında kayıtlı"</th><td>Aynı e-posta ile ikinci kart açılamaz.</td></tr><tr><th>"... yetkiniz yok"</th><td>Rolünüz bu işlemi yapmaya izin vermiyor. Yöneticinizden yetki isteyin.</td></tr></tbody></table></div></section>
+      <section class="guide-sec" id="gs-13"><h2><span class="gnum">13</span>Altın kurallar</h2><p class="guide-lead">Sistemin doğru çalışması için bunlara uyun.</p><div class="guide-item"><h3>Yapılması gerekenler</h3><div class="guide-ok"><ul style="margin:0;padding-left:18px;line-height:1.85"><li>Proje tahsilatlarını <strong>Proje Finans Durumu</strong> ekranından girin, Günlük Kayıt'tan değil.</li><li>Tedarikçi ödemelerini <strong>Faturalar &amp; Ödemeler</strong> ekranından girin, Günlük Kayıt'tan değil.</li><li>Tedarikçi faturasında <strong>PROJE alanını doldurun</strong> — projenin gerçek maliyeti buna bağlıdır.</li><li>Fatura ve tahsilatta <strong>vade tarihini</strong> girin — tüm gecikme takibi buna dayanır.</li><li>Tedarikçi kartına <strong>ödeme vadesini</strong> girin — sipariş ve fatura vadesi otomatik hesaplansın.</li><li>Kişi kartınızın e-postası <strong>giriş e-postanızla aynı</strong> olsun.</li><li>Döviz işlemlerinde <strong>kuru</strong> mutlaka girin.</li></ul></div></div><div class="guide-item"><h3>Yapılmaması gerekenler</h3><div class="guide-warn"><ul style="margin:0;padding-left:18px;line-height:1.85"><li>Aynı parayı iki yerden girmeyin (proje tahsilatı + günlük gelir gibi).</li><li>KMH kullanımını ve kredi kartı borcu ödemesini gelir/gider olarak girmeyin — bunlar varlıklar arası harekettir, Banka Merkezi'nden işlenir.</li><li>İşten ayrılan kişinin kartını silmeyin; geçmiş belgeler ona bağlıdır.</li><li>Yanlış SAP No ile açılmış siparişi düzeltmeye çalışmayın — numara değişmez. Faturası kesilmemişse silip yenisini açın.</li><li>Tahsilatı "hesap kapansın diye" fazla girmeyin; sistem zaten engeller.</li></ul></div></div><div class="guide-item"><h3>Bir şey ters giderse</h3><ol class="guide-steps"><li><strong>Proje Hareket Geçmişi</strong>ne bakın (Projeler ekranının altı). Hiçbir kayıt silinmez; kim ne zaman ne yaptı orada yazar.</li><li>Yanlış kaydı silin veya düzenleyin — sistem bağlı kayıtları (gelir, banka bakiyesi, proje durumu) kendiliğinden geri alır.</li><li>Durum otomatik geri alındıysa panik yapmayın; hareket geçmişinde nedeni yazar.</li><li>Emin değilseniz kaydı silmeden önce ekran görüntüsü alın.</li></ol></div></section>
+      </div>
+      <div class="guide-empty" id="guide-empty" style="display:none">Aradığınız kelime kılavuzda bulunamadı. Daha kısa bir kelime deneyin (örneğin <strong>vade</strong>, <strong>SAP</strong>, <strong>tahsilat</strong>).</div>
       </div>
 
       <!-- KİŞİ KARTLARI -->
@@ -4463,9 +4510,9 @@
 
 <script>
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-const PAGE_TITLES={guide:'Kullanım Kılavuzu',people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
+const PAGE_TITLES={weightCalc:'Mühendislik · Ağırlık Hesaplama',guide:'Kullanım Kılavuzu',people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.16.0';
+const APP_VERSION='0.17.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -4557,6 +4604,7 @@ const ROLE_LABELS={admin:'Yönetici',accounting:'Muhasebe',engineer:'Mühendis /
 const APP_MODULES=[
   {key:'finance',   label:'Finans',            pages:['dashboard','ai','daily','fixed','forecast','banking','creditCards','reports','plan5','categories']},
   {key:'project',   label:'Proje Yönetimi',    pages:['projectMeetings','projects','projectCosts','projectProduction','projectFiles','projectFinance']},
+  {key:'engineering',label:'Mühendislik',      pages:['weightCalc']},
   {key:'purchase',  label:'Satın Alma',        pages:['suppliers','purchaseOrders','supplierInvoices']},
   {key:'current',   label:'Cari Hesaplar',     pages:['receivables','payables']},
   {key:'management',label:'Yönetim Raporları', pages:['execDashboard']},
@@ -4565,11 +4613,11 @@ const APP_MODULES=[
 const MODULE_LEVELS={none:0,view:1,edit:2};
 const MODULE_LEVEL_LABELS={none:'Erişim yok',view:'Görüntüleme',edit:'Düzenleme'};
 const ROLE_MODULE_DEFAULTS={
-  admin:      {finance:'edit',project:'edit',purchase:'edit',current:'edit',management:'edit',system:'edit'},
-  accounting: {finance:'edit',project:'view',purchase:'view',current:'edit',management:'view',system:'view'},
-  engineer:   {finance:'none',project:'edit',purchase:'view',current:'view',management:'none',system:'view'},
-  purchasing: {finance:'view',project:'view',purchase:'edit',current:'view',management:'none',system:'view'},
-  viewer:     {finance:'view',project:'view',purchase:'view',current:'view',management:'view',system:'view'}
+  admin:      {finance:'edit',project:'edit',engineering:'edit',purchase:'edit',current:'edit',management:'edit',system:'edit'},
+  accounting: {finance:'edit',project:'view',engineering:'view',purchase:'view',current:'edit',management:'view',system:'view'},
+  engineer:   {finance:'none',project:'edit',engineering:'edit',purchase:'view',current:'view',management:'none',system:'view'},
+  purchasing: {finance:'view',project:'view',engineering:'view',purchase:'edit',current:'view',management:'none',system:'view'},
+  viewer:     {finance:'view',project:'view',engineering:'view',purchase:'view',current:'view',management:'view',system:'view'}
 };
 const ROLE_LABELS_TR={admin:'Yönetici',accounting:'Muhasebe',engineer:'Mühendis / Proje',purchasing:'Satın Alma',viewer:'Rapor Kullanıcısı'};
 function modulePermissionStore(){
@@ -4784,6 +4832,7 @@ function findNavButton(id){
 const NAV_GROUPS={
   finance:['ai','daily','fixed','forecast','banking','creditCards'],
   project:['projectMeetings','projects','projectCosts','projectProduction','projectFiles','projectFinance'],
+  engineering:['weightCalc'],
   purchase:['suppliers','purchaseOrders','supplierInvoices'],
   current:['receivables','payables'],
   report:['execDashboard','reports','plan5','export'],
@@ -6733,7 +6782,7 @@ function rerenderActivePage(){
   const active=document.querySelector('.page.active');
   if(!active)return;
   const id=active.id.replace('page-','');
-  const renders={guide:renderGuide,people:renderPeople,receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
+  const renders={weightCalc:renderWeightCalc,guide:renderGuide,people:renderPeople,receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
   if(renders[id])renders[id]();
 }
 
@@ -7446,7 +7495,7 @@ function showPage(id,btn){
   closeMobileNav();
   document.getElementById('topbar-title').textContent=PAGE_TITLES[id]||'';
   populateCatSelects();
-  const renders={guide:renderGuide,people:renderPeople,receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
+  const renders={weightCalc:renderWeightCalc,guide:renderGuide,people:renderPeople,receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
   if(renders[id])renders[id]();
   if(id==='billing'&&isAdmin()&&currentCompanyId)refreshSubscriptionRequests(false);
   updateBillingAlert();
@@ -11234,6 +11283,241 @@ function relinkOrderInvoices(order,oldProjectId){
   });
   return moved;
 }
+/* ──────── v0.17.0 — MÜHENDİSLİK: AĞIRLIK HESAPLAMA ────────
+   Ağırlık = kesit alanı × uzunluk × yoğunluk.
+   Ölçüler mm, yoğunluk kg/dm³ (= g/cm³), sonuç kg.
+   1 dm³ = 1.000.000 mm³ olduğundan hacim mm³ / 1e6 ile dm³'e çevrilir. */
+const ENG_MATERIALS=[
+  ['Çelik (S235 / St37)',7.85],
+  ['Alaşımlı / İmalat Çeliği',7.85],
+  ['Paslanmaz Çelik 304',7.90],
+  ['Paslanmaz Çelik 316',8.00],
+  ['Dökme Demir (gri)',7.20],
+  ['Alüminyum (1050 / saf)',2.70],
+  ['Alüminyum Alaşım (6061 / 6063)',2.70],
+  ['Bakır',8.96],
+  ['Pirinç',8.50],
+  ['Bronz',8.80],
+  ['Çinko',7.14],
+  ['Kurşun',11.34],
+  ['Titanyum',4.50],
+  ['Nikel',8.90],
+  ['Magnezyum',1.74],
+  ['PVC',1.40],
+  ['Polietilen (PE)',0.95],
+  ['POM (Delrin)',1.41],
+  ['Poliamid (PA6 / Naylon)',1.14],
+  ['PTFE (Teflon)',2.20],
+  ['Pleksiglas (PMMA)',1.19],
+  ['Cam',2.50],
+  ['Ahşap (çam, kuru)',0.50],
+  ['Özel — yoğunluğu elle gir',0]
+];
+/* Her kesit: alanı mm² veren bir formül ve uzunluk alanı. Sac/plakada
+   "uzunluk" boy demektir; kesit alanı en × kalınlıktır. */
+const ENG_SECTIONS=[
+  {k:'sheet',  ad:'Sac / Plaka',                 f:[['w','En (mm)','1000'],['t','Kalınlık (mm)','3']], u:['L','Boy (mm)','2000'],
+   A:v=>v.w*v.t, ok:v=>v.w>0&&v.t>0},
+  {k:'flat',   ad:'Lama (dikdörtgen dolu)',      f:[['w','Genişlik (mm)','50'],['t','Kalınlık (mm)','5']], u:['L','Uzunluk (mm)','6000'],
+   A:v=>v.w*v.t, ok:v=>v.w>0&&v.t>0},
+  {k:'square', ad:'Kare Dolu (mil)',             f:[['a','Kenar a (mm)','20']], u:['L','Uzunluk (mm)','6000'],
+   A:v=>v.a*v.a, ok:v=>v.a>0},
+  {k:'round',  ad:'Yuvarlak Dolu (mil)',         f:[['d','Çap d (mm)','20']], u:['L','Uzunluk (mm)','6000'],
+   A:v=>Math.PI*v.d*v.d/4, ok:v=>v.d>0},
+  {k:'pipe',   ad:'Boru (yuvarlak)',             f:[['D','Dış Çap D (mm)','48.3'],['t','Et Kalınlığı t (mm)','3']], u:['L','Uzunluk (mm)','6000'],
+   A:v=>Math.PI/4*(v.D*v.D-Math.pow(v.D-2*v.t,2)), ok:v=>v.D>0&&v.t>0&&v.D>2*v.t},
+  {k:'sqtube', ad:'Kutu Profil (kare)',          f:[['a','Kenar a (mm)','40'],['t','Et Kalınlığı t (mm)','2']], u:['L','Uzunluk (mm)','6000'],
+   A:v=>v.a*v.a-Math.pow(v.a-2*v.t,2), ok:v=>v.a>0&&v.t>0&&v.a>2*v.t},
+  {k:'rectube',ad:'Kutu Profil (dikdörtgen)',    f:[['a','Genişlik a (mm)','60'],['b','Yükseklik b (mm)','40'],['t','Et Kalınlığı t (mm)','2']], u:['L','Uzunluk (mm)','6000'],
+   A:v=>v.a*v.b-(v.a-2*v.t)*(v.b-2*v.t), ok:v=>v.a>0&&v.b>0&&v.t>0&&v.a>2*v.t&&v.b>2*v.t},
+  {k:'hex',    ad:'Altıgen Dolu (anahtar ağzı)', f:[['af','Anahtar Ağzı AF (mm)','24']], u:['L','Uzunluk (mm)','3000'],
+   A:v=>Math.sqrt(3)/2*v.af*v.af, ok:v=>v.af>0},
+  {k:'angle',  ad:'Köşebent (L profil)',         f:[['a','Kol a (mm)','40'],['b','Kol b (mm)','40'],['t','Et Kalınlığı t (mm)','4']], u:['L','Uzunluk (mm)','6000'],
+   A:v=>v.t*(v.a+v.b-v.t), ok:v=>v.a>0&&v.b>0&&v.t>0&&v.a>v.t&&v.b>v.t, yaklasik:true},
+  {k:'uprof',  ad:'U Profil',                    f:[['h','Yükseklik h (mm)','80'],['b','Flanş b (mm)','45'],['t','Et Kalınlığı t (mm)','6']], u:['L','Uzunluk (mm)','6000'],
+   A:v=>v.t*(v.h+2*v.b-2*v.t), ok:v=>v.h>0&&v.b>0&&v.t>0&&v.h>2*v.t&&v.b>v.t, yaklasik:true},
+  {k:'tprof',  ad:'T Profil',                    f:[['b','Başlık b (mm)','50'],['h','Yükseklik h (mm)','50'],['t','Et Kalınlığı t (mm)','6']], u:['L','Uzunluk (mm)','6000'],
+   A:v=>v.b*v.t+(v.h-v.t)*v.t, ok:v=>v.b>0&&v.h>0&&v.t>0&&v.h>v.t, yaklasik:true},
+  {k:'iprof',  ad:'I / H Profil',                f:[['h','Yükseklik h (mm)','200'],['b','Flanş b (mm)','100'],['tf','Flanş Kalınlığı (mm)','8.5'],['tw','Gövde Kalınlığı (mm)','5.6']], u:['L','Uzunluk (mm)','6000'],
+   A:v=>2*v.b*v.tf+(v.h-2*v.tf)*v.tw, ok:v=>v.h>0&&v.b>0&&v.tf>0&&v.tw>0&&v.h>2*v.tf, yaklasik:true}
+];
+function engSection(k){return ENG_SECTIONS.find(x=>x.k===k)||ENG_SECTIONS[0];}
+/* Kesit şemaları — ölçü harfleri formdaki alan adlarıyla aynıdır. */
+function engSvg(k){
+  const c='var(--primary)', f='var(--bg-soft,#dbe7f2)';
+  const w='<svg viewBox="0 0 120 100" width="190" height="158" fill="none" stroke="'+c+'" stroke-width="2">';
+  const tx=(x,y,t)=>'<text x="'+x+'" y="'+y+'" fill="'+c+'" stroke="none" font-size="11" font-family="system-ui">'+t+'</text>';
+  const M={
+    sheet:'<rect x="14" y="30" width="86" height="26" fill="'+f+'"/>'+tx(52,25,'en')+tx(104,46,'t'),
+    flat:'<rect x="20" y="34" width="80" height="20" fill="'+f+'"/>'+tx(56,29,'w')+tx(104,46,'t'),
+    square:'<rect x="30" y="20" width="60" height="60" fill="'+f+'"/>'+tx(57,15,'a'),
+    round:'<circle cx="60" cy="50" r="30" fill="'+f+'"/>'+'<line x1="30" y1="50" x2="90" y2="50" stroke-dasharray="4 3"/>'+tx(57,15,'d'),
+    pipe:'<circle cx="60" cy="50" r="30" fill="'+f+'"/><circle cx="60" cy="50" r="21" fill="var(--bg-card,#fff)"/>'+tx(57,15,'D')+tx(92,50,'t'),
+    sqtube:'<rect x="30" y="20" width="60" height="60" fill="'+f+'"/><rect x="38" y="28" width="44" height="44" fill="var(--bg-card,#fff)"/>'+tx(57,15,'a')+tx(94,52,'t'),
+    rectube:'<rect x="16" y="26" width="88" height="48" fill="'+f+'"/><rect x="24" y="34" width="72" height="32" fill="var(--bg-card,#fff)"/>'+tx(56,21,'a')+tx(108,52,'b'),
+    hex:'<polygon points="60,18 86,34 86,66 60,82 34,66 34,34" fill="'+f+'"/>'+tx(57,14,'AF'),
+    angle:'<polygon points="24,18 38,18 38,68 100,68 100,82 24,82" fill="'+f+'"/>'+tx(16,48,'a')+tx(66,92,'b')+tx(44,78,'t'),
+    uprof:'<polygon points="24,18 24,82 96,82 96,68 38,68 38,32 96,32 96,18" fill="'+f+'"/>'+tx(14,52,'h')+tx(64,14,'b')+tx(28,52,'t'),
+    tprof:'<polygon points="24,18 96,18 96,32 67,32 67,82 53,82 53,32 24,32" fill="'+f+'"/>'+tx(56,14,'b')+tx(74,60,'h'),
+    iprof:'<polygon points="24,18 96,18 96,30 67,30 67,70 96,70 96,82 24,82 24,70 53,70 53,30 24,30" fill="'+f+'"/>'+tx(56,14,'b')+tx(76,52,'h')
+  };
+  return w+(M[k]||'')+'</svg>';
+}
+let _engRows=[];
+function engMaterialOptions(sel){
+  return ENG_MATERIALS.map((m,i)=>'<option value="'+i+'"'+(String(i)===String(sel)?' selected':'')+'>'+htmlEsc(m[0])+(m[1]?(' · '+formatNumberTr(m[1],2)):'')+'</option>').join('');
+}
+function onEngMaterialChange(){
+  const sel=document.getElementById('eng-material');
+  const d=document.getElementById('eng-density');
+  if(!sel||!d)return;
+  const m=ENG_MATERIALS[parseInt(sel.value,10)||0];
+  const ozel=!m||!m[1];
+  d.readOnly=!ozel;
+  d.style.opacity=ozel?'1':'0.7';
+  if(!ozel)d.value=String(m[1]);
+  else if(!parseFloat(d.value))d.value='';
+  engCalc();
+}
+function onEngSectionChange(){
+  const sec=engSection((document.getElementById('eng-section')||{}).value);
+  const wrap=document.getElementById('eng-fields');
+  if(!wrap)return;
+  const alanlar=sec.f.concat([sec.u]);
+  wrap.innerHTML='<div class="pro-grid pro-grid-12">'
+    +alanlar.map(([ad,etiket,ornek])=>'<div class="form-group span-3"><label>'+htmlEsc(etiket)+'</label>'
+      +'<input type="number" min="0" step="0.01" id="eng-f-'+ad+'" placeholder="'+htmlEsc(ornek)+'" value="'+htmlEsc(ornek)+'" oninput="engCalc()"></div>').join('')
+    +'</div>';
+  const sema=document.getElementById('eng-svg');
+  if(sema)sema.innerHTML=engSvg(sec.k);
+  engCalc();
+}
+function engValues(sec){
+  const v={};
+  sec.f.concat([sec.u]).forEach(([ad])=>{const e=document.getElementById('eng-f-'+ad);v[ad]=parseDecimalInput(e?e.value:'')||0;});
+  return v;
+}
+function engCalc(){
+  const out=document.getElementById('eng-result');
+  if(!out)return null;
+  const sec=engSection((document.getElementById('eng-section')||{}).value);
+  const v=engValues(sec);
+  const yog=parseDecimalInput((document.getElementById('eng-density')||{}).value)||0;
+  const adet=Math.max(1,Math.round(parseDecimalInput((document.getElementById('eng-qty')||{}).value)||1));
+  const uzunlukAd=sec.u[0];
+  const L=v[uzunlukAd]||0;
+  const gecerli=sec.ok(v)&&L>0&&yog>0;
+  const detay=document.getElementById('eng-detail');
+  if(!gecerli){
+    out.innerHTML='<div class="empty">Ölçüleri ve yoğunluğu girin. Et kalınlığı, dış ölçünün yarısından küçük olmalıdır.</div>';
+    if(detay)detay.innerHTML='';
+    return null;
+  }
+  const A=sec.A(v);                 /* mm² */
+  const hacim=A*L;                  /* mm³ */
+  const parca=hacim/1e6*yog;        /* kg */
+  const metreKg=A*1000/1e6*yog;     /* kg/m */
+  const toplam=parca*adet;
+  const kart=(e,d,alt)=>'<div class="project-kpi"><div class="label">'+e+'</div><div class="value">'+d+'</div>'
+    +(alt?('<div style="font-size:11px;color:var(--text-muted);margin-top:3px">'+alt+'</div>'):'')+'</div>';
+  out.innerHTML=kart('Kesit Alanı',formatNumberTr(A,2)+' mm²',formatNumberTr(A/100,3)+' cm²')
+    +kart('Birim Ağırlık',formatNumberTr(metreKg,3)+' kg/m',sec.k==='sheet'?'sac için bilgi amaçlı':'')
+    +kart('Parça Ağırlığı',formatNumberTr(parca,3)+' kg',formatNumberTr(L/1000,3)+' m')
+    +kart('Toplam ('+adet+' adet)','<strong>'+formatNumberTr(toplam,2)+' kg</strong>',formatNumberTr(toplam/1000,4)+' ton');
+  if(detay){
+    detay.innerHTML='<div class="guide-note" style="margin:0">'
+      +'<strong>Hesap:</strong> kesit alanı '+formatNumberTr(A,2)+' mm² × uzunluk '+formatNumberTr(L,1)+' mm = '
+      +formatNumberTr(hacim/1000,2)+' cm³ hacim · × '+formatNumberTr(yog,2)+' kg/dm³ = '
+      +formatNumberTr(parca,3)+' kg/parça · × '+adet+' adet = <strong>'+formatNumberTr(toplam,2)+' kg</strong>'
+      +(sec.yaklasik?'<br><em>Not: Köşe radyusları ve flanş eğimleri hesaba katılmaz; standart katalog değerinden yaklaşık %1-3 sapabilir.</em>':'')
+      +'</div>';
+  }
+  return {sec,v,yog,adet,A,L,parca,metreKg,toplam};
+}
+function engOlculerMetni(sec,v){
+  return sec.f.map(([ad,etiket])=>etiket.replace(/\s*\(mm\)/,'').replace(/\s*\([^)]*\)/,'')+' '+formatNumberTr(v[ad],2)).join(' × ')
+    +' · boy '+formatNumberTr(v[sec.u[0]],0)+' mm';
+}
+function engAddRow(){
+  const r=engCalc();
+  if(!r){alert('Önce geçerli ölçüleri girin.');return;}
+  const mSel=document.getElementById('eng-material');
+  const mAd=mSel?(ENG_MATERIALS[parseInt(mSel.value,10)||0]||['Özel'])[0]:'';
+  _engRows.push({id:makeId('eng'),malzeme:mAd,yogunluk:r.yog,kesit:r.sec.ad,
+    olculer:engOlculerMetni(r.sec,r.v),adet:r.adet,birim:r.metreKg,parca:r.parca,toplam:r.toplam});
+  renderEngList();
+}
+function engRemoveRow(id){_engRows=_engRows.filter(x=>String(x.id)!==String(id));renderEngList();}
+function engClearList(){
+  if(!_engRows.length)return;
+  if(!confirm('Listedeki tüm kalemler silinsin mi?'))return;
+  _engRows=[];renderEngList();
+}
+function engListTotals(){
+  const kg=_engRows.reduce((s,r)=>s+r.toplam,0);
+  const fiyat=parseDecimalInput((document.getElementById('eng-price')||{}).value)||0;
+  return {kg,fiyat,tutar:kg*fiyat};
+}
+function renderEngList(){
+  const el=document.getElementById('eng-list');
+  if(!el)return;
+  const t=engListTotals();
+  const ozet=document.getElementById('eng-list-total');
+  if(ozet){
+    ozet.innerHTML=_engRows.length
+      ?('<strong>'+formatNumberTr(t.kg,2)+' kg</strong> · '+formatNumberTr(t.kg/1000,4)+' ton'
+        +(t.fiyat>0?(' · malzeme tutarı <strong>'+fmtTL(t.tutar)+'</strong>'):''))
+      :'';
+  }
+  if(!_engRows.length){el.innerHTML='<div class="empty">Listeye kalem eklemediniz. Hesapladıktan sonra "Listeye Ekle" ile buraya ekleyin.</div>';return;}
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Malzeme</th><th>Kesit</th><th>Ölçüler</th>'
+    +'<th style="text-align:right">Adet</th><th style="text-align:right">kg/m</th><th style="text-align:right">Parça kg</th>'
+    +'<th style="text-align:right">Toplam kg</th>'+(t.fiyat>0?'<th style="text-align:right">Tutar</th>':'')+'<th></th></tr></thead><tbody>'
+    +_engRows.map(r=>'<tr><td><strong>'+htmlEsc(r.malzeme)+'</strong></td>'
+      +'<td>'+htmlEsc(r.kesit)+'</td>'
+      +'<td style="font-size:12px;color:var(--text-muted)">'+htmlEsc(r.olculer)+'</td>'
+      +'<td style="text-align:right">'+r.adet+'</td>'
+      +'<td style="text-align:right">'+formatNumberTr(r.birim,3)+'</td>'
+      +'<td style="text-align:right">'+formatNumberTr(r.parca,3)+'</td>'
+      +'<td style="text-align:right;font-weight:700">'+formatNumberTr(r.toplam,2)+'</td>'
+      +(t.fiyat>0?('<td style="text-align:right">'+fmtTL(r.toplam*t.fiyat)+'</td>'):'')
+      +'<td><button class="btn btn-sm btn-del" onclick="engRemoveRow(&quot;'+htmlEsc(r.id)+'&quot;)">🗑</button></td></tr>').join('')
+    +'</tbody><tfoot><tr><th colspan="6">TOPLAM</th>'
+    +'<th style="text-align:right">'+formatNumberTr(t.kg,2)+' kg</th>'
+    +(t.fiyat>0?('<th style="text-align:right">'+fmtTL(t.tutar)+'</th>'):'')+'<th></th></tr></tfoot></table></div>';
+}
+function engCopyList(){
+  if(!_engRows.length){alert('Liste boş.');return;}
+  const t=engListTotals();
+  const satirlar=_engRows.map(r=>[r.malzeme,r.kesit,r.olculer,r.adet+' adet',
+    formatNumberTr(r.birim,3)+' kg/m',formatNumberTr(r.toplam,2)+' kg'
+    +(t.fiyat>0?(' · '+fmtTL(r.toplam*t.fiyat)):'')].join('\t'));
+  satirlar.push('');
+  satirlar.push('TOPLAM\t'+formatNumberTr(t.kg,2)+' kg'+(t.fiyat>0?('\t'+fmtTL(t.tutar)):''));
+  const metin=satirlar.join('\n');
+  const bitti=()=>alert('Liste panoya kopyalandı. Maliyet çalışmasına veya e-postaya yapıştırabilirsiniz.');
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(metin).then(bitti,()=>engCopyFallback(metin,bitti));
+  }else engCopyFallback(metin,bitti);
+}
+function engCopyFallback(metin,bitti){
+  const ta=document.createElement('textarea');
+  ta.value=metin;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');bitti();}catch(e){alert('Kopyalanamadı. Listeyi elle seçip kopyalayın.');}
+  document.body.removeChild(ta);
+}
+function renderWeightCalc(){
+  const m=document.getElementById('eng-material');
+  if(m&&!m.innerHTML)m.innerHTML=engMaterialOptions(0);
+  const sec=document.getElementById('eng-section');
+  if(sec&&!sec.innerHTML)sec.innerHTML=ENG_SECTIONS.map(x=>'<option value="'+x.k+'">'+htmlEsc(x.ad)+'</option>').join('');
+  const f=document.getElementById('eng-fields');
+  if(f&&!f.innerHTML){onEngMaterialChange();onEngSectionChange();}
+  else engCalc();
+  renderEngList();
+}
+
 /* ──────── v0.15.0 — KİŞİ KARTLARI ────────
    Teklif ve satın alma belgelerinde görünecek sorumlu kişi bilgileri burada
    tutulur. Belge oluştururken varsayılan olarak İŞLEMİ YAPAN kişinin kartı

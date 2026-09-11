@@ -1,0 +1,58 @@
+NakitPilot v0.17.0 Test Notu
+
+Ağırlık hesaplama testleri — 36 senaryo, 36 başarılı:
+
+Sayfa ve menü
+  * page-weightCalc, PAGE_TITLES, engineering modülü, NAV grubu yerinde
+  * Menüde "Mühendislik" başlığı ve altında "Ağırlık Hesaplama"
+
+Hesap doğruluğu — standart tablo değerleriyle karşılaştırıldı
+  * Sac 1000×2000×3 çelik ....... 47,10 kg
+  * Lama 50×5 / 6 m ............. 11,775 kg · 1,9625 kg/m
+  * Yuvarlak mil Ø20 / 1 m ...... 2,466 kg
+  * Boru Ø48,3×3 ................ 3,351 kg/m
+  * Kutu profil 40×40×2 ......... 2,386 kg/m
+  * Kutu profil 60×40×2 ......... 3,014 kg/m
+  * Kare dolu 20×20 ............. 3,140 kg/m
+  * Altıgen AF24 ................ 3,916 kg/m
+  * Köşebent 40×40×4 ............ 2,386 kg/m (katalog 2,42 — radyus farkı)
+  * Alüminyum sac 1000×2000×3 ... 16,20 kg
+  * 4 adet lama toplamı ......... 47,10 kg
+  Tüm değerler beklenen sonuçlarla 0,01 kg hassasiyetinde tutuyor.
+
+Malzeme ve yoğunluk
+  * 24 malzeme tanımlı
+  * Malzeme seçilince yoğunluk otomatik geliyor ve alan kilitleniyor
+  * "Özel" seçilince yoğunluk elle girilebiliyor
+
+Geçersiz girdi koruması
+  * Et kalınlığı dış ölçünün yarısından büyükse hesaplamıyor
+  * Uzunluk veya yoğunluk girilmemişse sonuç göstermiyor
+
+Kesit şemaları
+  * 12 kesit tipinin hepsinde şema çiziliyor
+
+Hesap listesi
+  * İki kalem eklendi, toplam 75,74 kg doğru hesaplandı
+  * kg fiyatı girilince tutar sütunu ve toplam tutar çıktı
+  * Satır silme çalışıyor
+
+Yetkiler
+  * Beş rolün tamamı ekranı görebiliyor
+  * Düzenleme seviyesi yönetici ve mühendiste, diğerleri görüntüleme
+
+Mobil
+  * 390x844 ekranda yatay taşma yok
+
+Kullanım kılavuzu
+  * 13 bölüm, 39 konu, 25 görsel · arama ve içindekiler testleri güncellendi
+
+GERİLEME TESTLERİ
+  Finans 14 · Proje 43 · Kenar durumlar 39 · Satın alma 50 · Bütünleşik 28 ·
+  Yetkiler 31 · Kişi kartları 58 · Kılavuz 28 · v0.14 satın alma/vade 65 ·
+  arayüz 33 · motor testleri (v0.8.3–v0.12.0) 162
+
+TOPLAM 587 SENARYO BAŞARILI.
+
+Görsel kontrol: ağırlık hesaplama ekranı ve mobil görünümü incelendi;
+kesit şeması büyütüldü.

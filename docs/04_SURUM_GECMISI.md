@@ -279,4 +279,20 @@
 - Kılavuz görselleri `guide/` klasöründe tutulur ve yalnız kılavuz açıldığında
   indirilir; otomatik yayın akışına bu klasör eklendi.
 
-Güncel baz sürüm: **v0.16.0**
+## v0.17.0
+- Sol menüye **Mühendislik** başlığı eklendi (Proje Takip ile Satın Alma
+  arasında). Tasarım ve maliyet çalışmasında kullanılan araçlar buraya gelecek.
+- İlk araç: **Ağırlık Hesaplama**. 12 kesit tipi (sac, lama, kare/yuvarlak
+  dolu, boru, kutu profil kare ve dikdörtgen, altıgen, köşebent, U, T, I/H),
+  24 malzeme ve özel yoğunluk girişi.
+- Her kesit için ölçü harflerini gösteren şema; kesit alanı, kg/m, parça ve
+  toplam ağırlık ile hesabın adım adım açıklaması.
+- Hesap listesi: birden çok kalem, toplam ağırlık, TL/kg fiyatıyla tutar ve
+  panoya kopyalama.
+- Et kalınlığı dış ölçüyü aşarsa, uzunluk veya yoğunluk boşsa hesaplama
+  yapılmaz. L/U/T/I profillerde radyus ihmali ekranda belirtilir.
+- Yetki: tüm roller kullanabilir; düzenleme seviyesi yönetici ve mühendiste.
+- Kullanım kılavuzuna "Mühendislik araçları" bölümü eklendi (13 bölüm,
+  39 konu, 25 görsel).
+
+Güncel baz sürüm: **v0.17.0**

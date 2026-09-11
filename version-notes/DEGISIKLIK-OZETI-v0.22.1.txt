@@ -1,0 +1,31 @@
+NakitPilot v0.22.1 — Kurulum SQL'i düzeltmesi
+
+SORUN
+v0.22.0 kurulum dosyası ikinci kez çalıştırıldığında, anahtar satırı yeniden
+doldurulmadıysa daha önce girilmiş service_role anahtarının ÜSTÜNE
+"BURAYA_SERVICE_ROLE_ANAHTARINIZI_YAPISTIRIN" yazıyordu. Kontrol tablosunda
+"service_role anahtari girildi" satırı false'a dönüyor ve kullanıcı oluşturma
+çalışmıyordu.
+
+DÜZELTME
+- Anahtar artık TEK bir yerde yazılıyor:
+    DO $kurulum$
+    DECLARE v_key text := 'BURAYA_SERVICE_ROLE_ANAHTARINIZI_YAPISTIRIN';
+  Bu satırı doldurmadan dosyayı tekrar çalıştırırsanız mevcut anahtarınız
+  KORUNUR (ekranda "Anahtar satiri doldurulmadi; mevcut anahtar korundu."
+  bilgisi çıkar). Doldurursanız güncellenir.
+- Anahtarın geçerli olup olmadığını tek bir np_admin_key() yardımcısı söylüyor.
+- Dosyanın sonuna NOTIFY pgrst, 'reload schema'; eklendi; yeni fonksiyonlar
+  Supabase API önbelleğinde hemen görünür.
+
+UYGULAMA TARAFI
+Kurulum kontrolü hata verirse bu artık "kurulum yapılmadı" diye gösterilmiyor.
+Şema önbelleği gecikmesi ayrı anlatılıyor, teknik ayrıntı yazılıyor ve kontrol
+2,5 saniye sonra bir kez otomatik tekrarlanıyor.
+
+ANAHTARI SONRADAN DEĞİŞTİRMEK / DÜZELTMEK
+SQL Editor'de tek satır yeterli:
+  UPDATE public.np_admin_config
+     SET value = 'ANAHTARINIZ', updated_at = now()
+   WHERE key = 'service_role_key';
+  NOTIFY pgrst, 'reload schema';

@@ -459,4 +459,17 @@
 - Kurulum yapılmadıysa ekranda hangi SQL dosyasının çalıştırılacağı ve `http`
   eklentisinin açılması gerektiği yazılı olarak gösteriliyor.
 
-Güncel baz sürüm: **v0.22.0**
+## v0.22.1
+- **Düzeltme (kurulum SQL'i):** dosya ikinci kez çalıştırıldığında, anahtar
+  satırı doldurulmamışsa daha önce girilmiş `service_role` anahtarının üstüne
+  placeholder yazıyordu ve kurulum bozuluyordu. Artık anahtar satırı tek yerde
+  (`DO $kurulum$` bloğundaki `v_key`) bulunur; doldurulmamışsa mevcut anahtar
+  **korunur**, doldurulmuşsa güncellenir. Anahtar kontrolü tek bir
+  `np_admin_key()` yardımcısına taşındı.
+- Kurulum SQL'inin sonuna `NOTIFY pgrst, 'reload schema';` eklendi: yeni
+  fonksiyonlar Supabase API şema önbelleğinde hemen görünür.
+- Uygulama, kurulum kontrolü hata verdiğinde bunu "kurulum yapılmadı" ile
+  karıştırmıyor: şema önbelleği gecikmesini ayrı anlatıyor, teknik ayrıntıyı
+  gösteriyor ve 2,5 saniye sonra kontrolü bir kez otomatik tekrarlıyor.
+
+Güncel baz sürüm: **v0.22.1**

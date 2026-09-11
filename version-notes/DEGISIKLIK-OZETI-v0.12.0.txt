@@ -1,0 +1,50 @@
+NakitPilot v0.12.0 — Cari Hesaplar ve Yönetim Raporları
+
+Sol menüye iki yeni bölüm ve üç yeni ekran eklendi.
+
+CARİ HESAPLAR
+1) Alacaklar
+- Müşteri bazında toplanır: proje faturaları eksi tahsilatlar.
+- Üstte üç özet kart: Toplam Alacak, Vadesi Geçmiş, Müşteri Sayısı.
+- Müşteri adının altında açık fatura sayısı ve ilgili proje kodları yazar.
+- Yaşlandırma sütunları: Vadesi Gelmedi / 1-30 / 31-60 / 61-90 / 90+ gün,
+  her satır için ayrı ayrı ve en altta TOPLAM satırı olarak.
+- Vadesi geçmiş sütunlardaki tutarlar kırmızı ve kalın gösterilir.
+- En yüksek alacaktan aşağıya sıralanır.
+
+2) Borçlar
+- Tedarikçi bazında toplanır: tedarikçi faturaları eksi ödemeler.
+- Kısmi ödenen faturalarda yalnız kalan borç sayılır.
+- Üstte üç özet kart: Toplam Borç, Vadesi Geçmiş, Tedarikçi Sayısı.
+- Aynı yaşlandırma tablosu ve aynı renk mantığı borç tarafında da kullanılır.
+- En yüksek borçtan aşağıya sıralanır.
+
+YÖNETİM RAPORU
+3) Yönetici Paneli
+- Üstte sekiz özet kart: teklif aşamasındaki proje sayısı, onay bekleyen
+  proje sayısı ve bekleyen teklif tutarı, üretimdeki proje sayısı, geciken
+  proje sayısı, tahsil edilecek toplam, ödenecek toplam, teklif onay oranı
+  ve onaylanan ciro.
+- Proje Kârlılığı tablosu: satış, tahmini maliyet, gerçek maliyet, gerçek kâr,
+  kâr marjı ve kalan alacak. Satışa göre büyükten küçüğe sıralanır.
+  * Tahmini maliyet projenin seçili maliyet çalışmasından gelir.
+  * Gerçek maliyet projeye bağlanan tedarikçi faturalarından gelir.
+  * Kâr ve marj negatifse kırmızı, pozitifse yeşil gösterilir.
+- Geciken Projeler listesi: teslim tarihi geçmiş ve kapanmamış projeler,
+  kaç gün geciktiği ile birlikte.
+
+NEDEN ÖNEMLİ
+- Bu sürümle ekosistem kapandı: teklif → onay → satın alma → gerçek maliyet
+  → fatura → tahsilat zinciri tek ekranda kâr olarak görünür hale geldi.
+- Alacak ve borç artık proje ve satın alma kayıtlarından otomatik doğar;
+  ayrı bir cari defter tutulması gerekmez.
+
+YETKİ
+- Alacaklar ve Borçlar "Cari" modülüne, Yönetici Paneli "Yönetim Raporları"
+  modülüne bağlıdır.
+- Her iki ekran salt okunurdur; buradan veri girilmez, veri kaynağı proje ve
+  satın alma kayıtlarıdır.
+- Modülü görme yetkisi olmayan kullanıcıda menü bölümü hiç görünmez.
+
+Supabase
+- Şema değişikliği gerekmez.

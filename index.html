@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.11.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.11.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.11.0">
-  <title>NakitPilot Marmara Teknik — v0.11.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.12.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.12.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.12.0">
+  <title>NakitPilot Marmara Teknik — v0.12.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2527,7 +2527,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.11.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.12.0</p>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Ana</div>
@@ -2571,6 +2571,17 @@
       </button>
       <button class="nav-btn" onclick="showPage('supplierInvoices',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 3h16v18l-3-2-3 2-3-2-3 2-3-2z"/><path d="M8 8h8M8 12h8"/></svg>Faturalar &amp; Ödemeler
+      </button>
+      <div class="nav-section">Cari Hesaplar</div>
+      <button class="nav-btn" onclick="showPage('receivables',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M12 3v18"/></svg>Alacaklar
+      </button>
+      <button class="nav-btn" onclick="showPage('payables',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18"/></svg>Borçlar
+      </button>
+      <div class="nav-section">Yönetim Raporu</div>
+      <button class="nav-btn" onclick="showPage('execDashboard',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Yönetici Paneli
       </button>
       <div class="nav-section">Analiz</div>
       <button class="nav-btn" onclick="showPage('reports',this)">
@@ -3419,6 +3430,32 @@
       </div>
 
       <!-- AI ASSISTANT -->
+      <!-- CARİ: ALACAKLAR -->
+      <div id="page-receivables" class="page form-page-clean pro-layout-page">
+        <div class="project-kpi-grid" id="receivable-kpis"></div>
+        <div class="card">
+          <div class="card-title"><span class="dot" style="background:var(--income)"></span>Müşteri Alacakları · Yaşlandırma</div>
+          <div class="section-sub">Proje faturalarından tahsil edilmemiş tutarlar müşteri bazında ve vade yaşına göre gruplanır. Vadesi geçmiş tutarlar kırmızı gösterilir.</div>
+          <div id="receivable-body"></div>
+        </div>
+      </div>
+
+      <!-- CARİ: BORÇLAR -->
+      <div id="page-payables" class="page form-page-clean pro-layout-page">
+        <div class="project-kpi-grid" id="payable-kpis"></div>
+        <div class="card">
+          <div class="card-title"><span class="dot" style="background:var(--expense)"></span>Tedarikçi Borçları · Yaşlandırma</div>
+          <div class="section-sub">Tedarikçi faturalarından ödenmemiş tutarlar tedarikçi bazında ve vade yaşına göre gruplanır.</div>
+          <div id="payable-body"></div>
+        </div>
+      </div>
+
+      <!-- YÖNETİM RAPORU -->
+      <div id="page-execDashboard" class="page form-page-clean pro-layout-page">
+        <div class="project-kpi-grid" id="exec-kpis"></div>
+        <div class="card"><div id="exec-body"></div></div>
+      </div>
+
       <!-- SATIN ALMA: TEDARİKÇİLER -->
       <div id="page-suppliers" class="page form-page-clean pro-layout-page">
         <div class="card">
@@ -4285,9 +4322,9 @@
 
 <script>
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-const PAGE_TITLES={suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
+const PAGE_TITLES={receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.11.0';
+const APP_VERSION='0.12.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -6512,7 +6549,7 @@ function rerenderActivePage(){
   const active=document.querySelector('.page.active');
   if(!active)return;
   const id=active.id.replace('page-','');
-  const renders={suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
+  const renders={receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
   if(renders[id])renders[id]();
 }
 
@@ -7224,7 +7261,7 @@ function showPage(id,btn){
   if(PROJECT_PAGES.includes(id))toggleProjectMenu(true);
   document.getElementById('topbar-title').textContent=PAGE_TITLES[id]||'';
   populateCatSelects();
-  const renders={suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
+  const renders={receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
   if(renders[id])renders[id]();
   if(id==='billing'&&isAdmin()&&currentCompanyId)refreshSubscriptionRequests(false);
   updateBillingAlert();
@@ -11402,6 +11439,190 @@ function renderPurchaseModulePage(id){
     onPurInvoiceCurrencyChange();onPurPaymentCurrencyChange();
     renderPurchaseInvoices();
   }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   v0.12.0 — CARİ HESAPLAR VE YÖNETİM RAPORLARI
+   Alacak  = proje faturaları − tahsilatlar   (müşteri bazında)
+   Borç    = tedarikçi faturaları − ödemeler  (tedarikçi bazında)
+   Yaşlandırma vade tarihine göre yapılır.
+   ════════════════════════════════════════════════════════════════════ */
+const AGING_BUCKETS=[
+  {key:'current',label:'Vadesi Gelmedi',min:null,max:0},
+  {key:'d30',label:'1-30 Gün',min:1,max:30},
+  {key:'d60',label:'31-60 Gün',min:31,max:60},
+  {key:'d90',label:'61-90 Gün',min:61,max:90},
+  {key:'d90p',label:'90+ Gün',min:91,max:null}
+];
+function agingBucketOf(dueDate){
+  const d=daysUntil(dueDate);
+  if(d===null||d>=0)return 'current';
+  const late=Math.abs(d);
+  if(late<=30)return 'd30';
+  if(late<=60)return 'd60';
+  if(late<=90)return 'd90';
+  return 'd90p';
+}
+function emptyAging(){const o={};AGING_BUCKETS.forEach(b=>o[b.key]=0);return o;}
+
+/* ── Alacaklar: müşteri bazında ── */
+function receivableRows(){
+  const map={};
+  mtpro().projects.forEach(p=>{
+    projectInvoices(p).forEach(inv=>{
+      const rem=invoiceRemaining(p,inv);
+      if(rem<=0.01)return;
+      const key=(p.customer||'Tanımsız müşteri').trim()||'Tanımsız müşteri';
+      if(!map[key])map[key]={name:key,total:0,aging:emptyAging(),items:[]};
+      map[key].total+=rem;
+      map[key].aging[agingBucketOf(inv.dueDate)]+=rem;
+      map[key].items.push({project:p,invoice:inv,remaining:rem});
+    });
+  });
+  return Object.values(map).sort((a,b)=>b.total-a.total);
+}
+function receivablesTotal(){return receivableRows().reduce((s,r)=>s+r.total,0);}
+
+/* ── Borçlar: tedarikçi bazında ── */
+function payableRows(){
+  const map={};
+  purchasing().invoices.forEach(inv=>{
+    const rem=purInvoiceRemaining(inv);
+    if(rem<=0.01)return;
+    const key=supplierName(inv.supplierId)||'Tanımsız tedarikçi';
+    if(!map[key])map[key]={name:key,total:0,aging:emptyAging(),items:[]};
+    map[key].total+=rem;
+    map[key].aging[agingBucketOf(inv.dueDate)]+=rem;
+    map[key].items.push({invoice:inv,remaining:rem});
+  });
+  return Object.values(map).sort((a,b)=>b.total-a.total);
+}
+function payablesTotal(){return payableRows().reduce((s,r)=>s+r.total,0);}
+
+function agingTableHtml(rows,firstColLabel,detailFn){
+  if(!rows.length)return '<div class="empty">Açık kayıt yok.</div>';
+  const tot=emptyAging();
+  rows.forEach(r=>AGING_BUCKETS.forEach(b=>tot[b.key]+=r.aging[b.key]));
+  const grand=rows.reduce((s,r)=>s+r.total,0);
+  return '<div class="table-wrap"><table><thead><tr><th>'+htmlEsc(firstColLabel)+'</th>'
+    +AGING_BUCKETS.map(b=>'<th style="text-align:right">'+htmlEsc(b.label)+'</th>').join('')
+    +'<th style="text-align:right">Toplam</th></tr></thead><tbody>'
+    +rows.map(r=>'<tr><td><strong>'+htmlEsc(r.name)+'</strong>'
+        +(detailFn?('<div style="font-size:11px;color:var(--text-muted)">'+detailFn(r)+'</div>'):'')+'</td>'
+      +AGING_BUCKETS.map(b=>'<td style="text-align:right'+(b.key!=='current'&&r.aging[b.key]>0.01?';color:var(--expense);font-weight:600':'')+'">'
+        +(r.aging[b.key]>0.01?fmtTL(r.aging[b.key]):'—')+'</td>').join('')
+      +'<td style="text-align:right;font-weight:700">'+fmtTL(r.total)+'</td></tr>').join('')
+    +'</tbody><tfoot><tr><th>TOPLAM</th>'
+    +AGING_BUCKETS.map(b=>'<th style="text-align:right">'+fmtTL(tot[b.key])+'</th>').join('')
+    +'<th style="text-align:right">'+fmtTL(grand)+'</th></tr></tfoot></table></div>';
+}
+function renderReceivables(){
+  const el=document.getElementById('receivable-body');if(!el)return;
+  const rows=receivableRows();
+  const kpi=document.getElementById('receivable-kpis');
+  if(kpi){
+    const overdue=rows.reduce((s,r)=>s+AGING_BUCKETS.filter(b=>b.key!=='current').reduce((q,b)=>q+r.aging[b.key],0),0);
+    kpi.innerHTML='<div class="project-kpi"><div class="label">Toplam Alacak</div><div class="value">'+fmtTL(receivablesTotal())+'</div></div>'
+      +'<div class="project-kpi status-rejected"><div class="label">Vadesi Geçmiş</div><div class="value">'+fmtTL(overdue)+'</div></div>'
+      +'<div class="project-kpi"><div class="label">Müşteri Sayısı</div><div class="value">'+rows.length+'</div></div>';
+  }
+  el.innerHTML=agingTableHtml(rows,'Müşteri',r=>r.items.length+' açık fatura · '+r.items.map(i=>htmlEsc(i.project.code||'')).filter((v,i,a)=>a.indexOf(v)===i).slice(0,4).join(', '));
+}
+function renderPayables(){
+  const el=document.getElementById('payable-body');if(!el)return;
+  const rows=payableRows();
+  const kpi=document.getElementById('payable-kpis');
+  if(kpi){
+    const overdue=rows.reduce((s,r)=>s+AGING_BUCKETS.filter(b=>b.key!=='current').reduce((q,b)=>q+r.aging[b.key],0),0);
+    kpi.innerHTML='<div class="project-kpi"><div class="label">Toplam Borç</div><div class="value">'+fmtTL(payablesTotal())+'</div></div>'
+      +'<div class="project-kpi status-rejected"><div class="label">Vadesi Geçmiş</div><div class="value">'+fmtTL(overdue)+'</div></div>'
+      +'<div class="project-kpi"><div class="label">Tedarikçi Sayısı</div><div class="value">'+rows.length+'</div></div>';
+  }
+  el.innerHTML=agingTableHtml(rows,'Tedarikçi',r=>r.items.length+' açık fatura');
+}
+
+/* ── Yönetim raporları ── */
+function projectProfitRow(p){
+  const sale=projectAmountTL(p);
+  const planned=(function(){
+    const c=mtpro().costs.find(x=>String(x.id)===String(p.selectedCostId))
+      ||mtpro().costs.filter(x=>String(x.projectId)===String(p.id)).slice(-1)[0];
+    return c?(n(c.total)*(n(p.rate)||1)):0;
+  })();
+  const actual=projectActualCost(p.id);
+  const invoiced=projectInvoicedTotal(p);
+  const collected=projectCollectedTotal(p);
+  return {p,sale,planned,actual,invoiced,collected,
+    remaining:Math.max(0,invoiced-collected),
+    plannedProfit:sale-planned, actualProfit:sale-actual,
+    margin: sale>0 ? ((sale-actual)/sale*100) : 0};
+}
+function execMetrics(){
+  const projects=mtpro().projects;
+  const inStatus=(arr)=>projects.filter(p=>arr.includes(p.status||''));
+  const quoteStage=inStatus(['Fiyat Teklifi Bekliyor']);
+  const pending=inStatus(['Onay Bekliyor','Beklemeye Alındı']);
+  const production=inStatus(['Onaylandı','Tasarımda','Malzeme Tedarik Sürecinde','Üretimde','Montajda','Test / Kontrolde','Teslime Hazır']);
+  const approved=projects.filter(p=>PRODUCTION_STATUSES.includes(p.status||''));
+  const completed=inStatus(['Teslim Edildi','Faturalandırıldı','Tahsilat Tamamlandı','Kapandı']);
+  const rejected=inStatus(['Reddedildi']);
+  const won=projects.filter(p=>p.approvedQuoteId).length;
+  const decided=won+rejected.length;
+  return {
+    quoteStage, pending, production, completed, rejected,
+    openQuoteAmount: pending.reduce((s,p)=>s+projectAmountTL(p),0),
+    approvedRevenue: approved.reduce((s,p)=>s+projectAmountTL(p),0),
+    completedRevenue: completed.reduce((s,p)=>s+projectAmountTL(p),0),
+    winRate: decided>0 ? (won/decided*100) : 0,
+    receivables: receivablesTotal(),
+    payables: payablesTotal(),
+    lateProjects: projects.filter(p=>p.dueDate&&daysUntil(p.dueDate)<0&&!['Teslim Edildi','Faturalandırıldı','Tahsilat Tamamlandı','Kapandı','Reddedildi'].includes(p.status||''))
+  };
+}
+function renderExecDashboard(){
+  const el=document.getElementById('exec-body');if(!el)return;
+  const m=execMetrics();
+  const kpi=document.getElementById('exec-kpis');
+  if(kpi){
+    kpi.innerHTML=[
+      ['Teklif Aşamasında',m.quoteStage.length+' proje',''],
+      ['Onay Bekleyen',m.pending.length+' proje · '+fmtTL(m.openQuoteAmount),''],
+      ['Üretimde',m.production.length+' proje',''],
+      ['Geciken',m.lateProjects.length+' proje',m.lateProjects.length?'status-rejected':''],
+      ['Tahsil Edilecek',fmtTL(m.receivables),''],
+      ['Ödenecek',fmtTL(m.payables),m.payables>0?'status-rejected':''],
+      ['Teklif Onay Oranı','%'+m.winRate.toFixed(0),''],
+      ['Onaylanan Ciro',fmtTL(m.approvedRevenue),'']
+    ].map(([l,v,c])=>'<div class="project-kpi '+c+'"><div class="label">'+htmlEsc(l)+'</div><div class="value">'+v+'</div></div>').join('');
+  }
+  const rows=mtpro().projects.filter(p=>PRODUCTION_STATUSES.includes(p.status||'')).map(projectProfitRow)
+    .sort((a,b)=>b.sale-a.sale);
+  let html='<div class="card-title" style="margin-top:4px">📈 Proje Kârlılığı</div>'
+    +'<div class="section-sub">Gerçek maliyet, projeye bağlanan tedarikçi faturalarından gelir. Tahmini maliyet, projenin seçili maliyet çalışmasından alınır.</div>';
+  if(!rows.length)html+='<div class="empty">Onaylanmış proje yok.</div>';
+  else html+='<div class="table-wrap"><table><thead><tr><th>Proje</th><th>Durum</th>'
+    +'<th style="text-align:right">Satış</th><th style="text-align:right">Tahmini Maliyet</th>'
+    +'<th style="text-align:right">Gerçek Maliyet</th><th style="text-align:right">Gerçek Kâr</th>'
+    +'<th style="text-align:right">Marj</th><th style="text-align:right">Kalan Alacak</th></tr></thead><tbody>'
+    +rows.map(r=>'<tr><td><strong>'+htmlEsc(r.p.code||'')+'</strong><div style="font-size:11px;color:var(--text-muted)">'+htmlEsc(r.p.customer||'')+'</div></td>'
+      +'<td><span class="project-badge '+(projectStatusClass(r.p.status)==='status-closed'?'green':'blue')+'">'+htmlEsc(r.p.status||'')+'</span></td>'
+      +'<td style="text-align:right">'+fmtTL(r.sale)+'</td>'
+      +'<td style="text-align:right;color:var(--text-muted)">'+(r.planned>0?fmtTL(r.planned):'—')+'</td>'
+      +'<td style="text-align:right;color:var(--expense)">'+(r.actual>0?fmtTL(r.actual):'—')+'</td>'
+      +'<td style="text-align:right;font-weight:700;color:'+(r.actualProfit>=0?'var(--income)':'var(--expense)')+'">'+fmtTL(r.actualProfit)+'</td>'
+      +'<td style="text-align:right;font-weight:600;color:'+(r.margin>=0?'var(--income)':'var(--expense)')+'">%'+r.margin.toFixed(1)+'</td>'
+      +'<td style="text-align:right;color:'+(r.remaining>0.01?'var(--expense)':'var(--text-muted)')+'">'+(r.remaining>0.01?fmtTL(r.remaining):'—')+'</td></tr>').join('')
+    +'</tbody></table></div>';
+  if(m.lateProjects.length){
+    html+='<div class="card-title" style="margin-top:18px">⚠️ Geciken Projeler</div>'
+      +'<ul class="project-mini-list">'+m.lateProjects.map(p=>'<li><strong>'+htmlEsc(p.code||'')+'</strong> · '+htmlEsc(p.customer||'')+' · teslim '+htmlEsc(dmy(p.dueDate))+' · <span style="color:var(--expense);font-weight:600">'+Math.abs(daysUntil(p.dueDate))+' gün gecikme</span></li>').join('')+'</ul>';
+  }
+  el.innerHTML=html;
+}
+function renderCurrentModulePage(id){
+  if(id==='receivables')renderReceivables();
+  if(id==='payables')renderPayables();
+  if(id==='execDashboard')renderExecDashboard();
 }
 
 /* ──────── BANKA MERKEZİ v0.8.2 ──────── */

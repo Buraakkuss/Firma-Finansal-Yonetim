@@ -1,0 +1,44 @@
+NakitPilot v0.12.0 Test Notu
+
+- index.html satır içi JavaScript sözdizimi doğrulandı: 1 blok, 0 hata.
+- sw.js sözdizimi ve manifest.webmanifest JSON geçerliliği doğrulandı.
+- Uygulama yerel sunucuda Chromium ile açıldı: sürüm 0.12.0, 29 sayfa,
+  yeni menü girdileri (Alacaklar | Borçlar | Yönetici Paneli) yerinde,
+  yeni sayfa ve kart kimliklerinin hepsi mevcut, açılışta JavaScript hatası yok.
+- Üç yeni ekran örnek veriyle tarayıcıda çizdirildi ve ekran görüntüsü alındı;
+  tablo, kart ve renk düzeni bozulmadı.
+
+- Cari ve rapor motoru kaynağın kendisinden okunarak Node üzerinde çalıştırıldı.
+  31 senaryo, 31 başarılı:
+
+Yaşlandırma kovaları
+  * Vadesi gelmemiş, bugün vadesi ve vade girilmemiş kayıtlar "Vadesi Gelmedi"
+  * 15 gün → 1-30, 45 gün → 31-60, 75 gün → 61-90, 120 gün → 90+
+
+Alacaklar
+  * Yalnız açık alacağı olan müşteri listelenir, tamamı tahsil edilen düşer
+  * Toplam alacak 500.000 TL, 40 gün gecikmiş 200.000 TL doğru kovada
+  * Müşteri bazında gruplama ve büyükten küçüğe sıralama doğru
+
+Borçlar
+  * İki tedarikçi ayrı satırlarda, toplam borç 120.000 TL
+  * En yüksek borç başta (70.000 TL)
+  * Kısmi ödenen fatura yalnız kalan tutarıyla yaşlandırmaya girdi
+  * 70 gün gecikmiş 61-90, 10 gün gecikmiş 1-30 kovasında
+
+Proje kârlılığı
+  * 600.000 satış, 400.000 tahmini maliyet, 380.000 gerçek maliyet
+  * Gerçek kâr 220.000 TL, marj %36,7
+  * Faturalanan, tahsil edilen ve kalan alacak tutarları doğru
+
+Yönetici paneli
+  * Teklif onay oranı %67
+  * Teslim tarihi geçmiş ve kapanmamış proje geciken olarak işaretlendi
+  * Kapanmış/faturalanmış proje geciken sayılmadı
+  * Tahsil edilecek 500.000 TL, ödenecek 500.000 TL
+
+Gerileme testleri
+  * v0.8.3: 7/7, v0.9.0: 25/25, v0.9.2: 18/18, v0.9.5: 8/8,
+    v0.9.6: 20/20, v0.10.0: 26/26, v0.11.0: 27/27
+
+Toplam 162 senaryo başarılı.

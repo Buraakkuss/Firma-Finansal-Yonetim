@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.21.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.21.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.21.0">
-  <title>NakitPilot Marmara Teknik — v0.21.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.21.1">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.21.1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.21.1">
+  <title>NakitPilot Marmara Teknik — v0.21.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2722,7 +2722,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.21.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.21.1</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -4702,7 +4702,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={weightCalc:'Mühendislik · Ağırlık Hesaplama',cadLibrary:'Standart Ekipmanlar · Hazır CAD Datalar',catalogs:'Standart Ekipmanlar · Kataloglar',guide:'Kullanım Kılavuzu',people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.21.0';
+const APP_VERSION='0.21.1';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -5557,7 +5557,9 @@ async function requestPasswordReset(){
       const {error}=await withTimeout(sb.auth.resetPasswordForEmail(email,{redirectTo:hedef}),AUTH_TIMEOUT_MS,'Şifre sıfırlama isteği');
       if(!error){
         if(btn){btn.disabled=false;btn.textContent=btn.dataset.eski||'Şifremi Unuttum';}
-        setAuthMessage('Şifre sıfırlama maili '+email+' adresine gönderildi. Gelen kutusunda yoksa spam/gereksiz klasörüne bakın. '
+        setAuthMessage('Şifre sıfırlama isteği '+email+' adresi için Supabase\'e iletildi. Gelen kutusunda yoksa spam/gereksiz klasörüne bakın. '
+          +'Birkaç dakikada gelmezse mail gönderimi kurulmamış demektir: yönetici Supabase → Project Settings → Authentication → SMTP Settings '
+          +'bölümünde kendi mail sunucusunu tanımlamalıdır (yerleşik gönderim yalnız proje üyelerinin adresine ve saatte birkaç mail sınırıyla çalışır). '
           +'Maildeki bağlantı bu adresi açar: '+hedef,'ok');
         return;
       }
@@ -5719,9 +5721,13 @@ async function authSignup(){
       return;
     }
     if(/already registered|already been registered|user already/i.test(msg)){
-      setAuthMessage('Bu e-posta ile zaten bir hesap var. Giriş Yap sekmesinden girin; şifrenizi unuttuysanız Şifremi Unuttum deyin.','error');
+      /* Davetle gelindiyse: giriş yapması yeterli, davet giriş anında uygulanır. */
+      setAuthMessage(pendingInviteToken
+        ? 'Bu e-posta ile zaten bir hesap var. Aşağıdan o hesabın şifresiyle giriş yapın — giriş yaptığınız anda davet uygulanacak ve kaydınız yöneticinin onayına düşecek. Şifrenizi bilmiyorsanız Şifremi Unuttum deyin.'
+        : 'Bu e-posta ile zaten bir hesap var. Giriş Yap sekmesinden girin; şifrenizi unuttuysanız Şifremi Unuttum deyin.','error');
       setAuthMode('login');
       const el=document.getElementById('auth-email');if(el)el.value=v.email;
+      const pw=document.getElementById('auth-password');if(pw)setTimeout(()=>pw.focus(),80);
       return;
     }
     setAuthMessage('Kayıt başarısız: '+msg,'error');return;
@@ -6271,7 +6277,7 @@ function renderJoinPanel(hata){
   if(hata){
     stateEl.className='join-state err';
     stateEl.innerHTML='Üyelik talebi ekranı açılamadı: '+htmlEsc(hata)
-      +'<br><small>SQL kurulumu yapılmadıysa yöneticiniz <strong>nakitpilot-uyelik-onay-v0.21.0.sql</strong> dosyasını çalıştırmalıdır.</small>';
+      +'<br><small>SQL kurulumu yapılmadıysa yöneticiniz <strong>nakitpilot-uyelik-onay-v0.21.1.sql</strong> dosyasını çalıştırmalıdır.</small>';
     formEl.hidden=true;
     if(refreshBtn)refreshBtn.hidden=false;
     if(detailsEl)detailsEl.hidden=false;
@@ -6401,7 +6407,7 @@ async function renderJoinRequests(){
   const {data,error}=await sb.rpc(LIST_JOIN_REQUESTS_RPC,{p_company_id:currentCompanyId});
   if(error){
     list.innerHTML='<div class="role-warning">Üyelik talepleri alınamadı: '+escapeHtml(error.message)
-      +'<br><small>Bu özellik için <strong>sql/nakitpilot-uyelik-onay-v0.21.0.sql</strong> dosyasının Supabase\'de çalıştırılmış olması gerekir.</small></div>';
+      +'<br><small>Bu özellik için <strong>sql/nakitpilot-uyelik-onay-v0.21.1.sql</strong> dosyasının Supabase\'de çalıştırılmış olması gerekir.</small></div>';
     return;
   }
   _joinRequestsCache=Array.isArray(data)?data:[];

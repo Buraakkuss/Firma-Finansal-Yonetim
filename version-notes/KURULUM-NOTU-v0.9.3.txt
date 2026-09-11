@@ -1,0 +1,12 @@
+NakitPilot v0.9.3 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu olduğu için dosya yüklemeye gerek yoktur.
+- Uygulamayı ?v=0.9.3 ile açın; görünüm eski kalırsa Ctrl + F5 (Mac: Cmd + Shift + R).
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+Kontrol
+- Proje Takip > Teklif & Maliyet ekranından bir teklifi Ön İzle ile açın.
+- Belgenin ilk sayfasında Marmara Teknik logosu görünmelidir.

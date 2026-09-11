@@ -1,0 +1,13 @@
+NakitPilot v0.9.3 Test Notu
+
+- index.html satır içi JavaScript sözdizimi doğrulandı: hata yok.
+- Logo 6400x4800 kaynaktan beyaz boşlukları kırpılarak 620x315 piksele
+  ölçeklendi; 256 renge indirilerek 13 KB'a düşürüldü.
+  Görsel olarak kontrol edildi: gradyanlarda bantlaşma yok, kenarlar temiz.
+- Teklif belgesi yeniden üretildi ve Chromium ile render edilerek kapak
+  görsel olarak doğrulandı; logo doğru boyutta ve konumda basıldı.
+- Kapak bilgi tablosunda sağ sütunu boş olan satırın birleştirildiği
+  üretilen HTML üzerinde doğrulandı.
+- Yedek parça şablonu toplamı yeniden doğrulandı: 91.250,00 TL.
+
+Supabase SQL gereksinimi: Yok.

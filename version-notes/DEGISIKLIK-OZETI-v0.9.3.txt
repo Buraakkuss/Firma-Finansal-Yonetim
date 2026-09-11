@@ -1,0 +1,16 @@
+NakitPilot v0.9.3 — Kurumsal logo ve teklif kapağı düzeltmesi
+
+Yeni: Marmara Teknik logosu
+- Teklif belgesinin kapağına firmanın kurumsal logosu eklendi.
+- Logo belgeye gömülü olarak taşınır; kaydedilen veya e-posta ile gönderilen
+  PDF'te internet bağlantısı olmadan da görünür.
+- Logo dosyası ayrıca icons/marmarateknik-logo.png olarak repoda saklanır.
+- Dosya boyutu, baskı kalitesi korunacak şekilde 620 piksel genişliğe ve
+  256 renge indirilerek 13 KB'a düşürüldü.
+
+Düzeltilen: kapak bilgi tablosu
+- Sağ sütunda karşılığı olmayan satırlarda boş kutu görünüyordu.
+- Artık sol bilgi satırı boş alanı birleştirerek kaplıyor; kapak temiz görünüyor.
+
+Supabase
+- Şema değişikliği gerekmez.

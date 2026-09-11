@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.22.0">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.22.0" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.22.0">
-  <title>NakitPilot Marmara Teknik — v0.22.0</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.22.1">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.22.1" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.22.1">
+  <title>NakitPilot Marmara Teknik — v0.22.1</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2685,7 +2685,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.22.0</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.22.1</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -4655,7 +4655,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={weightCalc:'Mühendislik · Ağırlık Hesaplama',cadLibrary:'Standart Ekipmanlar · Hazır CAD Datalar',catalogs:'Standart Ekipmanlar · Kataloglar',guide:'Kullanım Kılavuzu',people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.22.0';
+const APP_VERSION='0.22.1';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -6025,23 +6025,37 @@ function generateMemberPassword(){
   el.focus();
   el.select();
 }
-async function checkAdminSetup(){
+let _adminSetupError='';
+async function checkAdminSetup(tekrar){
   const sb=ensureSupabase();
   if(!sb||!currentCompanyId)return false;
   try{
     const {data,error}=await sb.rpc(ADMIN_SETUP_READY_RPC);
     if(error)throw error;
-    _adminSetupReady=data===true;
+    _adminSetupReady=data===true;_adminSetupError='';
   }catch(e){
     _adminSetupReady=false;
+    _adminSetupError=String((e&&e.message)||e);
+    /* Fonksiyon yeni oluşturulduysa Supabase'in şema önbelleği birkaç saniye
+       gecikebilir; bir kez otomatik tekrar denenir. */
+    if(!tekrar&&/does not exist|schema cache|404|not found/i.test(_adminSetupError)){
+      setTimeout(()=>checkAdminSetup(true),2500);
+    }
   }
   const uyari=document.getElementById('member-setup-warn');
   if(uyari){
     uyari.hidden=!!_adminSetupReady;
     if(!_adminSetupReady){
-      uyari.innerHTML='⚠️ <strong>Kurulum tamamlanmamış.</strong> Kullanıcı oluşturabilmek için '
-        +'<strong>'+htmlEsc(SETUP_SQL_ADI)+'</strong> dosyasını Supabase → SQL Editor\'de çalıştırın '
-        +'ve dosyadaki <strong>service_role</strong> anahtarı alanını kendi anahtarınızla doldurun.';
+      const onbellek=/does not exist|schema cache|404|not found/i.test(_adminSetupError);
+      uyari.innerHTML=onbellek
+        ? '⚠️ <strong>Kurulum kontrol edilemedi.</strong> SQL\'i az önce çalıştırdıysanız Supabase\'in şema '
+          +'önbelleği henüz tazelenmemiş olabilir: birkaç saniye bekleyip sayfayı yenileyin (Ctrl+F5). '
+          +'Sorun sürerse SQL Editor\'de <code>NOTIFY pgrst, \'reload schema\';</code> komutunu çalıştırın. '
+          +'<br><small>Teknik ayrıntı: '+htmlEsc(_adminSetupError)+'</small>'
+        : '⚠️ <strong>Kurulum tamamlanmamış.</strong> Kullanıcı oluşturabilmek için '
+          +'<strong>'+htmlEsc(SETUP_SQL_ADI)+'</strong> dosyasını Supabase → SQL Editor\'de çalıştırın '
+          +'ve dosyadaki <strong>service_role</strong> anahtarı satırını kendi anahtarınızla doldurun. '
+          +'Dosyayı ikinci kez çalıştırmanız girilmiş anahtarı bozmaz.';
     }
   }
   return _adminSetupReady;

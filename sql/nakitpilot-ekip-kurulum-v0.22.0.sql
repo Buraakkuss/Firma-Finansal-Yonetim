@@ -50,9 +50,39 @@ ALTER TABLE public.np_admin_config ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.np_admin_config FROM anon, authenticated;
 
 INSERT INTO public.np_admin_config(key, value) VALUES
-  ('project_url', 'https://ekpehcfhhldtxsuqiczj.supabase.co'),
-  ('service_role_key', 'BURAYA_SERVICE_ROLE_ANAHTARINIZI_YAPISTIRIN')
+  ('project_url', 'https://ekpehcfhhldtxsuqiczj.supabase.co')
 ON CONFLICT (key) DO UPDATE SET value = excluded.value, updated_at = now();
+
+-- Anahtar YALNIZ aşağıdaki tek satırda yazılır. Bu dosyayı tekrar
+-- çalıştırırsanız (satırı doldurmadan bile) daha önce girdiğiniz anahtar
+-- KORUNUR; üstüne yazılmaz.
+DO $kurulum$
+DECLARE v_key text := 'BURAYA_SERVICE_ROLE_ANAHTARINIZI_YAPISTIRIN';
+BEGIN
+  INSERT INTO public.np_admin_config(key, value)
+  VALUES ('service_role_key', '(henuz girilmedi)')
+  ON CONFLICT (key) DO NOTHING;
+
+  IF v_key NOT LIKE 'BURAYA%' AND length(v_key) > 20 THEN
+    UPDATE public.np_admin_config
+       SET value = v_key, updated_at = now()
+     WHERE key = 'service_role_key';
+    RAISE NOTICE 'service_role anahtari kaydedildi.';
+  ELSE
+    RAISE NOTICE 'Anahtar satiri doldurulmadi; mevcut anahtar korundu.';
+  END IF;
+END
+$kurulum$;
+
+-- Anahtarın girilip girilmediğini tek yerden söyleyen yardımcı.
+CREATE OR REPLACE FUNCTION public.np_admin_key()
+RETURNS text LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  SELECT CASE WHEN value IS NOT NULL AND length(value) > 20
+                   AND value NOT LIKE 'BURAYA%' AND value <> '(henuz girilmedi)'
+              THEN value ELSE NULL END
+  FROM public.np_admin_config WHERE key = 'service_role_key';
+$$;
+REVOKE ALL ON FUNCTION public.np_admin_key() FROM anon, authenticated;
 
 -- ── 3) HTTP eklentisi (Supabase admin servisine istek atmak için)
 CREATE EXTENSION IF NOT EXISTS http WITH SCHEMA extensions;
@@ -63,8 +93,8 @@ RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, extens
 DECLARE v_url text; v_key text; v_status int; v_content text;
 BEGIN
   SELECT value INTO v_url FROM public.np_admin_config WHERE key = 'project_url';
-  SELECT value INTO v_key FROM public.np_admin_config WHERE key = 'service_role_key';
-  IF v_url IS NULL OR v_key IS NULL OR v_key = 'BURAYA_SERVICE_ROLE_ANAHTARINIZI_YAPISTIRIN' THEN
+  v_key := public.np_admin_key();
+  IF v_url IS NULL OR v_key IS NULL THEN
     RAISE EXCEPTION 'Yonetici anahtari tanimlanmamis. Kurulum SQL dosyasindaki service_role alanini doldurun.';
   END IF;
   SELECT r.status, r.content INTO v_status, v_content
@@ -194,11 +224,9 @@ GRANT EXECUTE ON FUNCTION public.np_get_team(uuid) TO authenticated;
 -- ── 7) Kurulumun hazır olup olmadığını uygulamaya bildirir
 CREATE OR REPLACE FUNCTION public.np_admin_setup_ready()
 RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE v_key text;
 BEGIN
   IF auth.uid() IS NULL THEN RETURN false; END IF;
-  SELECT value INTO v_key FROM public.np_admin_config WHERE key = 'service_role_key';
-  RETURN v_key IS NOT NULL AND v_key <> 'BURAYA_SERVICE_ROLE_ANAHTARINIZI_YAPISTIRIN' AND length(v_key) > 20;
+  RETURN public.np_admin_key() IS NOT NULL;
 END; $$;
 
 -- ── 8) Yetkiler
@@ -207,14 +235,15 @@ GRANT EXECUTE ON FUNCTION public.np_set_member_password(uuid,uuid,text) TO authe
 GRANT EXECUTE ON FUNCTION public.np_admin_setup_ready() TO authenticated;
 REVOKE ALL ON FUNCTION public.np_admin_api(text,text,jsonb) FROM anon, authenticated;
 
--- ── 9) Kontrol
+-- ── 9) API şema önbelleğini tazele (yeni fonksiyonlar hemen görünsün)
+NOTIFY pgrst, 'reload schema';
+
+-- ── 9b) Kontrol
 SELECT 'ayar tablosu' AS kontrol, to_regclass('public.np_admin_config') IS NOT NULL AS tamam
 UNION ALL
 SELECT 'http eklentisi', EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'http')
 UNION ALL
-SELECT 'service_role anahtari girildi',
-       (SELECT value <> 'BURAYA_SERVICE_ROLE_ANAHTARINIZI_YAPISTIRIN' AND length(value) > 20
-          FROM public.np_admin_config WHERE key = 'service_role_key')
+SELECT 'service_role anahtari girildi', public.np_admin_key() IS NOT NULL
 UNION ALL
 SELECT 'kullanici olusturma fonksiyonu',
        to_regprocedure('public.np_create_member(uuid,text,text,text,text)') IS NOT NULL

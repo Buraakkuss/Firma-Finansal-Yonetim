@@ -239,4 +239,19 @@
 - Liste ekranlarında işlem butonları için sütun genişletildi; boş vade ipucu
   satırı gizlendi.
 
-Güncel baz sürüm: **v0.14.2**
+## v0.15.0
+- Yeni ekran: **Ayarlar > Kişi Kartları**. Ad soyad, unvan, e-posta, telefon,
+  cep ve not. E-posta, giriş yapan kullanıcıyla eşleştirme için kullanılır.
+- Kendi kartını herkes düzenler; başkasının kartını ve silmeyi yalnız yönetici
+  yapar. Teklif veya siparişte geçen kart silinemez.
+- Teklif penceresine ve satın alma sipariş formuna **Sorumlu Kişi** seçimi
+  eklendi. Varsayılan olarak işlemi yapan kullanıcının kartı gelir; listeden
+  başka bir kişi seçilirse ad, telefon ve e-posta ona göre değişir.
+- Teklif PDF'inde "Hazırlayan" artık unvanla birlikte, iletişim bilgileri
+  seçilen kişinin bilgileri olarak basılır; imza kutusundaki ad da odur.
+- Sipariş ve teklif talep formunda "Sorumlu Kişi" / "Talep Eden" satırı ve
+  imza kutusunda kişinin unvanı, telefonu ve e-postası yer alır.
+- Kart seçilmezse firma varsayılanları basılır (eski davranış korunur).
+- Düzeltme: imza kutusundaki sabit yükseklik kişi bilgileriyle taşıyordu.
+
+Güncel baz sürüm: **v0.15.0**

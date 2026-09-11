@@ -1,0 +1,69 @@
+NakitPilot v0.15.0 Test Notu
+
+Yeni testler — 49 senaryo, 49 başarılı (tarayıcıda gerçek formlar doldurularak):
+
+Kişi kartı oluşturma
+  * Boş liste mesajı gösteriliyor
+  * 3 kişi kartı kaydedildi (Burak Kuş / Ahmet Yılmaz / Elif Demir)
+  * Ad, unvan, e-posta, telefon, cep ve not doğru kaydedildi
+  * Giriş yapan kullanıcının kartı e-postadan bulundu
+  * Kendi kartı listede "bu kart sizin" rozetiyle işaretlendi
+
+Doğrulamalar
+  * Adsız kart reddedildi
+  * Geçersiz e-posta biçimi reddedildi ve uyarı verildi
+  * Aynı e-posta ile ikinci kart reddedildi; uyarı çakışan kişiyi söylüyor
+
+Teklifte varsayılan kişi
+  * Teklif penceresi açılınca kendi kartım seçili geldi
+  * Hazırlayan adı, telefonu ve e-postası kendiliğinden doldu
+  * Listede 3 kişi + firma varsayılanı seçeneği var, unvanlar görünüyor
+
+Teklifte başka kişi seçme
+  * Elif Demir seçilince ad, telefon ve e-posta üçü birden değişti
+  * Teklife preparedById / preparedBy / preparedByTitle / preparedByPhone /
+    preparedByMail kaydedildi
+  * PDF'te "Hazırlayan: Elif Demir · Proje Mühendisi" yazıyor
+  * PDF'teki telefon ve e-posta Elif'in bilgileri
+  * İmza kutusundaki DÜZENLEYEN adı Elif Demir
+
+Kart seçilmezse
+  * Firma varsayılan telefonu ve e-postası basılıyor (eski davranış korundu)
+
+Siparişte sorumlu kişi
+  * Sipariş formu açılınca kendi kartım seçili geldi
+  * Ahmet Yılmaz seçilip kaydedildi, siparişe personId yazıldı
+  * Belgede ad, unvan, telefon ve e-posta yazıyor
+  * Üst bilgi tablosunda "Sorumlu Kişi" satırı var
+  * Siparişi düzenleyince seçili kişi geri geldi ve kaydedince değişmedi
+
+Teklif talep formu
+  * "Talep Eden" satırı ve seçilen kişinin bilgileri basılıyor
+
+Kart silme koruması
+  * Siparişte kullanılan kart silinemedi; uyarı kaç belgede geçtiğini söylüyor
+  * Hiçbir belgede geçmeyen kart silinebildi
+
+Yetki
+  * Mühendis kendi kartını düzenleyebiliyor
+  * Mühendis başkasının kartını düzenleyemiyor
+  * Mühendis kart silemiyor
+  * Yönetici her kartı düzenleyebiliyor
+
+Menü ve sayfa
+  * page-people, PAGE_TITLES, NAV_GROUPS, APP_MODULES ve menü butonu yerinde
+
+GÖRSEL KONTROL
+  * Kişi Kartları ekranı, teklif penceresi, sipariş formu ve teklif talep
+    formu ekran görüntüsüyle incelendi.
+  * Bulunan hata: sipariş formunda imza kutusuna kişi bilgileri eklenince
+    sabit yükseklik (82px) taşıyor, metin genel şartların üstüne biniyordu.
+    Kutu min-height'a çevrildi ve satır kaydırma eklendi; düzeltildi.
+  * Kişi Kartları formundaki dikey boşluk ve dar işlem sütunu düzeltildi.
+
+GERİLEME TESTLERİ
+  Finans 14 · Proje 43 · Kenar durumlar 39 · Satın alma 50 · Bütünleşik 28 ·
+  Yetkiler 31 · v0.14 satın alma/vade 65 · arayüz 32 ·
+  motor testleri (v0.8.3–v0.12.0) 162
+
+TOPLAM 513 SENARYO BAŞARILI.

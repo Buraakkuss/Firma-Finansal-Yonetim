@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.14.2">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.14.2" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.14.2">
-  <title>NakitPilot Marmara Teknik — v0.14.2</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.15.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.15.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.15.0">
+  <title>NakitPilot Marmara Teknik — v0.15.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -908,7 +908,9 @@
   #pinv-table .table-wrap table th:last-child,
   #pinv-table .table-wrap table td:last-child,
   #supplier-table .table-wrap table th:last-child,
-  #supplier-table .table-wrap table td:last-child { width:200px; }
+  #supplier-table .table-wrap table td:last-child,
+  #person-table .table-wrap table th:last-child,
+  #person-table .table-wrap table td:last-child { width:200px; }
   #project-list-card .table-wrap table th:last-child,
   #project-list-card .table-wrap table td:last-child { width:230px; }
   .project-action-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
@@ -2555,7 +2557,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.14.2</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.15.0</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -2609,6 +2611,7 @@
         <span class="nav-parent-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 2l.05.05a2 2 0 1 1-2.83 2.83l-.05-.05a1.8 1.8 0 0 0-2-.36 1.8 1.8 0 0 0-1.08 1.65V21a2 2 0 1 1-4 0v-.08A1.8 1.8 0 0 0 8.8 19.3a1.8 1.8 0 0 0-2 .36l-.05.05a2 2 0 1 1-2.83-2.83l.05-.05a1.8 1.8 0 0 0 .36-2A1.8 1.8 0 0 0 2.68 14H2.6a2 2 0 1 1 0-4h.08A1.8 1.8 0 0 0 4.3 8.8a1.8 1.8 0 0 0-.36-2l-.05-.05A2 2 0 1 1 6.72 3.9l.05.05a1.8 1.8 0 0 0 2 .36A1.8 1.8 0 0 0 9.85 2.7V2.6a2 2 0 1 1 4 0v.08a1.8 1.8 0 0 0 1.08 1.65 1.8 1.8 0 0 0 2-.36l.05-.05a2 2 0 1 1 2.83 2.83l-.05.05a1.8 1.8 0 0 0-.36 2A1.8 1.8 0 0 0 21.02 10h.08a2 2 0 1 1 0 4h-.08A1.8 1.8 0 0 0 19.4 15z"/></svg>Ayarlar</span><span class="chev">›</span>
       </button>
       <div class="nav-sub-group" id="navgroup-system">
+        <button class="nav-btn" onclick="showPage('people',this)">Kişi Kartları</button>
         <button class="nav-btn" onclick="showPage('categories',this)">Kategori Yönetimi</button>
         <button class="nav-btn" onclick="showPage('team',this)">Firma & Ekip</button>
         <button class="nav-btn" style="display:none" onclick="showPage('billing',this)">Paket & Abonelik</button>
@@ -3443,6 +3446,27 @@
 
       <!-- AI ASSISTANT -->
       <!-- CARİ: ALACAKLAR -->
+      <!-- KİŞİ KARTLARI -->
+      <div id="page-people" class="page form-page-clean pro-layout-page">
+        <div class="card">
+          <div class="card-title"><span class="dot" style="background:var(--primary)"></span>Kişi Kartı</div>
+          <div class="section-sub">Teklif ve satın alma belgelerinde görünecek sorumlu kişi bilgileri. Belge oluştururken varsayılan olarak sizin kartınız gelir; arkadaşınız yerinde değilse belgede onun kartını seçebilirsiniz. <strong>Kendi kartınızı her zaman düzenleyebilirsiniz; başkasının kartını yalnız yönetici düzenler.</strong></div>
+          <input type="hidden" id="person-edit-id">
+          <div class="pro-grid pro-grid-12">
+            <div class="form-group span-4"><label>Ad Soyad</label><input id="person-name" placeholder="Örn. Burak Kuş"></div>
+            <div class="form-group span-4"><label>Unvan</label><input id="person-title" placeholder="Örn. Satın Alma Sorumlusu"></div>
+            <div class="form-group span-4"><label>E-posta</label><input id="person-mail" placeholder="ornek@marmarateknikmakine.com.tr"></div>
+            <div class="form-group span-3"><label>Telefon</label><input id="person-phone" placeholder="+90 ..."></div>
+            <div class="form-group span-3"><label>Cep Telefonu</label><input id="person-mobile" placeholder="+90 ..."></div>
+            <div class="form-group span-6"><label>Not</label><input id="person-note" placeholder="Örn. Proje ve teklif süreçleri"></div>
+            <div class="span-12" style="margin-top:-6px"><div class="section-sub" style="margin:0">E-posta adresi, uygulamaya giriş yapan kullanıcıyla eşleştirmek için kullanılır. Kendi kartınızın e-postası giriş e-postanızla aynı olmalıdır ki belgelerde varsayılan olarak sizin bilgileriniz gelsin.</div></div>
+            <div class="form-action span-3"><button class="btn btn-primary" onclick="savePerson()">💾 Kişiyi Kaydet</button></div>
+            <div class="form-action span-2"><button class="btn" onclick="clearPersonForm()">Temizle</button></div>
+          </div>
+        </div>
+        <div class="card"><div class="card-title">👤 Kişi Listesi</div><div class="section-sub">Belgelerde "Sorumlu Kişi" olarak bu kişiler seçilebilir.</div><div id="person-table"></div></div>
+      </div>
+
       <div id="page-receivables" class="page form-page-clean pro-layout-page">
         <div class="project-kpi-grid" id="receivable-kpis"></div>
         <div class="card">
@@ -3507,6 +3531,7 @@
             <div class="form-group span-3"><label>Durum</label><select id="po-status" onchange="onPOStatusChange()"><option>Talep</option><option>Teklif İstendi</option><option>Onay Bekliyor</option><option>Sipariş Verildi</option><option>Kısmi Teslim</option><option>Teslim Alındı</option><option>Faturalandı</option><option>İptal</option></select></div>
             <div class="form-group span-2"><label>Ödeme Vadesi (gün)</label><input type="number" id="po-term" min="0" step="1" placeholder="Cariden" oninput="onPOTermManual()"></div>
             <div class="form-group span-2"><label>Teklif Son Tarihi</label><input type="date" id="po-quote-due"></div>
+            <div class="form-group span-3"><label>Sorumlu Kişi</label><select id="po-person"></select></div>
             <div class="form-group span-5"><label>Not</label><input id="po-note" placeholder="Teslim yeri, şart, referans"></div>
             <div class="form-group span-12" style="margin-top:-4px"><div class="section-sub" id="po-mode-hint" style="margin:0"></div></div>
             <div class="form-group span-12">
@@ -4119,7 +4144,10 @@
       <div class="form-group span-4"><label>İlgili Telefon</label><input id="quote-contact-phone" placeholder="+90 ..."></div>
       <div class="form-group span-4"><label>İlgili E-posta</label><input id="quote-contact-mail" placeholder="ornek@firma.com"></div>
       <div class="form-group span-4"><label>Talep No <span style="color:var(--text-hint)">(opsiyonel)</span></label><input id="quote-request-no" placeholder="Müşteri talep numarası"></div>
+      <div class="form-group span-4"><label>Sorumlu Kişi</label><select id="quote-person" onchange="onQuotePersonChange()"></select></div>
       <div class="form-group span-4"><label>Hazırlayan</label><input id="quote-prepared-by" placeholder="Ad Soyad"></div>
+      <div class="form-group span-4"><label>Hazırlayan Telefon</label><input id="quote-prepared-phone" placeholder="Kart seçilince dolar"></div>
+      <div class="form-group span-4"><label>Hazırlayan E-posta</label><input id="quote-prepared-mail" placeholder="Kart seçilince dolar"></div>
       <div class="form-group span-4"><label>Teslim Yeri</label><input id="quote-delivery-place" placeholder="Örn. Müşteri fabrikası, nakliye dahil"></div>
       <div class="form-group span-4"><label>Garanti (ay)</label><input type="number" id="quote-warranty-months" min="0" step="1" value="12"></div>
 
@@ -4341,9 +4369,9 @@
 
 <script>
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-const PAGE_TITLES={receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
+const PAGE_TITLES={people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.14.2';
+const APP_VERSION='0.15.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -4438,7 +4466,7 @@ const APP_MODULES=[
   {key:'purchase',  label:'Satın Alma',        pages:['suppliers','purchaseOrders','supplierInvoices']},
   {key:'current',   label:'Cari Hesaplar',     pages:['receivables','payables']},
   {key:'management',label:'Yönetim Raporları', pages:['execDashboard']},
-  {key:'system',    label:'Sistem',            pages:['settings','contact']}
+  {key:'system',    label:'Sistem',            pages:['settings','contact','people']}
 ];
 const MODULE_LEVELS={none:0,view:1,edit:2};
 const MODULE_LEVEL_LABELS={none:'Erişim yok',view:'Görüntüleme',edit:'Düzenleme'};
@@ -4665,7 +4693,7 @@ const NAV_GROUPS={
   purchase:['suppliers','purchaseOrders','supplierInvoices'],
   current:['receivables','payables'],
   report:['execDashboard','reports','plan5','export'],
-  system:['categories','team','billing','legal','settings','contact'],
+  system:['people','categories','team','billing','legal','settings','contact'],
   admin:['admin']
 };
 function navGroupOf(pageId){
@@ -6611,7 +6639,7 @@ function rerenderActivePage(){
   const active=document.querySelector('.page.active');
   if(!active)return;
   const id=active.id.replace('page-','');
-  const renders={receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
+  const renders={people:renderPeople,receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
   if(renders[id])renders[id]();
 }
 
@@ -7324,7 +7352,7 @@ function showPage(id,btn){
   closeMobileNav();
   document.getElementById('topbar-title').textContent=PAGE_TITLES[id]||'';
   populateCatSelects();
-  const renders={receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
+  const renders={people:renderPeople,receivables:()=>renderCurrentModulePage('receivables'),payables:()=>renderCurrentModulePage('payables'),execDashboard:()=>renderCurrentModulePage('execDashboard'),suppliers:()=>renderPurchaseModulePage('suppliers'),purchaseOrders:()=>renderPurchaseModulePage('purchaseOrders'),supplierInvoices:()=>renderPurchaseModulePage('supplierInvoices'),dashboard:renderDashboard,daily:renderHistory,fixed:renderFixed,forecast:renderForecast,banking:renderBanking,creditCards:renderCreditCards,projectMeetings:()=>renderProjectModulePage('projectMeetings'),projects:()=>renderProjectModulePage('projects'),projectCosts:()=>renderProjectModulePage('projectCosts'),projectProduction:()=>renderProjectModulePage('projectProduction'),projectFiles:()=>renderProjectModulePage('projectFiles'),projectFinance:()=>renderProjectModulePage('projectFinance'),ai:renderAiAssistant,reports:renderReports,plan5:renderPlan5,categories:renderCategories,export:renderExportPage,team:renderTeam,billing:renderBillingPage,legal:renderLegalPage,settings:renderSettingsPage,contact:renderContactPage,admin:renderAdminPage};
   if(renders[id])renders[id]();
   if(id==='billing'&&isAdmin()&&currentCompanyId)refreshSubscriptionRequests(false);
   updateBillingAlert();
@@ -9834,8 +9862,28 @@ function onQuoteCostChange(preserveAmount){
    açıldıktan sonraki İLK teklif açılışında ReferenceError veriyordu; bu
    yüzden teklif penceresi hiç açılmıyordu. */
 let _quoteBaseline='';
+/* Kart seçilince hazırlayan ad/telefon/e-posta alanları dolar.
+   Kart seçili değilse firma varsayılanları belgeye basılır. */
+function onQuotePersonChange(ilk){
+  const sel=document.getElementById('quote-person');if(!sel)return;
+  const x=personById(sel.value||'');
+  const ad=document.getElementById('quote-prepared-by');
+  const tel=document.getElementById('quote-prepared-phone');
+  const mail=document.getElementById('quote-prepared-mail');
+  if(x){
+    if(ad)ad.value=personDisplayName(x);
+    if(tel)tel.value=x.phone||x.mobile||'';
+    if(mail)mail.value=x.email||'';
+  }else if(!ilk){
+    if(tel)tel.value='';
+    if(mail)mail.value='';
+  }
+  if(tel)tel.placeholder=MT_COMPANY.phone;
+  if(mail)mail.placeholder=MT_COMPANY.mail;
+  if(typeof markQuoteDirty==='function')markQuoteDirty();
+}
 function quoteFormSnapshot(){
-  const ids=['quote-id','quote-project-id','quote-code','quote-cost','quote-date','quote-valid-until','quote-delivery-time','quote-delivery-type','quote-payment-terms','quote-currency','quote-amount','quote-revision-note','quote-technical'];
+  const ids=['quote-id','quote-project-id','quote-code','quote-cost','quote-date','quote-valid-until','quote-delivery-time','quote-delivery-type','quote-payment-terms','quote-currency','quote-amount','quote-revision-note','quote-technical','quote-person','quote-prepared-by','quote-prepared-phone','quote-prepared-mail'];
   const obj={};ids.forEach(id=>{const el=document.getElementById(id);obj[id]=el?String(el.value||''):'';});
   return JSON.stringify(obj);
 }
@@ -9850,7 +9898,7 @@ function markQuoteDirty(){
   setQuoteSaveState(quoteFormSnapshot()===_quoteBaseline && !!document.getElementById('quote-id')?.value);
 }
 function initQuoteDirtyTracking(isExisting){
-  const ids=['quote-cost','quote-date','quote-valid-until','quote-delivery-time','quote-delivery-type','quote-payment-terms','quote-currency','quote-amount','quote-revision-note','quote-technical'];
+  const ids=['quote-cost','quote-date','quote-valid-until','quote-delivery-time','quote-delivery-type','quote-payment-terms','quote-currency','quote-amount','quote-revision-note','quote-technical','quote-prepared-by','quote-prepared-phone','quote-prepared-mail'];
   ids.forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
     el.oninput=markQuoteDirty;
@@ -9888,7 +9936,18 @@ function openQuoteModal(projectId,quoteId,costId){
   setV('quote-contact-mail',(q&&q.contactMail)||'');
   setV('quote-request-no',(q&&q.requestNo)||'');
   setV('quote-subject',(q&&q.subject)||p.title||'');
+  /* v0.15.0 — Sorumlu kişi: kayıtlı teklifte kendi kişisi, yeni teklifte
+     işlemi yapan kullanıcının kartı varsayılan gelir. */
+  const qPerson=document.getElementById('quote-person');
+  if(qPerson){
+    const secili=(q&&q.preparedById)||(q?'':((currentPerson()||{}).id||''));
+    qPerson.innerHTML=personOptions(secili,'Firma varsayılanı (kart seçilmedi)');
+    qPerson.value=secili||'';
+  }
   setV('quote-prepared-by',(q&&q.preparedBy)||p.owner||'');
+  setV('quote-prepared-phone',(q&&q.preparedByPhone)||'');
+  setV('quote-prepared-mail',(q&&q.preparedByMail)||'');
+  if(!q)onQuotePersonChange(true);
   setV('quote-delivery-place',(q&&q.deliveryPlace)||'');
   setV('quote-start-condition',(q&&q.startCondition)||'Avans ödemesinin banka hesabına geçmesinden sonra +5. gün iş başlangıç tarihi kabul edilir.');
   setV('quote-warranty-months',(q&&n(q.warrantyMonths))||12);
@@ -10041,7 +10100,11 @@ function collectQuoteFromModal(forceNew){
     contactMail:(document.getElementById('quote-contact-mail')||{}).value.trim(),
     requestNo:(document.getElementById('quote-request-no')||{}).value.trim(),
     subject:(document.getElementById('quote-subject')||{}).value.trim(),
+    preparedById:(document.getElementById('quote-person')||{}).value||'',
     preparedBy:(document.getElementById('quote-prepared-by')||{}).value.trim(),
+    preparedByTitle:(function(){const x=personById((document.getElementById('quote-person')||{}).value||'');return x?String(x.title||''):'';})(),
+    preparedByPhone:((document.getElementById('quote-prepared-phone')||{}).value||'').trim(),
+    preparedByMail:((document.getElementById('quote-prepared-mail')||{}).value||'').trim(),
     deliveryPlace:(document.getElementById('quote-delivery-place')||{}).value.trim(),
     startCondition:(document.getElementById('quote-start-condition')||{}).value.trim(),
     warrantyMonths:parseDecimalInput((document.getElementById('quote-warranty-months')||{}).value)||12,
@@ -10301,7 +10364,7 @@ function quoteHtml(q){
     ['E-posta',q.contactMail||'']
   ].filter(r=>String(r[1]||'').trim());
   const rightPairs=[
-    ['Hazırlayan',q.preparedBy||p.owner||''],
+    ['Hazırlayan',(q.preparedBy||p.owner||'')+(q.preparedByTitle?(' · '+q.preparedByTitle):'')],
     ['İletişim',q.preparedByPhone||MT_COMPANY.phone],
     ['E-posta',q.preparedByMail||MT_COMPANY.mail],
     ['Talep No',q.requestNo||'']
@@ -11072,6 +11135,161 @@ function relinkOrderInvoices(order,oldProjectId){
   });
   return moved;
 }
+/* ──────── v0.15.0 — KİŞİ KARTLARI ────────
+   Teklif ve satın alma belgelerinde görünecek sorumlu kişi bilgileri burada
+   tutulur. Belge oluştururken varsayılan olarak İŞLEMİ YAPAN kişinin kartı
+   gelir; arkadaşı yerinde değilse listeden başka bir kişi seçilebilir ve
+   belgeye o kişinin adı, unvanı, telefonu ve e-postası yazılır. */
+function peopleStore(){
+  if(!Array.isArray(data.people))data.people=[];
+  return data.people;
+}
+function personById(id){
+  if(!id)return null;
+  return peopleStore().find(x=>String(x.id)===String(id))||null;
+}
+function personByEmail(mail){
+  const k=normalizeEmail(mail||'');
+  if(!k)return null;
+  return peopleStore().find(x=>normalizeEmail(x.email||'')===k)||null;
+}
+/* Oturumu açan kişinin kendi kartı. */
+function currentPerson(){
+  return personByEmail((currentUser&&currentUser.email)||'');
+}
+function personDisplayName(x){
+  if(!x)return '';
+  return String(x.name||'').trim()||String(x.email||'').trim();
+}
+function personContactLine(x){
+  if(!x)return '';
+  return [x.title,x.phone||x.mobile,x.email].filter(v=>String(v||'').trim()).join(' · ');
+}
+/* Belgeye basılacak bilgiler: kart yoksa firma varsayılanlarına düşer. */
+function personDocInfo(id){
+  const x=personById(id);
+  if(x)return {
+    id:String(x.id), name:personDisplayName(x), title:String(x.title||''),
+    phone:String(x.phone||x.mobile||''), mail:String(x.email||''), found:true
+  };
+  const me=currentPerson();
+  if(me)return {
+    id:String(me.id), name:personDisplayName(me), title:String(me.title||''),
+    phone:String(me.phone||me.mobile||''), mail:String(me.email||''), found:true
+  };
+  return {id:'',name:'',title:'',phone:'',mail:'',found:false};
+}
+function peopleSorted(){
+  return peopleStore().filter(x=>x.active!==false)
+    .slice().sort((a,b)=>personDisplayName(a).localeCompare(personDisplayName(b),'tr'));
+}
+function personOptions(selected,emptyLabel){
+  const head=['<option value="">'+htmlEsc(emptyLabel||'Firma varsayılanı')+'</option>'];
+  return head.concat(peopleSorted().map(x=>{
+    const etiket=personDisplayName(x)+(x.title?(' · '+x.title):'');
+    return '<option value="'+htmlEsc(x.id)+'"'+(String(x.id)===String(selected)?' selected':'')+'>'+htmlEsc(etiket)+'</option>';
+  })).join('');
+}
+/* Kendi kartını herkes düzenleyebilir; başkasınınkini yalnız yönetici. */
+function peopleCanEditCard(x){
+  if(isAdmin())return true;
+  if(!x)return !!currentUser;
+  return normalizeEmail(x.email||'')===normalizeEmail((currentUser&&currentUser.email)||'');
+}
+function clearPersonForm(){
+  ['person-name','person-title','person-mail','person-phone','person-mobile','person-note']
+    .forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const e=document.getElementById('person-edit-id');if(e)e.value='';
+}
+function savePerson(){
+  const editId=(document.getElementById('person-edit-id')||{}).value||'';
+  const mevcut=editId?personById(editId):null;
+  if(!peopleCanEditCard(mevcut))return denyAction('Yalnız kendi kişi kartınızı düzenleyebilirsiniz. Başka bir kartı yönetici düzenleyebilir.');
+  const name=((document.getElementById('person-name')||{}).value||'').trim();
+  const mail=((document.getElementById('person-mail')||{}).value||'').trim();
+  if(!name){alert('Ad soyad zorunludur.');return;}
+  if(mail&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)){alert('Geçerli bir e-posta adresi girin veya boş bırakın.');return;}
+  const arr=peopleStore();
+  if(mail){
+    const cakisan=arr.find(x=>normalizeEmail(x.email||'')===normalizeEmail(mail)&&String(x.id)!==String(editId));
+    if(cakisan){alert('Bu e-posta başka bir kişi kartında kayıtlı: '+personDisplayName(cakisan));return;}
+  }
+  if(!editId&&!isAdmin()){
+    const benimMail=normalizeEmail((currentUser&&currentUser.email)||'');
+    if(benimMail&&normalizeEmail(mail)!==benimMail){
+      alert('Yönetici olmayan kullanıcı yalnız kendi kartını oluşturabilir.\n\nE-posta alanına giriş e-postanızı yazın: '+((currentUser&&currentUser.email)||''));
+      return;
+    }
+  }
+  const rec={
+    id: editId||makeId('per'), name, email:mail,
+    title:((document.getElementById('person-title')||{}).value||'').trim(),
+    phone:((document.getElementById('person-phone')||{}).value||'').trim(),
+    mobile:((document.getElementById('person-mobile')||{}).value||'').trim(),
+    note:((document.getElementById('person-note')||{}).value||'').trim(),
+    active:true, updatedAt:new Date().toISOString(), updatedBy:(currentUser&&currentUser.email)||''
+  };
+  const i=arr.findIndex(x=>String(x.id)===String(editId));
+  if(i>=0)arr[i]=Object.assign({},arr[i],rec);
+  else {rec.createdAt=new Date().toISOString();arr.push(rec);}
+  saveData(data);clearPersonForm();renderPeople();fillPersonSelects();
+}
+function editPerson(id){
+  const x=personById(id);if(!x)return;
+  if(!peopleCanEditCard(x))return denyAction('Bu kartı yalnız kart sahibi veya yönetici düzenleyebilir.');
+  document.getElementById('person-edit-id').value=x.id;
+  [['person-name','name'],['person-title','title'],['person-mail','email'],
+   ['person-phone','phone'],['person-mobile','mobile'],['person-note','note']]
+    .forEach(([el,k])=>{const e=document.getElementById(el);if(e)e.value=x[k]||'';});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function deletePerson(id){
+  const x=personById(id);if(!x)return;
+  if(!isAdmin())return denyAction('Kişi kartı silmek için yönetici yetkisi gerekir.');
+  const teklif=(mtpro().quotes||[]).filter(q=>String(q.preparedById||'')===String(id)).length;
+  const siparis=purchasing().orders.filter(o=>String(o.personId||'')===String(id)).length;
+  if(teklif||siparis){
+    alert('Bu kişi '+teklif+' teklif ve '+siparis+' siparişte sorumlu olarak geçiyor. Kayıt silinemez.\n\nKişi ayrılmışsa kartı silmek yerine adının yanına not düşün; belgelerdeki geçmiş bilgi korunur.');
+    return;
+  }
+  if(!confirm('Kişi kartı silinsin mi? '+personDisplayName(x)))return;
+  data.people=peopleStore().filter(y=>String(y.id)!==String(id));
+  saveData(data);renderPeople();fillPersonSelects();
+}
+function renderPeople(){
+  const el=document.getElementById('person-table');if(!el)return;
+  fillPersonSelects();
+  const benim=normalizeEmail((currentUser&&currentUser.email)||'');
+  const rows=peopleSorted();
+  if(!rows.length){
+    el.innerHTML='<div class="empty">Henüz kişi kartı yok. Kendi kartınızı oluşturun: ad soyad, unvan ve giriş e-postanız yeterlidir.</div>';
+    return;
+  }
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Ad Soyad</th><th>Unvan</th><th>E-posta</th><th>Telefon</th><th>Not</th><th></th></tr></thead><tbody>'
+    +rows.map(x=>{
+      const ben=benim&&normalizeEmail(x.email||'')===benim;
+      return '<tr><td><strong>'+htmlEsc(personDisplayName(x))+'</strong>'
+        +(ben?' <span class="project-badge green">bu kart sizin</span>':'')+'</td>'
+        +'<td>'+htmlEsc(x.title||'')+'</td>'
+        +'<td>'+htmlEsc(x.email||'')+'</td>'
+        +'<td>'+htmlEsc(x.phone||'')+(x.mobile?('<div style="font-size:11px;color:var(--text-muted)">'+htmlEsc(x.mobile)+'</div>'):'')+'</td>'
+        +'<td style="color:var(--text-muted)">'+htmlEsc(x.note||'')+'</td>'
+        +'<td><div class="project-action-row">'
+          +(peopleCanEditCard(x)?'<button class="btn btn-sm" onclick="editPerson(&quot;'+htmlEsc(x.id)+'&quot;)">Düzenle</button>':'')
+          +(isAdmin()?'<button class="btn btn-sm btn-del" onclick="deletePerson(&quot;'+htmlEsc(x.id)+'&quot;)">🗑</button>':'')
+        +'</div></td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function fillPersonSelects(){
+  [['quote-person',()=>{}],['po-person',()=>{}]].forEach(([id])=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const keep=el.value||'';
+    el.innerHTML=personOptions(keep,'Firma varsayılanı (kart seçilmedi)');
+    el.value=keep;
+  });
+}
+
 /* ──────── v0.14.0 — CARİ VADESİ ────────
    Vade tedarikçi (cari) kartında gün olarak tanımlanır. Sipariş kendi
    vadesini taşımıyorsa tedarikçinin vadesi kullanılır. Vade, fatura
@@ -11364,6 +11582,8 @@ function clearPurchaseOrderForm(){
   const st=document.getElementById('po-status');if(st)st.value='Talep';
   onPOSupplierChange();onPOStatusChange();
   const pr=document.getElementById('po-project');if(pr)pr.value='';
+  const pp=document.getElementById('po-person');
+  if(pp){const benim=(currentPerson()||{}).id||'';pp.innerHTML=personOptions(benim,'Firma varsayılanı (kart seçilmedi)');pp.value=benim;}
   updatePOCodePreview();
 }
 /* SAP no önizleme: yeni kayıtta hangi numaranın verileceğini gösterir,
@@ -11464,6 +11684,8 @@ function savePurchaseOrder(){
     })(),
     quoteDueDate:(document.getElementById('po-quote-due')||{}).value||'',
     note:((document.getElementById('po-note')||{}).value||'').trim(),
+    /* v0.15.0 — Belgede görünecek sorumlu kişi. Boşsa işlemi yapanın kartı. */
+    personId:((document.getElementById('po-person')||{}).value||'')||((currentPerson()||{}).id||''),
     lines:_poLines.map(l=>Object.assign({},l)),
     updatedAt:new Date().toISOString(), updatedBy:(currentUser&&currentUser.email)||''
   };
@@ -11499,6 +11721,8 @@ function editPurchaseOrder(id){
   if(tEl&&tEl.dataset)tEl.dataset.manual=ozel?'1':'';
   if(tEl)tEl.value=ozel?String(o.termDays):'';
   set('po-quote-due',o.quoteDueDate||'');
+  const pp2=document.getElementById('po-person');
+  if(pp2){pp2.innerHTML=personOptions(o.personId||'','Firma varsayılanı (kart seçilmedi)');pp2.value=o.personId||'';}
   onPOSupplierChange();onPOStatusChange();
   _poLines=poLines(o).map(l=>Object.assign({},l));renderPOLines();
   updatePOCodePreview();
@@ -11530,6 +11754,8 @@ function receiveAllGoods(id){
   saveData(data);renderPurchaseOrders();renderProjectActivity();
 }
 function syncPurchaseSelects(){
+  const pp=document.getElementById('po-person');
+  if(pp){const keep=pp.value||((currentPerson()||{}).id||'');pp.innerHTML=personOptions(keep,'Firma varsayılanı (kart seçilmedi)');pp.value=keep;}
   const sup=document.getElementById('po-supplier');
   if(sup)sup.innerHTML=supplierOptions(sup.value||'',true);
   const isup=document.getElementById('pinv-supplier');
@@ -11651,9 +11877,16 @@ function purchaseOrderDocHtml(o,forceMode){
   const intro = rfq
     ? '<div class="po-note"><b>Sayın '+htmlEsc(sup.name||'Yetkili')+',</b>Aşağıdaki kalemler için fiyat teklifinizi rica ederiz. Lütfen birim fiyat, teslim süresi, ödeme vadesi ve teklif geçerlilik sürenizi belirterek '+(o.quoteDueDate?('<strong>'+htmlEsc(dmy(o.quoteDueDate))+'</strong> tarihine kadar '):'')+'tarafımıza iletiniz. Yazışmalarınızda <strong>'+htmlEsc(o.code||'')+'</strong> talep numarasını kullanınız.</div>'
     : '<div class="po-note" style="min-height:0"><b>Faturalandırma</b>Lütfen faturayı <strong>'+htmlEsc(o.code||'')+'</strong> sipariş numarası ile düzenleyiniz. Fatura kalemleri ve miktarları bu form ile birebir aynı olmalıdır.</div>';
+  /* v0.15.0 — Belgedeki sorumlu kişi: siparişte seçilen kart, yoksa işlemi
+     yapanın kartı, o da yoksa firma varsayılanları. */
+  const kisi=personDocInfo(o.personId||'');
+  const kisiAd=kisi.name||o.updatedBy||(currentUser&&currentUser.email)||'';
+  const kisiSatir=[kisi.title,kisi.phone||MT_COMPANY.phone,kisi.mail||MT_COMPANY.mail]
+    .filter(v=>String(v||'').trim()).map(v=>htmlEsc(v)).join('<br>');
+  const imzaIc='<strong>'+htmlEsc(kisiAd)+'</strong>'+(kisiSatir?('<div style="margin-top:4px;font-size:10px;line-height:1.45">'+kisiSatir+'</div>'):'');
   const signs = rfq
-    ? '<div class="po-sign"><div>Talep Eden<br><br>'+htmlEsc(o.updatedBy||(currentUser&&currentUser.email)||'')+'</div><div>Tedarikçi Teklif Veren / Kaşe</div></div>'
-    : '<div class="po-sign"><div>Sipariş Veren<br><br>'+htmlEsc(o.updatedBy||(currentUser&&currentUser.email)||'')+'</div><div>Onaylayan</div><div>Tedarikçi Kaşe / İmza</div></div>';
+    ? '<div class="po-sign"><div>Talep Eden<br><br>'+imzaIc+'</div><div>Tedarikçi Teklif Veren / Kaşe</div></div>'
+    : '<div class="po-sign"><div>Sipariş Veren<br><br>'+imzaIc+'</div><div>Onaylayan</div><div>Tedarikçi Kaşe / İmza</div></div>';
   const termsHtml='<div class="po-terms"><div class="po-terms-title">'
     +(rfq?'TEKLİF TALEP ŞARTLARI':'SATIN ALMA GENEL ŞARTLARI')+'</div><ol>'
     +terms.map(t=>'<li><b>'+htmlEsc(t[0])+'.</b> '+htmlEsc(t[1])+'</li>').join('')
@@ -11681,8 +11914,10 @@ function purchaseOrderDocHtml(o,forceMode){
     +'.po-total{background:#f3f7fa;font-weight:700}'
     +'.po-note{border:1px solid #d7e0e7;padding:10px;margin-bottom:14px;min-height:46px}'
     +'.po-note b{display:block;margin-bottom:4px;color:#3c4c5c}'
-    +'.po-sign{display:flex;gap:14px;margin-top:18px}'
-    +'.po-sign div{flex:1;border:1px solid #d7e0e7;padding:10px;height:82px;font-size:11px;color:#5b6b7a}'
+    +'.po-sign{display:flex;gap:14px;margin-top:18px;align-items:stretch}'
+    /* v0.15.0 — Kişi bilgileri eklenince sabit yükseklik taşıyordu. */
+    +'.po-sign div{flex:1 1 0;min-width:0;border:1px solid #d7e0e7;padding:10px;min-height:88px;font-size:11px;color:#5b6b7a;overflow-wrap:anywhere}'
+    +'.po-sign strong{color:#1b2430;font-size:12px}'
     +'.po-terms{margin-top:22px;page-break-before:always;break-before:page}'
     +'.po-terms-title{font-size:13px;text-align:center;letter-spacing:.12em;font-weight:700;margin:0 0 12px;padding:8px 0;border-top:2px solid #2E4F6E;border-bottom:2px solid #2E4F6E;color:#2E4F6E}'
     +'.po-terms ol{margin:0;padding-left:18px;font-size:10.5px;line-height:1.5;text-align:justify}'
@@ -11706,6 +11941,10 @@ function purchaseOrderDocHtml(o,forceMode){
         : htmlEsc(CURRENCY_LABELS[cur]||cur)+(cur!=='TRY'?(' · Kur '+formatNumberTr(n(o.rate)||1,4)):'')))
     +(rfq&&o.quoteDueDate?('<tr><th>Teklif Son Tarihi</th><td colspan="3"><strong>'+htmlEsc(dmy(o.quoteDueDate))+'</strong></td></tr>'):'')
     +(rfq?'':('<tr><th>Durum</th><td colspan="3">'+htmlEsc(o.status||'')+'</td></tr>'))
+    +'<tr><th>'+(rfq?'Talep Eden':'Sorumlu Kişi')+'</th><td colspan="3">'+htmlEsc(kisiAd)
+      +(kisi.title?(' · '+htmlEsc(kisi.title)):'')
+      +'<div style="font-size:10.5px;color:#5b6b7a;margin-top:2px">'
+      +htmlEsc(kisi.phone||MT_COMPANY.phone)+' · '+htmlEsc(kisi.mail||MT_COMPANY.mail)+'</div></td></tr>'
     +'</table>'
     +'<table>'
     +'<tr><th style="width:120px">Tedarikçi</th><td colspan="3"><strong>'+htmlEsc(sup.name||'')+'</strong></td></tr>'

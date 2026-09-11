@@ -1,0 +1,47 @@
+NakitPilot v0.15.0 — Kişi kartları ve belgelerde sorumlu kişi
+
+SORUN
+Teklif ve satın alma belgelerinde iletişim bilgileri firmanın sabit
+bilgileriydi. Kimin hazırladığı belli olmuyor, arkadaş yerinde olmadığında
+onun adına teklif/sipariş verilirken belgede yanlış bilgi kalıyordu.
+
+1) YENİ EKRAN: AYARLAR > KİŞİ KARTLARI
+- Her çalışan için ad soyad, unvan, e-posta, telefon, cep telefonu ve not.
+- E-posta, uygulamaya giriş yapan kullanıcıyla eşleştirmek için kullanılır.
+  Kendi kartınızın e-postası giriş e-postanızla aynı olmalıdır.
+- Listede kendi kartınız "bu kart sizin" rozetiyle işaretlenir.
+- Kendi kartınızı her zaman düzenleyebilirsiniz.
+  Başkasının kartını yalnız yönetici düzenler; kart silme yalnız yöneticide.
+- Bir kişi herhangi bir teklif veya siparişte sorumlu olarak geçiyorsa kartı
+  silinemez; belgelerdeki geçmiş bilgi korunur.
+- Aynı e-posta ile ikinci kart açılamaz; hatalı e-posta biçimi reddedilir.
+
+2) TEKLİFTE SORUMLU KİŞİ
+- Teklif penceresine "Sorumlu Kişi" seçimi eklendi.
+- Yeni teklif açtığınızda VARSAYILAN olarak sizin kartınız seçili gelir;
+  Hazırlayan adı, telefonu ve e-postası kendiliğinden dolar.
+- Listeden başka bir kişi seçerseniz üç alan da o kişininkiyle değişir.
+- Hazırlayan / Telefon / E-posta alanları ayrıca elle de düzenlenebilir.
+- Teklif PDF'inde artık "Hazırlayan: Elif Demir · Proje Mühendisi" gibi
+  unvanla birlikte yazılır; iletişim ve e-posta o kişinin bilgileridir.
+- İmza kutusundaki "DÜZENLEYEN" adı da seçilen kişidir.
+- Kart seçilmezse eskisi gibi firma telefonu ve e-postası basılır.
+
+3) SİPARİŞ VE TEKLİF TALEP FORMUNDA SORUMLU KİŞİ
+- Satın alma sipariş formuna "Sorumlu Kişi" seçimi eklendi; varsayılan yine
+  sizin kartınız.
+- Belgenin üst bilgi tablosuna yeni satır: sipariş formunda "Sorumlu Kişi",
+  teklif talep formunda "Talep Eden" — ad, unvan, telefon ve e-posta ile.
+- İmza kutusunda ("Sipariş Veren" / "Talep Eden") kişinin adı kalın, altında
+  unvanı, telefonu ve e-postası yazar.
+- Siparişi düzenlediğinizde seçili kişi korunur.
+
+4) NEDEN ÖNEMLİ
+- Tedarikçi veya müşteri belgede kime ulaşacağını görür.
+- Arkadaşınız izinde/yerinde değilken onun adına belge düzenleyebilirsiniz;
+  belgede onun bilgileri çıkar, sizin bilgileriniz karışmaz.
+- Kimin hangi teklifi verdiği, kimin hangi siparişi geçtiği kayıtta kalır.
+
+Supabase
+- Şema değişikliği gerekmez. Kişi kartları company_data.data.people altında
+  tutulur.

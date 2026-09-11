@@ -1,0 +1,26 @@
+NakitPilot v0.9.1 Test Notu
+
+- index.html satır içi JavaScript sözdizimi doğrulandı: hata yok.
+- Teklif belgesi üreticisi kaynağın kendisinden okunarak Node üzerinde
+  çalıştırıldı ve iki şablon da gerçek veriyle üretildi.
+
+Proje teklifi (MTP26-80-T-1, BERİCAP, 22.500 EUR)
+  * 8 bölüm üretildi: kapak, firma tanıtımı, kapsam, hizmet paketleri,
+    fiyat tablosu ve ticari şartlar, garanti, sipariş formu, imza
+  * Toplam 22.500,00 EUR doğru yazdırıldı
+  * 10 maddelik kapsam listesi madde madde basıldı
+
+Ürün / yedek parça teklifi (5 kalem, TL)
+  * 5 bölüm üretildi: kapak, kapsam, fiyat tablosu ve ticari şartlar,
+    garanti, imza
+  * Kalem toplamı 91.250,00 TL doğru hesaplandı
+    (12x840 + 25x1.250 + 2x14.500 + 4x1.980 + 2x6.500)
+  * Firma tanıtımı, hizmet paketleri ve sipariş formu bölümleri bu şablonda
+    beklendiği gibi yazdırılmadı
+
+Görsel doğrulama
+  * Her iki belge Chromium ile render edilerek görsel olarak kontrol edildi.
+  * Kapak bilgi tablosunda boş alanların basılmadığı doğrulandı.
+  * Konu satırının tam genişlikte yazdırıldığı doğrulandı.
+
+Supabase SQL gereksinimi: Yok.

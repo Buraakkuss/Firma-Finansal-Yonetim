@@ -1,0 +1,100 @@
+NakitPilot v0.20.0 — Test raporu
+Tarih: 11 Eylül 2026
+
+ÖZET
+  Tarayıcı testleri: 786 test çalıştı, 786 geçti, 0 kaldı.
+  SQL testleri    :  39 test çalıştı,  39 geçti, 0 kaldı.
+  Yeni: e2e-12-uyelik (76 test) ve yerel PostgreSQL 16 üzerinde SQL akış testi.
+
+A) SQL TESTİ — GERÇEK ŞEMA ÜZERİNDE
+Yerel PostgreSQL 16'da Supabase şeması yeniden kuruldu:
+  - auth.users / auth.uid() / auth.jwt() ve storage şeması taklit edildi,
+  - mtpro-finans kurulum v0.3.4, banka merkezi migration v0.6.0,
+    proje takip kurulum v0.5.0 ve satın alma rolü v0.10.0 dosyaları çalıştırıldı
+    (hatasız),
+  - iki firma ve dört kullanıcıyla gerçekçi veri yüklendi,
+  - nakitpilot-uyelik-onay-v0.20.0.sql ÜST ÜSTE İKİ KEZ çalıştırıldı (idempotent,
+    hata yok).
+
+Doğrulanan 39 davranış:
+  Rol düzeltmesi (5)
+    - engineer daveti 'engineer' olarak kaydediliyor (eskiden viewer oluyordu).
+    - purchasing daveti 'purchasing' olarak kaydediliyor.
+    - Bilinmeyen rol güvenli şekilde 'viewer' oluyor.
+    - Geçersiz e-posta reddediliyor.
+    - Zaten üye olan e-posta davet edilemiyor.
+  Davet (4)
+    - Aynı e-postaya ikinci davette eski davet iptal, tek bekleyen davet kalıyor.
+    - Yeni davetin rolü doğru kaydediliyor.
+    - Davet kabul edilince kullanıcı doğru rolle üye oluyor.
+    - Aynı davet ikinci kez kullanılamıyor.
+  Üyelik talebi (6)
+    - Açık firmalar listeleniyor; üyelik ve bekleyen talep bilgisi doğru.
+    - Talep oluşuyor, listede "pending" görünüyor.
+    - Aynı firmaya ikinci talep engelleniyor.
+    - Kullanıcı kendi talebini görüyor.
+  Yetki (3)
+    - Firmaya üye olmayan talep listesini göremiyor.
+    - BAŞKA firmanın yöneticisi Marmara'nın taleplerini göremiyor.
+    - Muhasebe rolündeki üye talep listesini göremiyor.
+  Onay (6)
+    - Yönetici talebi ve tüm detaylarını (ad, telefon, istenen rol) görüyor.
+    - Onayda seçilen rol (purchasing) uygulanıyor, company_members kaydı oluşuyor.
+    - Bekleyen talep sayısı sıfırlanıyor.
+    - Onaylanmış talep tekrar onaylanamıyor.
+    - Onaylanan kullanıcı np_get_my_companies ile firmayı görüyor.
+    - Kullanıcı kendi talebini "approved" olarak görüyor.
+  Red (6)
+    - Talep reddediliyor, sebep kaydediliyor, kullanıcı sebebi görüyor.
+    - Reddedilen kullanıcı üye olmuyor ve yeniden talep gönderebiliyor.
+  Talebe kapatma (4)
+    - Kapatılan firma listede görünmüyor ve talep kabul etmiyor, tekrar açılıyor.
+  Geri çekme (2) ve firma sahibi koruması (3)
+    - Kullanıcı talebini geri çekiyor, bekleyenlerden düşüyor.
+    - Firma sahibinin yöneticiliği kaldırılamıyor; diğer üyenin rolü
+      purchasing yapılabiliyor.
+
+B) TARAYICI TESTİ — e2e-12-uyelik (76 test)
+Gerçek giriş ekranı ve gerçek Firma & Ekip ekranı sürülür; Supabase çağrıları
+taklit edilerek kaydedilir.
+  1) Sekmeler (10): Giriş/Kayıt sekmeleri, alan görünürlükleri, aktif sekme.
+  2) Kayıt doğrulamaları (12): ad soyad, e-posta, kısa şifre, şifre eşleşmesi —
+     hiçbiri sunucuya gitmiyor; başarılı kayıtta ad-soyad ve telefon kullanıcı
+     bilgisine yazılıyor, doğrulama maili uygulama adresine dönüyor, kayıttan
+     sonra giriş sekmesine geçiliyor; "zaten hesap var" mesajı anlaşılır.
+  3) Üyelik talebi — kullanıcı (17): panel açılıyor, firma listesi doluyor,
+     ad/telefon kullanıcıdan geliyor, rol listesinde yönetici yok, talep doğru
+     alanlarla gönderiliyor, sonrasında bekleme ekranı ve geri çekme çıkıyor,
+     ikinci talep engelleniyor, geri çekince form tekrar açılıyor.
+  4) Reddedilen talep (3): red bilgisi ve yöneticinin notu kullanıcıya
+     gösteriliyor, yeniden talep gönderilebiliyor.
+  5) Yönetici tarafı (19): talep kartı, ad/e-posta/telefon/not/istenen rol,
+     bekleyen sayısı rozeti, rol seçimi, onay sorusu, onayda seçilen rolün
+     gönderilmesi, üye ekleme, listeden düşme, geçmişte görünme, red sebebi,
+     taleplere açık/kapalı anahtarı.
+  6) Davet akışı (5): beş rol seçilebiliyor, davet oluşuyor, bağlantı
+     üretiliyor (eski parametreler temizleniyor), mail gönder butonu var.
+  7) Davet bağlantısı (7): davet bandı çıkıyor, jeton okunuyor ve tarayıcıya
+     yazılıyor; adreste davet olmayan ikinci açılışta saklanan jeton
+     kullanılıyor (e-posta doğrulaması dönüşünde davet kaybolmuyor);
+     kabul sonrası jeton siliniyor.
+  Sayfada JavaScript hatası yok.
+
+C) GERİLEME TESTLERİ (710 test — hepsi geçti)
+  ui-test 33 · e2e-1-finans 14 · e2e-2-proje 43 · e2e-3-kenar 39
+  e2e-4-satinalma 50 · e2e-5-butun 28 · e2e-6-yetki 31 · e2e-7-kisi 58
+  e2e-8-kilavuz 28 · e2e-9-muhendislik 36 · e2e-10-kutuphane 80
+  e2e-11-klasor 43 · test-v0140 65 · test-v083 7 · test-v090 25 · test-v092 18
+  test-v095 8 · test-v096 20 · test-v0100 26 · test-v0110 27 · test-v0120 31
+
+D) DOSYA DOĞRULAMASI
+  index.html script blokları ....... 1 blok, 0 hata
+  sw.js ............................ node --check temiz
+  manifest.webmanifest ............. geçerli JSON
+  Kılavuz .......................... 13 bölüm / 41 konu
+                                     ("Yeni kullanıcı ekleme — iki yol" eklendi)
+
+E) TESTTE KAPSANMAYAN
+  Gerçek e-posta gönderimi (Supabase doğrulama ve şifre sıfırlama mailleri)
+  canlı ortamda denenmelidir. SQL fonksiyonları gerçek şemada test edilmiştir
+  ancak canlı Supabase'de dosya bir kez çalıştırılmalıdır.

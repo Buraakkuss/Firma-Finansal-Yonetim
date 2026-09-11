@@ -347,4 +347,37 @@
 - Kullanım kılavuzunun "Standart Ekipmanlar" konusuna klasör yükleme adımları
   eklendi.
 
-Güncel baz sürüm: **v0.19.0**
+## v0.20.0
+- **Yeni kullanıcı kaydı ve yönetici onayı akışı eklendi.** Giriş ekranı artık
+  iki sekmeli: *Giriş Yap* ve *Kayıt Ol*. Kayıt formunda ad soyad, e-posta,
+  telefon ve iki kez şifre istenir; ad ve telefon kullanıcı bilgisine yazılır,
+  doğrulama maili uygulamanın adresine döner.
+- Hesap açan kullanıcı bir firmaya bağlı değilse **üyelik talebi** ekranı gelir:
+  firma seçer, istediği rolü, adını, telefonunu ve notunu yazıp talep gönderir.
+  Talep beklerken durum, tarih ve *Talebi Geri Çek* düğmesi görünür;
+  *Onaylandı mı? Kontrol Et* ile yetki yeniden sorgulanır. Reddedilen kullanıcı
+  yöneticinin yazdığı sebebi görür ve yeniden talep gönderebilir.
+- Firma & Ekip ekranına **Üyelik Talepleri** kartı eklendi: bekleyen talepler
+  ad, e-posta, telefon, not ve istenen rolle listelenir; yönetici rolü seçip
+  onaylar veya sebep yazarak reddeder. Karara bağlanan talepler geçmiş
+  tablosunda kalır. "Yeni üyelik taleplerine açık" anahtarıyla firma talebe
+  kapatılabilir.
+- **Davet akışı düzeltildi:**
+  - Davet rolleri eksikti; artık beş rol de seçilebiliyor (Rapor Kullanıcısı,
+    Muhasebe, Mühendis/Proje, Satın Alma, Yönetici). Sunucudaki
+    `np_invite_member` ve `np_update_member_role` fonksiyonları `engineer` ve
+    `purchasing` rollerini sessizce `viewer` yapıyordu; düzeltildi.
+  - Davet jetonu tarayıcıda saklanıyor. E-posta doğrulaması gibi araya giren
+    yönlendirmelerde adresteki `?invite=` kaybolsa bile davet uygulanıyor.
+  - Davet bağlantısıyla gelen kişiye giriş ekranında açıklayıcı bir bant
+    gösteriliyor; "Mail ile Gönder" düğmesi hazır metinle mail açıyor.
+  - Aynı e-postaya ikinci davet açılırsa eski davet iptal ediliyor; zaten üye
+    olan bir e-posta davet edilemiyor; geçersiz e-posta reddediliyor.
+  - Firma sahibinin yönetici yetkisi artık geri alınamıyor.
+- Rol etiketlerinde eksik olan **Satın Alma** rolü eklendi (ekip listesi ve rol
+  değiştirme kutusu).
+- Supabase: `sql/nakitpilot-uyelik-onay-v0.20.0.sql` tek parça çalıştırılmalıdır
+  (join_requests tablosu, companies.allow_join_requests kolonu, 9 RPC ve rol
+  kısıtı düzeltmesi). Dosya iki kez çalıştırılabilir, veriye dokunmaz.
+
+Güncel baz sürüm: **v0.20.0**

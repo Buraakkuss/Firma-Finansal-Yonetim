@@ -1,0 +1,67 @@
+NakitPilot v0.20.0 — Supabase notu
+
+ÇALIŞTIRILACAK DOSYA (zorunlu, tek parça)
+  sql/nakitpilot-uyelik-onay-v0.20.0.sql
+
+NE YAPAR
+1) Rol kısıtlarını düzeltir. company_members ve company_invitations
+   tablolarındaki role kontrolü beş rolü kabul eder:
+   admin, accounting, engineer, purchasing, viewer.
+   np_invite_member ve np_update_member_role fonksiyonları yeniden yazılır;
+   önceden 'engineer' ve 'purchasing' rolleri sessizce 'viewer' yapılıyordu.
+   np_invite_member ayrıca:
+     - geçersiz e-postayı reddeder,
+     - zaten üye olan e-postayı davet etmez,
+     - aynı e-postaya yeni davet açılırken eski daveti iptal eder.
+   np_update_member_role firma sahibinin yöneticiliğini kaldırmayı engeller.
+
+2) public.companies tablosuna allow_join_requests boolean kolonu ekler
+   (varsayılan true). Firma bu kolonla üyelik taleplerine açılıp kapatılır.
+
+3) public.join_requests tablosunu oluşturur:
+   id, company_id, user_id, email, full_name, phone, note, requested_role,
+   status (pending/approved/rejected/cancelled), decided_by, decided_at,
+   decision_note, created_at.
+   Aynı kullanıcının aynı firmada tek bekleyen talebi olabilir (kısmi tekil
+   indeks). RLS açıktır ve tabloya doğrudan erişim verilmez; okuma/yazma
+   yalnız aşağıdaki SECURITY DEFINER fonksiyonlar üzerinden yapılır.
+
+4) Yeni RPC'ler (hepsi authenticated rolüne verilir):
+   np_list_open_companies()                       -> katılmaya açık firmalar
+   np_request_join(company, ad, telefon, not, rol) -> talep gönder
+   np_my_join_requests()                          -> kendi taleplerim
+   np_cancel_my_join_request(id)                  -> talebi geri çek
+   np_list_join_requests(company)                 -> yönetici: talep listesi
+   np_approve_join_request(company, id, rol)      -> yönetici: onayla
+   np_reject_join_request(company, id, not)       -> yönetici: reddet
+   np_set_join_requests_open(company, acik)       -> yönetici: talebe aç/kapat
+   np_pending_join_count(company)                 -> bekleyen talep sayısı
+   Yönetici fonksiyonları np_user_role kontrolünden geçer; başka firmanın
+   yöneticisi veya muhasebe/mühendis rolü bu listeleri göremez.
+
+GİZLİLİK NOTU
+np_list_open_companies, giriş yapmış her kullanıcıya "üyelik taleplerine açık"
+firmaların id ve adını döndürür (katılacağı firmayı seçebilmesi için).
+Firma adınızın bu listede görünmesini istemiyorsanız Firma & Ekip ekranından
+"yeni üyelik taleplerine açık" kutusunun işaretini kaldırın; o zaman firmaya
+yalnız davet bağlantısıyla kullanıcı eklenir.
+
+DOKUNULMAYANLAR
+- company_data.data ve banka merkezi tetikleyicisi
+  (trg_company_data_banking_sync / np_sync_company_banking_snapshot)
+  değiştirilmez.
+- Storage bucket politikaları değiştirilmez.
+- sql/ klasöründeki eski kurulum/migration dosyalarını TEKRAR ÇALIŞTIRMAYIN.
+
+İKİ KEZ ÇALIŞTIRMA
+Dosya idempotenttir: ikinci çalıştırmada tablo/kolon tekrar oluşturulmaz,
+fonksiyonlar aynı içerikle yeniden yazılır, veri değişmez. Testte iki kez
+çalıştırılarak doğrulanmıştır.
+
+GERİ ALMA
+Özelliği kapatmak isterseniz tabloyu silmek gerekmez; Firma & Ekip ekranından
+üyelik taleplerini kapatmanız yeterlidir. Tamamen kaldırmak için:
+  DROP FUNCTION IF EXISTS public.np_request_join(uuid,text,text,text,text);
+  ... (diğer np_*_join_* fonksiyonları) ...
+  DROP TABLE IF EXISTS public.join_requests;
+Bu durumda rol düzeltmeleri (beş rol) yerinde kalır.

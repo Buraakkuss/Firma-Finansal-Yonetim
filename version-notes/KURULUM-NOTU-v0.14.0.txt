@@ -1,0 +1,51 @@
+NakitPilot v0.14.0 Kurulum Notu
+
+Kurulum
+- Otomatik yayın kurulu; dosya yüklemeye gerek yoktur.
+- ?v=0.14.0 ile açın, görünüm eski kalırsa Ctrl + F5.
+
+Supabase
+- SQL çalıştırmayın; bu sürüm için gerekmez.
+
+İLK YAPILACAK İŞ: cari vadelerini girin
+1) Satın Alma > Tedarikçiler.
+2) Her tedarikçiyi Düzenle ile açıp "Ödeme Vadesi (gün)" alanını doldurun.
+   - 30 gün vadeli çalışıyorsanız 30 yazın.
+   - Peşin çalışıyorsanız 0 yazın.
+   - Boş bırakırsanız formda vade yazmaz, fatura vadesi otomatik hesaplanmaz.
+3) Kaydedin. Listedeki "Vade" sütunundan kontrol edin.
+
+TEKLİF İSTEME AKIŞI (fiyat bilinmiyorken)
+1) Satın Alma > Satın Alma Siparişleri.
+2) Tedarikçiyi ve varsa projeyi seçin. Proje belli değilse
+   "Genel Satın Alma (projesiz)" bırakın.
+3) Durum = "Talep" veya "Teklif İstendi".
+4) Kalemleri girin; BİRİM FİYATI BOŞ BIRAKIN (0 kalabilir).
+5) İsterseniz "Teklif Son Tarihi" girin.
+6) Kaydedin. SAP No verilir.
+7) Listede "🖨 Teklif Formu" ile formu açıp tedarikçiye gönderin.
+   Fiyat sütunları tedarikçinin doldurması için boştur.
+
+TEKLİF GELDİKTEN SONRA SİPARİŞE ÇEVİRME
+1) Aynı satırda "Düzenle".
+2) Birim fiyatları girin.
+3) Durumu "Sipariş Verildi" yapın (gerekirse para birimi ve kuru düzeltin).
+4) Kaydedin. SAP No DEĞİŞMEZ.
+5) Buton artık "🖨 Sipariş Formu" — genel şartları da içeren formu basar.
+
+HUKUKİ ŞARTLAR
+- Sipariş formunun ikinci sayfasında 19 maddelik Satın Alma Genel Şartları,
+  teklif formunun ikinci sayfasında 7 maddelik Teklif Talep Şartları basılır.
+- Formda şu sayılar yazılıdır: teyit 2 iş günü, gecikme cezası günlük binde 1
+  (en çok %10), muayene 10 iş günü, garanti 24 ay, mücbir sebep 30 gün,
+  yetkili mahkeme Gebze / Kocaeli.
+- Bu sayılardan herhangi birini değiştirmek isterseniz söylemeniz yeterli;
+  tek yerden değiştirilecek şekilde yazıldı.
+- Metin genel ticari uygulamaya göre hazırlanmıştır. Yürürlüğe almadan önce
+  hukuk danışmanınıza okutmanız tavsiye edilir.
+
+Önemli
+- Fatura girerken vade tarihi cari vadesinden otomatik dolar. Elle
+  değiştirirseniz sistem bir daha üzerine yazmaz.
+- Fiyatı belli olmayan bir siparişi "Sipariş Verildi" yapamazsınız; sistem
+  uyarır ve talep modunda bırakmanızı söyler. Bu bilinçli bir korumadır.

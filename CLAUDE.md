@@ -1,7 +1,7 @@
 # NakitPilot / MT-PRO-Finans
 
 Marmara Teknik için çok firmalı web tabanlı finans ve proje takip uygulaması.
-Güncel sürüm: **v0.13.0**. Tek HTML (vanilla JS + CSS) + Supabase.
+Güncel sürüm: **v0.14.0**. Tek HTML (vanilla JS + CSS) + Supabase.
 
 ## 0. Limit kullanımı — her zaman geçerli
 

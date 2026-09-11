@@ -185,4 +185,23 @@
 - Mobil: sol menü çekmece oldu (☰), formlar tek sütuna iner, tablolar kendi
   içinde kaydırılır, sayfalarda yatay taşma yok.
 
-Güncel baz sürüm: **v0.13.0**
+## v0.14.0
+- Sipariş formuna 19 maddelik **Satın Alma Genel Şartları** (alıcıyı koruyan
+  hukuki metin) ayrı sayfa olarak eklendi; teklif formuna 7 maddelik
+  **Teklif Talep Şartları**.
+- Şartlardaki sayılar (teyit 2 iş günü, gecikme cezası günlük ‰1 / en çok %10,
+  muayene 10 iş günü, garanti 24 ay, mücbir sebep 30 gün, yetkili mahkeme)
+  MT_PO_TERM_VALUES sabitinden tek yerden değiştirilebilir.
+- Tedarikçi (cari) kartına **Ödeme Vadesi (gün)** alanı; sipariş formunda
+  "fatura tarihinden N gün · tahmini vade GG.AA.YYYY" olarak yazar.
+- Siparişe özel vade alanı cari vadesini ezebilir.
+- Tedarikçi faturasında vade tarihi cari vadesinden otomatik hesaplanır;
+  elle girilen vade korunur.
+- **Teklif isteme akışı**: yeni "Teklif İstendi" durumu. Talep/Teklif İstendi
+  durumlarında fiyat zorunlu değildir; form fiyatsız **Teklif Talep Formu**
+  olarak basılır (tutar sütunları tedarikçinin doldurması için boş).
+- Teklif gelince aynı kayıt düzenlenip fiyatlar girilir, durum "Sipariş
+  Verildi" yapılır ve genel şartlı sipariş formu basılır. **SAP No değişmez.**
+- "Sipariş Verildi" ve sonrası durumlarda fiyatsız kayıt engellenir.
+
+Güncel baz sürüm: **v0.14.0**

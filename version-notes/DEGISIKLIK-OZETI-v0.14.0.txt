@@ -1,0 +1,69 @@
+NakitPilot v0.14.0 — Hukuki şartlar, cari vadesi ve teklif talep akışı
+
+1) SATIN ALMA GENEL ŞARTLARI (SİPARİŞ FORMUNUN ARKA SAYFASI)
+- Sipariş formuna, alıcıyı (Marmara Teknik) koruyan 19 maddelik genel şart
+  metni eklendi. Ayrı sayfaya basılır.
+- Kapsam: siparişin geçerliliği · teyit süresi · fiyat sabitliği (ek bedel
+  yasağı) · teslim ve esaslı süre · gecikme cezası · muayene ve kabul ·
+  garanti · belgeler · fatura uyumu · ödeme ve mahsup hakkı · mülkiyet ve
+  hasar · gizlilik · fikri mülkiyet · devir ve taşeron yasağı · mevzuat ve
+  İSG · fesih · mücbir sebep · uygulanacak hukuk ve yetkili mahkeme ·
+  tedarikçinin kendi şartlarına üstünlük.
+- Altta: "Siparişin teyit edilmesi veya malın sevk edilmesi, bu genel
+  şartların kabul edildiği anlamına gelir."
+- Teklif talep formunda ise 7 maddelik ayrı TEKLİF TALEP ŞARTLARI basılır;
+  ilk madde "Bu belge sipariş değildir" ile başlar.
+
+   DEĞİŞTİRİLEBİLİR SAYILAR
+   Aşağıdaki değerler koddaki MT_PO_TERM_VALUES bloğundan tek yerden
+   değiştirilebilir. Şu an girili varsayılanlar:
+   - Teyit süresi            : 2 iş günü
+   - Gecikme cezası          : günlük binde 1, en çok sipariş bedelinin %10'u
+   - Muayene süresi          : 10 iş günü
+   - Garanti                 : 24 ay
+   - Mücbir sebep üst sınırı : 30 gün
+   - Yetkili mahkeme         : Gebze / Kocaeli
+   Bu metin genel ticari uygulamaya göre hazırlanmıştır; firmanızın hukuk
+   danışmanınca gözden geçirilmesi tavsiye edilir.
+
+2) CARİ (TEDARİKÇİ) VADESİ
+- Tedarikçi kartına "Ödeme Vadesi (gün)" alanı eklendi. Tedarikçi listesinde
+  vade sütunu görünür.
+- Sipariş formunda "Ödeme Vadesi" satırı yazar:
+  "Fatura tarihinden 30 gün · tahmini vade 11.10.2026"
+- 0 gün girilirse formda "Peşin" yazar. Vade tanımlı değilse formda vade
+  satırı "Cari kartında vade tanımlı değil" olarak görünür.
+- Sipariş ekranındaki "Ödeme Vadesi (gün)" alanı, o siparişe özel vade için
+  cari vadesini ezebilir. Boş bırakılırsa cari vadesi kullanılır.
+- Tedarikçi faturası girerken vade tarihi cari vadesinden OTOMATİK hesaplanır
+  (fatura tarihi + vade günü). Vade tarihini elle değiştirirseniz üzerine
+  yazılmaz.
+- Teklif talep formunda vade "Teklifinizde belirtiniz" olarak yazar.
+
+3) TEKLİF İSTEME → SİPARİŞ AKIŞI
+- Yeni durum: "Teklif İstendi" (Talep'in yanına).
+- "Talep" veya "Teklif İstendi" durumundayken FİYAT GİRMEK ZORUNLU DEĞİLDİR.
+  Satın alma kalemleri ve miktarları girip kaydeder, SAP No alır.
+- Bu durumda "🖨 Teklif Formu" butonu TEKLİF TALEP FORMU basar:
+  * Başlık "TEKLİF TALEP FORMU", numara "Talep No" olarak yazar
+  * Birim fiyat ve tutar sütunları tedarikçinin doldurması için BOŞ gelir
+  * Üstte "Sayın ... fiyat teklifinizi rica ederiz" yazısı ve talep numarası
+  * "Teklif Son Tarihi" alanı forma yazılır
+- Teklif gelince aynı kayıt Düzenle ile açılır, birim fiyatlar girilir ve
+  durum "Sipariş Verildi" yapılır. Buton "🖨 Sipariş Formu" olur ve genel
+  şartlı sipariş formu basar.
+- SAP No bu geçişte DEĞİŞMEZ. Tedarikçi baştan sona aynı numarayı görür.
+- "Sipariş Verildi" ve sonrası durumlarda fiyatsız kayıt engellenir; uyarı
+  kullanıcıyı talep moduna yönlendirir.
+- Sipariş listesinde tutar yerine "teklif bekleniyor" yazar; SAP No altında
+  vade bilgisi görünür.
+- Form üstünde hangi modda olduğunuzu anlatan bir açıklama satırı vardır.
+
+4) KÜÇÜK İYİLEŞTİRMELER
+- "Teklif Son Tarihi" alanı eklendi (talep modunda kullanılır).
+- Sipariş durumu "Teklif İstendi" turuncu rozetle gösterilir.
+- Kaydetme sonrası uyarı, hangi formun basılacağını ve vadeyi söyler.
+- En az bir kalemin malzeme/hizmet açıklaması zorunlu hale getirildi.
+
+Supabase
+- Şema değişikliği gerekmez.

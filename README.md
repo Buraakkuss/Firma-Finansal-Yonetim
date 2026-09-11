@@ -3,7 +3,7 @@
 Marmara Teknik için geliştirilen, çok firmalı web tabanlı finans ve proje takip uygulaması.
 Tek HTML dosyası (vanilla JS + CSS) üzerinde çalışır, verisini Supabase'te tutar.
 
-**Güncel sürüm: v0.13.0**
+**Güncel sürüm: v0.14.0**
 
 ## Dosya yapısı
 

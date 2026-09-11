@@ -121,4 +121,11 @@
 - PWA simgeleri, favicon ve tema renkleri logo gradyanıyla güncellendi.
 - Anlam taşıyan renkler korundu: gelir yeşil, gider/borç kırmızı, uyarı turuncu.
 
-Güncel baz sürüm: **v0.9.4**
+## v0.9.5
+- Proje kodu (örn. MTP26-1) sistem genelinde takip anahtarı hâline getirildi.
+- Teklif fiyat tablosundaki açıklama sütunu varsayılan olarak proje kodunu gösterir.
+- Teklif penceresinde ilk kalem proje koduyla dolu açılır.
+- Fatura ve tahsilat açıklamaları proje koduyla ön doldurulur; kayıtta kod yoksa
+  başa eklenir, varsa tekrar eklenmez. Kayıtlara ayrıca projectCode alanı yazılır.
+
+Güncel baz sürüm: **v0.9.5**

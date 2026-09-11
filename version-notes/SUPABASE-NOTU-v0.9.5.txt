@@ -1,0 +1,10 @@
+NakitPilot v0.9.5 Supabase Notu
+
+Şema değişikliği yoktur. Yeni tablo, kolon, RPC veya migration gerekmez.
+
+Fatura ve tahsilat kayıtlarına eklenen projectCode alanı, mevcut JSONB yapısı
+içinde tutulur (company_data.data > mtpro > projects > invoices/collections) ve
+Banka Merkezi'nin normalize tablo senkronizasyonuna dahil değildir.
+
+Eski kayıtlarda projectCode alanı bulunmaz; bu kayıtlar sorunsuz okunmaya
+devam eder.

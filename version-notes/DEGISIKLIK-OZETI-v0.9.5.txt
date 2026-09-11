@@ -1,0 +1,29 @@
+NakitPilot v0.9.5 — Proje kodu her yerde takip anahtarı
+
+Firma, teklif fiyat tablosundaki açıklama alanına ve gelen ödemelerin takibine
+proje kodunu (örn. MTP26-1) yazıyor. Sistem buna göre hizalandı.
+
+Teklif fiyat tablosu
+- Fiyat tablosundaki AÇIKLAMA sütunu artık varsayılan olarak proje kodunu gösterir.
+- Kalem eklenmemiş tek satırlık tekliflerde açıklama doğrudan proje kodudur.
+- Kalem eklenmiş ama açıklaması boş bırakılmış satırlarda da proje kodu yazdırılır.
+- Elle açıklama yazıldıysa o metin aynen korunur.
+
+Teklif kalemleri
+- Teklif penceresinde ilk kalem eklendiğinde açıklama alanı proje koduyla dolu gelir.
+- Sonraki kalemler boş açılır; yedek parça tekliflerinde her satıra ürün adı yazılır.
+
+Fatura ve tahsilat
+- Fatura ve tahsilat açıklama alanları, proje seçildiğinde proje koduyla ön doldurulur.
+- Kayıt sırasında açıklamada proje kodu yoksa başına eklenir; zaten varsa tekrar
+  eklenmez (büyük/küçük harf farkı gözetilmez).
+- Fatura ve tahsilat kayıtlarına ayrıca projectCode alanı yazılır; böylece
+  raporlama ve arama proje kodu üzerinden yapılabilir.
+- Formlar temizlendiğinde proje kodu yeniden yerleşir.
+
+Not
+- Proje ödeme planı kalemleri zaten proje kodu ile oluşturuluyordu (örn.
+  "MTP26-1 AVANS"); bu davranış korundu.
+
+Supabase
+- Şema değişikliği gerekmez.

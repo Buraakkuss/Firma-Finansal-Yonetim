@@ -1,7 +1,7 @@
 # Orbita — oyun projesi
 
 Tek dokunuşlu sonsuz arcade oyunu. **Tek HTML dosyası** (`www/index.html`) + Capacitor.
-Güncel sürüm: **v1.0.0**. Bu depo NakitPilot / MT-PRO-Finans projesinden tamamen bağımsızdır.
+Güncel sürüm: **v1.0.1**. Bu depo NakitPilot / MT-PRO-Finans projesinden tamamen bağımsızdır.
 
 ## Çalışma kuralları
 
@@ -20,8 +20,11 @@ Güncel sürüm: **v1.0.0**. Bu depo NakitPilot / MT-PRO-Finans projesinden tama
 
 - Oyun döngüsü: `update(dt)` → `render()`, `requestAnimationFrame(loop)` ile.
 - Durumlar: `menu · orbit · fly · dead` (`G.mode`).
-- Zorluk eğrisi dört fonksiyonda: `omega()`, `flySpeed()`, `planetR()`, `spikeCount()`.
-  Denge ayarı başka yere dokunmadan burada yapılır.
+- Zorluk: menüdeki üç mod (`easy · normal · hard`) `DIFF` tablosundan gelir, `DF()` ile okunur.
+  Denge ayarı **yalnız `DIFF` tablosundan** yapılır — `omega()`, `flySpeed()`, `planetR()`,
+  `spikeCount()`, yakalama toleransı ve PERFECT açısı hepsi bu tablodan çarpan alır.
+  `hard` modu v1.0.0'ın orijinal dengesidir. Rekorlar mod başına ayrı tutulur (`S.best`).
+- `easy` modunda (ve `normal`'da ilk 3 gezegende) nişan çizgisi çizilir; mekaniği öğreten şey budur.
 - `U = W/400` ölçek birimi. **Tüm mesafeler `U` ile çarpılır**, yoksa zorluk cihaz genişliğine göre değişir.
 - `capture()` içinde "adaletsiz iniş" koruması var: top dikenin üstüne düşerse gezegenin
   dikenleri 180° döndürülür. Bu kaldırılırsa oyun haksız ölümler üretir.
@@ -33,7 +36,7 @@ Güncel sürüm: **v1.0.0**. Bu depo NakitPilot / MT-PRO-Finans projesinden tama
 | URL | Ne yapar |
 |---|---|
 | `www/index.html` | normal oyun |
-| `www/index.html?selftest=1` | 9000 kare otomatik oynar, sonucu `document.title` içine yazar |
+| `www/index.html?selftest=1&diff=easy` | 9000 kare otomatik oynar, sonucu `document.title` içine yazar (`diff` isteğe bağlı) |
 | `www/index.html?shot=1&...` | mağaza ekran görüntüsü kompozisyonu üretir |
 
 ## Tuzaklar

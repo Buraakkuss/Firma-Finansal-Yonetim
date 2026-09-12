@@ -23,6 +23,7 @@ HOW IT WORKS
 • You launch along your spin direction, so you must tap BEFORE the ball looks aligned.
 • Release exactly on target for a PERFECT jump — double points.
 • Red arcs sweep around every planet. Wait too long and they take you.
+• Pick EASY, NORMAL or HARD from the menu. Each one keeps its own best score.
 
 WHY YOU WILL KEEP PLAYING
 • Runs last seconds. "One more try" costs you nothing.
@@ -31,6 +32,7 @@ WHY YOU WILL KEEP PLAYING
 • Beat your own best score. That is the entire progression system.
 
 BUILT TO RESPECT YOU
+• Three difficulty modes — EASY draws your launch line and forgives near misses, HARD forgives nothing.
 • Works fully offline. No internet needed to play.
 • No account. No sign-up. No e-mail. No social login.
 • No forced videos between every run.
@@ -61,6 +63,7 @@ How far can you get before the arcs catch you?
 ```
 First release.
 - One-tap orbit jumping
+- Three difficulty modes with separate best scores
 - Perfect landing bonus
 - Rotating hazards that get meaner every planet
 - Fully offline, no account, optional ad-free upgrade

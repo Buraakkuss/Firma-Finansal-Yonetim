@@ -38,6 +38,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
 .btn.gold{background:linear-gradient(180deg,#ffd76a,#f0a92a);color:#2a1b00;box-shadow:0 10px 28px rgba(240,169,42,.35)}
 .row{display:flex;gap:10px;width:100%}
 .row .btn{flex:1}
+.seg{display:flex;gap:5px;width:100%;background:rgba(255,255,255,.05);padding:5px;border-radius:17px}
+.sg{flex:1;padding:11px 0;border:0;border-radius:12px;background:transparent;color:var(--dim);
+  font-size:12px;font-weight:800;letter-spacing:.12em;cursor:pointer;transition:background .15s,color .15s}
+.sg.on{background:rgba(255,255,255,.13);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.28)}
 .icons{display:flex;gap:10px;margin-top:4px}
 .ico{width:46px;height:46px;border-radius:14px;border:0;background:rgba(255,255,255,.07);color:var(--ink);
   font-size:19px;display:grid;place-items:center;cursor:pointer}
@@ -73,6 +77,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
     <div class="title">ORBITA</div>
     <div class="sub">one tap · endless</div>
     <div class="best" id="mBest">BEST 0</div>
+    <div class="seg" id="seg">
+      <button class="sg" data-d="easy">EASY</button>
+      <button class="sg on" data-d="normal">NORMAL</button>
+      <button class="sg" data-d="hard">HARD</button>
+    </div>
     <button class="btn" id="bPlay">PLAY</button>
     <div class="icons">
       <button class="ico" id="bSound" title="Sound">&#9834;</button>
@@ -119,7 +128,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
 
 var CFG = {
   name: 'Orbita',
-  version: '1.0.0',
+  version: '1.0.1',
   bundleId: 'com.kusgrup.orbita',
   supportEmail: 't.burakkus@gmail.com',
   urls: {
@@ -167,8 +176,28 @@ var Store = {
   set: function(k,v){ try{ localStorage.setItem('orbita.'+k, JSON.stringify(v)); }catch(e){} }
 };
 
+/* Zorluk modlari. hard = ilk surumun orijinal dengesi.
+   spd hiz, omg yorunge hizi, size gezegen buyuklugu, dist gezegen araligi,
+   spikeFrom dikenlerin basladigi skor, catch yakalama toleransi (piksel),
+   perfect PERFECT acisi (radyan), spin diken donus hizi.                    */
+var DIFF = {
+  easy:   { spd:0.78, omg:0.74, size:1.20, dist:0.84, spikeFrom:10, spikeMax:2, catch:16, perfect:0.21, spin:0.65, aim:true },
+  normal: { spd:0.90, omg:0.86, size:1.09, dist:0.93, spikeFrom:7,  spikeMax:3, catch:8,  perfect:0.16, spin:0.85, aim:false },
+  hard:   { spd:1.00, omg:1.00, size:1.00, dist:1.00, spikeFrom:5,  spikeMax:3, catch:0,  perfect:0.13, spin:1.00, aim:false }
+};
+function DF(){ return DIFF[S.diff] || DIFF.normal; }
+
+/* eski tek sayilik 'best' kaydini moda gore ayrilmis yapiya tasir */
+function loadBest(){
+  var b = Store.get('best', null);
+  if (typeof b === 'number') b = { easy:0, normal:b, hard:b };
+  if (!b || typeof b !== 'object') b = { easy:0, normal:0, hard:0 };
+  return { easy:b.easy|0, normal:b.normal|0, hard:b.hard|0 };
+}
+
 var S = {
-  best:   Store.get('best', 0),
+  best:   loadBest(),
+  diff:   Store.get('diff', 'normal'),
   sound:  Store.get('sound', true),
   vibe:   Store.get('vibe', true),
   noAds:  Store.get('noAds', false),
@@ -232,7 +261,7 @@ window.addEventListener('orientationchange', function(){ setTimeout(resize,150);
 
 var G = {
   mode: 'menu',        /* menu | orbit | fly | dead */
-  score: 0, combo: 0, best: S.best,
+  score: 0, combo: 0,
   planets: [], cur: 0,
   ball: { x:0, y:0, vx:0, vy:0, a:0, dir:1 },
   camY: 0, camTarget: 0, shake: 0,
@@ -241,21 +270,22 @@ var G = {
   trail: [], parts: []
 };
 
-function planetR(i){ return Math.max(15, 27 - Math.min(11, i*0.16)) * U; }
+function planetR(i){ return Math.max(15, 27 - Math.min(11, i*0.16)) * U * DF().size; }
 function orbitGap(){ return 21*U; }
-function omega(){ return 1.85 + Math.min(1.45, G.score*0.028); }
-function flySpeed(){ return (335 + Math.min(175, G.score*3.2)) * U; }
+function omega(){ return (1.85 + Math.min(1.45, G.score*0.028)) * DF().omg; }
+function flySpeed(){ return (335 + Math.min(175, G.score*3.2)) * U * DF().spd; }
 function spikeCount(i){
-  if (i < 5) return 0;
-  if (i < 11) return Math.random()<0.6 ? 1 : 0;
-  if (i < 20) return Math.random()<0.35 ? 2 : 1;
-  return Math.random()<0.45 ? 3 : 2;
+  var D = DF(), f = D.spikeFrom;
+  if (i < f) return 0;
+  if (i < f + 6)  return Math.random()<0.55 ? 1 : 0;
+  if (i < f + 15) return Math.random()<0.35 ? Math.min(2, D.spikeMax) : 1;
+  return Math.min(D.spikeMax, Math.random()<0.45 ? 3 : 2);
 }
 
 function makePlanet(prev, idx){
   var r = planetR(idx), p, nx, ny, ang, d, pad = 34*U + r;
-  var dmin = (112 + Math.min(62, idx*1.6)) * U;
-  var dmax = dmin + 92*U;
+  var dmin = (112 + Math.min(62, idx*1.6)) * U * DF().dist;
+  var dmax = dmin + 92*U * DF().dist;
   if (!prev){
     p = { x: W/2, y: 0, r:r };
   } else {
@@ -272,7 +302,7 @@ function makePlanet(prev, idx){
   }
   p.orbitR = p.r + orbitGap();
   p.rot    = Math.random()*TAU;
-  p.spin   = (Math.random()<0.5?-1:1) * rand(0.5, 0.55 + Math.min(1.1, idx*0.03));
+  p.spin   = (Math.random()<0.5?-1:1) * rand(0.5, 0.55 + Math.min(1.1, idx*0.03)) * DF().spin;
   p.spikes = [];
   var n = spikeCount(idx);
   for (var s=0;s<n;s++) p.spikes.push({ a0: (s/n)*TAU + rand(-0.3,0.3), w: rand(0.22,0.34) });
@@ -317,7 +347,7 @@ function launch(){
   G.flyMax = dd*1.55 + 70*U;
   /* PERFECT: tam hedefe dogru birakildiysa */
   var aim = Math.atan2(dy,dx), dirA = Math.atan2(ty,tx);
-  G.lastPerfect = Math.abs(angDiff(aim,dirA)) < 0.13;
+  G.lastPerfect = Math.abs(angDiff(aim,dirA)) < DF().perfect;
   G.mode = 'fly';
   Snd.launch();
   for (var i=0;i<6;i++) spark(G.ball.x, G.ball.y, p.hue, 1);
@@ -352,7 +382,7 @@ function die(reason){
   Snd.die(); buzz(60);
   for (var i=0;i<26;i++) spark(G.ball.x, G.ball.y, 350, 2.6);
   S.deaths++; Store.set('deaths', S.deaths);
-  if (G.score > G.best){ G.best = G.score; S.best = G.score; Store.set('best', G.score); }
+  if (G.score > S.best[S.diff]){ S.best[S.diff] = G.score; Store.set('best', S.best); }
   setTimeout(function(){ UI.toDead(reason); }, 620);
 }
 
@@ -386,7 +416,7 @@ function update(dt){
     var nx = G.planets[G.cur+1];
     if (nx){
       var d = Math.hypot(G.ball.x-nx.x, G.ball.y-nx.y);
-      if (d <= nx.orbitR){ capture(G.cur+1); }
+      if (d <= nx.orbitR + DF().catch*U){ capture(G.cur+1); }
     }
     if (G.mode === 'fly'){
       if (G.flyDist > G.flyMax) die('missed');
@@ -475,6 +505,15 @@ function render(){
   }
   cx.globalAlpha = 1;
 
+  /* nisan cizgisi: topun hangi yone firlayacagini gosterir */
+  if (G.mode === 'orbit' && (DF().aim || (S.diff === 'normal' && G.score < 3))){
+    var atx = -Math.sin(G.ball.a)*G.ball.dir, aty = Math.cos(G.ball.a)*G.ball.dir;
+    cx.beginPath(); cx.moveTo(G.ball.x, G.ball.y);
+    cx.lineTo(G.ball.x + atx*160*U, G.ball.y + aty*160*U);
+    cx.strokeStyle = 'rgba(255,255,255,.22)'; cx.lineWidth = 2;
+    cx.setLineDash([6*U, 9*U]); cx.stroke(); cx.setLineDash([]);
+  }
+
   /* top */
   if (G.mode !== 'dead'){
     cx.shadowBlur = 22; cx.shadowColor = 'rgba(150,200,255,.9)';
@@ -511,7 +550,7 @@ var UI = {
   toMenu: function(){
     G.mode = 'menu';
     show($('menu'),true); show($('dead'),false); show($('hud'),false); show($('tapHint'),false);
-    $('mBest').textContent = 'BEST ' + S.best;
+    UI.syncDiff();
   },
   toPlay: function(){
     show($('menu'),false); show($('dead'),false); show($('hud'),true); show($('tapHint'),true);
@@ -521,11 +560,16 @@ var UI = {
   toDead: function(){
     show($('hud'),false); show($('tapHint'),false); show($('dead'),true);
     $('dScore').textContent = G.score;
-    $('dBest').textContent  = 'BEST ' + S.best;
-    $('dBadge').style.opacity = (G.score >= S.best && G.score > 0) ? 1 : 0;
+    $('dBest').textContent  = 'BEST ' + S.best[S.diff];
+    $('dBadge').style.opacity = (G.score >= S.best[S.diff] && G.score > 0) ? 1 : 0;
     var canRevive = !G.revived && G.score >= 5 && Ads.rewardedReady();
     show($('bRevive'), canRevive);
     Ads.maybeInterstitial();
+  },
+  syncDiff: function(){
+    var els = document.querySelectorAll('.sg');
+    for (var i=0;i<els.length;i++) els[i].classList.toggle('on', els[i].getAttribute('data-d') === S.diff);
+    $('mBest').textContent = 'BEST ' + S.best[S.diff];
   },
   syncIcons: function(){
     $('bSound').classList.toggle('off', !S.sound);
@@ -675,6 +719,14 @@ window.addEventListener('keydown', function(e){
   }
 });
 
+var segBtns = document.querySelectorAll('.sg');
+for (var sgi=0; sgi<segBtns.length; sgi++){
+  segBtns[sgi].onclick = (function(b){ return function(){
+    S.diff = b.getAttribute('data-d'); Store.set('diff', S.diff);
+    UI.syncDiff(); Snd.boot(); Snd.ui();
+  }; })(segBtns[sgi]);
+}
+
 $('bPlay').onclick   = function(){ Snd.boot(); Snd.ui(); newGame(); };
 $('bRetry').onclick  = function(){ Snd.ui(); newGame(); };
 $('bHome').onclick   = function(){ Snd.ui(); UI.toMenu(); };
@@ -712,7 +764,7 @@ $('bRevive').onclick = function(){
 };
 
 $('bShare').onclick = function(){
-  var txt = 'I scored ' + G.score + ' in Orbita. Beat me.';
+  var txt = 'I scored ' + G.score + ' on ' + S.diff.toUpperCase() + ' in Orbita. Beat me.';
   try {
     var Sh = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Share;
     if (Sh){ Sh.share({ title:'Orbita', text:txt, dialogTitle:'Share score' }); return; }
@@ -741,6 +793,8 @@ function boot(){
 /* otomatik dogrulama modu: index.html?selftest=1 */
 function selftest(){
   try {
+    var dq = (location.search.match(/diff=(easy|normal|hard)/)||[])[1];
+    if (dq) S.diff = dq;
     resize();
     var deaths = 0, best = 0, frames = 0;
     newGame();
@@ -757,7 +811,7 @@ function selftest(){
       render();
     }
     if (G.score>best) best=G.score;
-    document.title = 'SELFTEST:OK frames='+frames+' deaths='+deaths+' best='+best+' planets='+G.planets.length;
+    document.title = 'SELFTEST:OK ['+S.diff+'] frames='+frames+' deaths='+deaths+' best='+best+' planets='+G.planets.length;
   } catch(e){
     document.title = 'SELFTEST:ERR ' + (e && e.message) + ' | ' + String(e && e.stack || '').split('\n').slice(0,2).join(' >> ');
   }
@@ -766,6 +820,7 @@ function selftest(){
 /* magaza gorseli uretme modu: index.html?shot=1&play=..&score=..&headline=.. */
 function shotMode(){
   var q = new URLSearchParams(location.search);
+  if (q.get('diff')) S.diff = q.get('diff');
   resize();
   if (q.get('menu') === '1'){
     UI.syncIcons(); UI.toMenu();

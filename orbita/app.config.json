@@ -1,17 +1,31 @@
 {
   "_comment": "Kimlik bilgilerinin tek kaynagi. Degistirirsen 'bash tools/set-identity.sh' calistir.",
   "appName": "Orbita",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "versionCode": 1,
   "bundleId": "com.kusgrup.orbita",
   "supportEmail": "t.burakkus@gmail.com",
   "pagesBaseUrl": "https://buraakkuss.github.io/orbita-game",
-  "iap": { "removeAds": { "id": "remove_ads", "type": "non-consumable", "priceTierUSD": 2.99 } },
+  "iap": {
+    "removeAds": {
+      "id": "remove_ads",
+      "type": "non-consumable",
+      "priceTierUSD": 2.99
+    }
+  },
   "admob": {
     "useTest": true,
     "real": {
-      "android": { "app": "", "interstitial": "", "rewarded": "" },
-      "ios": { "app": "", "interstitial": "", "rewarded": "" }
+      "android": {
+        "app": "",
+        "interstitial": "",
+        "rewarded": ""
+      },
+      "ios": {
+        "app": "",
+        "interstitial": "",
+        "rewarded": ""
+      }
     }
   }
 }

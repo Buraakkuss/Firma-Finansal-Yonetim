@@ -70,7 +70,7 @@ declare -a SH=(
  "play=260&score=17&perfect=1&headline=NAIL%20THE%20PERFECT%20JUMP&sub=perfect%20landing%20%3D%20double%20points"
  "play=420&score=24&headline=DODGE%20THE%20RED%20ARCS&sub=they%20spin%20faster%20every%20planet"
  "play=560&score=31&headline=IT%20NEVER%20STOPS%20SPEEDING%20UP&sub=how%20far%20can%20you%20get"
- "menu=1&best=41&headline=FREE%20%C2%B7%20OFFLINE%20%C2%B7%20NO%20SIGN-UP&sub=one%20tap%20%C2%B7%20endless"
+ "menu=1&diff=hard&best=41&headline=FREE%20AND%20FULLY%20OFFLINE&sub=no%20account%20%C2%B7%20no%20sign-up"
 )
 i=1
 for Q in "${SH[@]}"; do

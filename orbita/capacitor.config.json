@@ -1,0 +1,15 @@
+{
+  "appId": "com.kusgrup.orbita",
+  "appName": "Orbita",
+  "webDir": "www",
+  "android": { "backgroundColor": "#080b1a", "allowMixedContent": false },
+  "ios": { "backgroundColor": "#080b1a", "contentInset": "never" },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 600,
+      "backgroundColor": "#080b1a",
+      "showSpinner": false,
+      "androidSplashResourceName": "splash"
+    }
+  }
+}

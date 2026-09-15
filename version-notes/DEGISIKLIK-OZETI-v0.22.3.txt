@@ -1,0 +1,47 @@
+v0.22.3 — Teklif ve satın alma çıktılarında sayfa düzeni düzeltmesi
+
+SORUN
+- Teklif önizlemede düzgün görünüyor, yazdır/PDF'e kaydet yapıldığında
+  sayfalar arasına büyük boşluklar giriyordu. 8 sayfalık bir teklifin
+  yarısı boştu.
+- Satın alma / teklif talep formunda uzun kalem tablosu ikinci sayfaya
+  taşarken başlık satırı tekrar etmiyor, satırlar ortadan bölünüyor,
+  imza kutusu ikiye ayrılıyordu.
+
+SEBEP
+- Teklif belgesinde her bölüm (.mt-page) yazdırmada
+  "page-break-after: always" ile ayrı bir sayfaya zorlanıyordu. Kısa
+  bölümler (kapsam listesi gibi) tek başına bir sayfa kaplıyor, geri
+  kalan yer boş kalıyordu.
+- Satın alma belgesinde yazdırma için hiç sayfa bölme kuralı yoktu.
+
+ÇÖZÜM
+Teklif belgesi (index.html, yazdırma stilleri):
+- Bölümler artık kesintisiz akıyor; aralarına 9 mm boşluk konuyor.
+- Yalnız kapak sayfası ve örnek proje görseli kendi sayfasında kalıyor.
+- Başlıklar (h2/h3) kendi metninden koparak sayfa sonunda yalnız kalmıyor.
+- Paragraf ve madde satırları ortadan bölünmüyor (orphans/widows: 3).
+- Fiyat tablosu uzunsa bölünebiliyor, ama satır ortadan kesilmiyor ve
+  başlık satırı her sayfada tekrar ediyor.
+- İmza bloğu tek parça halinde kalıyor.
+
+Satın alma / teklif talep formu (index.html, yazdırma stilleri):
+- Tablo başlık satırı taşan sayfalarda tekrar ediyor.
+- Tablo satırları, not kutusu, imza kutuları ve genel şart maddeleri
+  ortadan bölünmüyor.
+- Genel şartlar bölümü eskisi gibi kendi sayfasında başlıyor.
+
+ÖLÇÜM
+- Aynı içerikli örnek teklif: 8 sayfa -> 5 sayfa.
+- Satın alma formu: 3 sayfa (değişmedi) ama tablo başlığı artık ikinci
+  sayfada da görünüyor, satır ve imza bölünmesi ortadan kalktı.
+
+NOT
+- Çıktının üstünde/altında görünen tarih, "about:blank" ve sayfa numarası
+  tarayıcının kendi üstbilgi/altbilgisidir; CSS ile kapatılamaz.
+  Yazdırma penceresinde "Diğer ayarlar > Üstbilgi ve altbilgi"
+  kutusunun işaretini kaldırmak yeterlidir.
+
+VERİ ETKİSİ
+- Yok. Yalnız yazdırma stilleri değişti; hesaplama, kayıt ve Supabase
+  tarafında değişiklik yok.

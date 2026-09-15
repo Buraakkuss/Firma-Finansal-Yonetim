@@ -1,0 +1,42 @@
+v0.22.3 TEST RAPORU
+
+YÖNTEM
+index.html içindeki gerçek yazdırma stilleri (teklif ve satın alma
+belgelerinin <style> blokları) dosyadan çıkarılıp, temsilî bir belge
+gövdesiyle birlikte Chromium'da A4 PDF olarak basıldı. Eski ve yeni
+stiller aynı içerikle karşılaştırıldı.
+
+1) TEKLİF BELGESİ (MTP26-2-T-2 örneği ile aynı bölümler)
+   - Eski stil: 8 sayfa. Kapak, tanıtım, kapsam, hizmet paketleri,
+     fiyat, garanti, sipariş kabulü ve imza bölümlerinin her biri ayrı
+     sayfa; 5 sayfanın büyük kısmı boş.
+   - Yeni stil: 5 sayfa. Kapak kendi sayfasında; kalan bölümler
+     kesintisiz akıyor.
+   - Kontroller (görsel doğrulama, sayfa sayfa):
+     * Sayfa sonunda yalnız kalan başlık yok.              GEÇTİ
+     * Madde/paragraf ortadan bölünmüyor.                  GEÇTİ
+     * Fiyat tablosu tek parça, toplam satırı ayrılmamış.  GEÇTİ
+     * İmza bloğu bölünmemiş, belgenin sonunda.            GEÇTİ
+     * Kapak sayfası tek başına.                           GEÇTİ
+
+2) SATIN ALMA SİPARİŞ FORMU (22 kalemli örnek)
+   - Eski stil: 3 sayfa, ikinci sayfada tablo başlığı yok.
+   - Yeni stil: 3 sayfa, ikinci sayfada tablo başlığı tekrar ediyor.
+   - Kontroller:
+     * thead ikinci sayfada tekrar ediyor.                 GEÇTİ
+     * Satır ortadan bölünmüyor.                           GEÇTİ
+     * Not kutusu tek parça.                               GEÇTİ
+     * Üç imza kutusu tek parça, yan yana.                 GEÇTİ
+     * Genel şartlar kendi sayfasında başlıyor.            GEÇTİ
+
+3) SÖZDİZİMİ / PAKET DOĞRULAMASI
+   - index.html satır içi script: 1 blok, 0 hata.          GEÇTİ
+   - node --check sw.js                                    GEÇTİ
+   - manifest.webmanifest JSON.parse                       GEÇTİ
+
+4) SÜRÜM İŞARETLERİ
+   - index.html APP_VERSION, sayfa başlığı, manifest/ikon bağlantıları,
+     sidebar sürüm yazısı, sw.js APP_VERSION, manifest start_url:
+     hepsi 0.22.3.                                         GEÇTİ
+
+SONUÇ: Tüm kontroller geçti. Veri veya hesaplama tarafına dokunulmadı.

@@ -472,4 +472,13 @@
   karıştırmıyor: şema önbelleği gecikmesini ayrı anlatıyor, teknik ayrıntıyı
   gösteriyor ve 2,5 saniye sonra kontrolü bir kez otomatik tekrarlıyor.
 
-Güncel baz sürüm: **v0.22.1**
+
+## v0.22.3
+- Teklif çıktısında her bölümün ayrı sayfaya zorlanması kaldırıldı; bölümler
+  kesintisiz akıyor, yalnız kapak ve örnek görsel kendi sayfasında kalıyor.
+- Başlık/paragraf/madde bölünmesi, fiyat tablosu satır bölünmesi ve imza
+  bloğunun ikiye ayrılması engellendi. Örnek teklifte 8 sayfa → 5 sayfa.
+- Satın alma ve teklif talep formunda tablo başlığı taşan sayfalarda tekrar
+  ediyor; satır, not kutusu ve imza kutuları artık ortadan bölünmüyor.
+
+Güncel baz sürüm: **v0.22.3**

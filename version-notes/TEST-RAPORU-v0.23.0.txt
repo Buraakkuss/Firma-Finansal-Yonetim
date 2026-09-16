@@ -1,0 +1,42 @@
+v0.23.0 TEST RAPORU
+
+YÖNTEM
+index.html içindeki gerçek fonksiyonlar (costCalc, costLaborPct,
+costLaborPctLabel, projectCostComputedOffer) dosyadan çıkarılıp asgari bir
+ortamda çalıştırıldı; form değerleri gerçek alan kimlikleriyle beslendi.
+
+SENARYO 1 — Tahmini maliyet 100.000, işçilik %15, kar %25, pazarlık %5
+  İşçilik tutarı         15.000            GEÇTİ
+  Ara toplam            115.000            GEÇTİ
+  Kar tutarı             28.750            GEÇTİ
+  Pazarlık payı           7.187,50         GEÇTİ
+  Hesaplanan nihai      150.937,50         GEÇTİ
+  Kayda laborPct yazılıyor (15)            GEÇTİ
+  days/rate artık üretilmiyor              GEÇTİ
+
+SENARYO 2 — İşçilik %0
+  İşçilik tutarı              0            GEÇTİ
+  Hesaplanan nihai      131.250            GEÇTİ
+
+SENARYO 3 — Eski adam-gün kaydından oran geri hesabı
+  Maliyet 80.000 / işçilik 20.000 -> %25   GEÇTİ
+  Yeni kayıt laborPct=25 -> %25            GEÇTİ
+  Maliyet 0 iken oran 0 (bölme hatası yok) GEÇTİ
+
+SENARYO 4 — Eski kaydın nihai tutarı korunuyor
+  Kayıtlı 131.250 -> 131.250               GEÇTİ
+
+SÖZDİZİMİ / PAKET
+  index.html satır içi script: 1 blok, 0 hata   GEÇTİ
+  node --check sw.js                            GEÇTİ
+  manifest.webmanifest JSON.parse               GEÇTİ
+
+SÜRÜM İŞARETLERİ
+  APP_VERSION, sayfa başlığı, manifest/ikon bağlantıları, sidebar yazısı,
+  sw.js APP_VERSION, manifest start_url: hepsi 0.23.0.   GEÇTİ
+
+ARTIK KULLANILMAYAN ALANLAR
+  cost-labor-days / cost-labor-rate / "Adam-Gün" metni için dosya tarandı;
+  hiç referans kalmadı.                          GEÇTİ
+
+SONUÇ: 13/13 hesap kontrolü ve tüm paket kontrolleri geçti.

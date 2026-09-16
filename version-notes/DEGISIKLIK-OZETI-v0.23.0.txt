@@ -1,0 +1,33 @@
+v0.23.0 — Teklif & Maliyet sayfasında işçilik artık yüzde ile giriliyor
+
+İSTEK
+Maliyet çalışmasında "Adam-Gün" ve "Adam-Gün Birim" kutuları yerine, kar
+oranındaki gibi tek bir yüzde kutusu olsun; girilen yüzdeye göre işçilik
+hesaplansın.
+
+DEĞİŞEN
+- "Adam-Gün" ve "Adam-Gün Birim" kutuları kaldırıldı.
+- Yerine tek bir "İşçilik Oranı %" kutusu geldi (kar oranı kutusu ile aynı
+  mantıkta çalışır).
+- İşçilik Toplamı = Tahmini Maliyet x İşçilik Oranı / 100
+- "İşçilik Toplamı" kutusu eskisi gibi salt okunur ve anında güncellenir.
+- Önizleme kartında ve formül satırında işçiliğin yanında oran da yazıyor.
+- Maliyet çalışmaları listesindeki İşçilik sütununda da oran parantez
+  içinde gösteriliyor.
+
+HESAP ZİNCİRİ (değişmedi)
+  Ara toplam   = Tahmini maliyet + İşçilik
+  Kar          = Ara toplam x Kar oranı / 100
+  Pazarlık payı= (Ara toplam + Kar) x Pazarlık oranı / 100
+  Nihai teklif = Ara toplam + Kar + Pazarlık payı
+
+ESKİ KAYITLAR
+- Eski adam-gün ile yapılmış çalışmaların kayıtlı işçilik tutarı ve nihai
+  teklif tutarı DEĞİŞMEZ.
+- Böyle bir çalışmayı düzenlemeye açtığınızda işçilik oranı, kayıtlı
+  işçilik tutarından geri hesaplanır (işçilik / maliyet x 100). Yani ekranda
+  gördüğünüz tutar aynı kalır.
+- Kayıt güncellenince eskiden kalan days/rate alanları temizlenir.
+
+VERİ ETKİSİ
+- Mevcut hiçbir tutar bozulmuyor. Supabase tarafında değişiklik yok.

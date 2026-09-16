@@ -11,10 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="NakitPilot MT">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest?v=0.22.3">
-<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.22.3" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.22.3">
-  <title>NakitPilot Marmara Teknik — v0.22.3</title>
+<link rel="manifest" href="manifest.webmanifest?v=0.23.0">
+<link rel="icon" href="icons/nakitpilot-icon.svg?v=0.23.0" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/nakitpilot-icon.svg?v=0.23.0">
+  <title>NakitPilot Marmara Teknik — v0.23.0</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
@@ -2685,7 +2685,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand-line"><div class="brand-mark" aria-hidden="true">NP</div><h1>NakitPilot</h1></div>
-      <p>Marmara Teknik çok firmalı iç finans paneli · v0.22.3</p>
+      <p>Marmara Teknik çok firmalı iç finans paneli · v0.23.0</p>
     </div>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showPage('dashboard',this)">
@@ -3464,9 +3464,8 @@
               </div>
             </div>
             <div class="form-group span-3"><label>Toplam Maliyet</label><input type="number" id="cost-material" min="0" step="0.01" oninput="updateCostPreview()" placeholder="0.00"></div>
-            <div class="form-group span-2"><label>Adam-Gün</label><input type="number" id="cost-labor-days" min="0" step="0.1" oninput="updateCostPreview()" placeholder="0"></div>
-            <div class="form-group span-2"><label>Adam-Gün Birim</label><input type="number" id="cost-labor-rate" min="0" step="0.01" value="0" oninput="updateCostPreview()"></div>
-            <div class="form-group span-2"><label>İşçilik Toplamı</label><input type="text" id="cost-labor-total" readonly></div>
+            <div class="form-group span-3"><label>İşçilik Oranı %</label><input type="number" id="cost-labor-pct" min="0" step="0.1" value="0" oninput="updateCostPreview()" placeholder="0"><div class="manual-offer-note">Tahmini maliyetin yüzdesi olarak hesaplanır.</div></div>
+            <div class="form-group span-3"><label>İşçilik Toplamı</label><input type="text" id="cost-labor-total" readonly></div>
             <div class="form-group span-3"><label>Para Birimi</label><select id="cost-currency" onchange="updateCostPreview()"><option value="TRY">TL</option><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
 
             <div class="form-group span-3"><label>Kar Oranı %</label><input type="number" id="cost-profit" min="0" step="0.1" value="25" oninput="updateCostPreview()"></div>
@@ -4655,7 +4654,7 @@
 const MONTHS=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const PAGE_TITLES={weightCalc:'Mühendislik · Ağırlık Hesaplama',cadLibrary:'Standart Ekipmanlar · Hazır CAD Datalar',catalogs:'Standart Ekipmanlar · Kataloglar',guide:'Kullanım Kılavuzu',people:'Kişi Kartları',receivables:'Cari · Alacaklar',payables:'Cari · Borçlar',execDashboard:'Yönetim Raporu',suppliers:'Satın Alma · Tedarikçiler',purchaseOrders:'Satın Alma · Siparişler',supplierInvoices:'Satın Alma · Faturalar & Ödemeler',dashboard:'Özet Paneli',ai:'AI Finans Asistanı',daily:'Tamamlanmış Gelir/Gider Kayıt',fixed:'Gelecekteki Kesin Gelir/Gider',forecast:'Tahmini Gelir/Gider',banking:'Banka Merkezi',creditCards:'Kredi Kartları',projectMeetings:'Proje Takip · Müşteri Görüşmeleri',projects:'Proje Takip · Projeler',projectCosts:'Proje Takip · Teklif & Maliyet',projectProduction:'Proje Takip · Üretim Takibi',projectFiles:'Proje Takip · Dosyalar',projectFinance:'Proje Takip · Proje Finans Durumu',reports:'Raporlar',plan5:'5 Yıllık Plan',categories:'Kategori Yönetimi',export:'Rapor İndirme',team:'Firma & Ekip',billing:'Paket & Abonelik',legal:'Yasal & Hesap',settings:'Ayarlar',contact:'İletişim / Destek',admin:'Admin Paneli'};
 const STORAGE_KEY='nakitpilot_finance_data_v1';
-const APP_VERSION='0.22.3';
+const APP_VERSION='0.23.0';
 const BILLING_DISABLED=true;
 const PRIMARY_ADMIN_EMAIL='tburak.kus@marmarateknikmakine.com.tr';
 const SUPABASE_URL='https://ekpehcfhhldtxsuqiczj.supabase.co';
@@ -9953,8 +9952,8 @@ function updateCostTitleOptions(selected){
 }
 function clearCostFieldsForProject(){
   _costItems=[];renderCostItems();
-  ['cost-edit-id','cost-material','cost-labor-days','cost-display-amount','cost-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  const lr=document.getElementById('cost-labor-rate');if(lr&&!lr.value)lr.value='0';
+  ['cost-edit-id','cost-material','cost-display-amount','cost-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const lp=document.getElementById('cost-labor-pct');if(lp)lp.value='0';
   const titleEl=document.getElementById('cost-title');if(titleEl)titleEl.value=nextCostTitle(document.getElementById('cost-project')?.value||'');
 }
 function onCostTitleSelectionChange(){
@@ -10036,20 +10035,30 @@ function costCalc(){
   // Kalem girilmişse toplam maliyet kalemlerden hesaplanır, elle girilen tutar yok sayılır.
   const material=_costItems.length?costItemsTotal():(parseDecimalInput(document.getElementById('cost-material')?.value)||0);
   const purchase=0;
-  const days=parseDecimalInput(document.getElementById('cost-labor-days')?.value)||0;
-  const rate=parseDecimalInput(document.getElementById('cost-labor-rate')?.value)||0;
+  // v0.23.0 — İşçilik adam-gün yerine tahmini maliyetin yüzdesi olarak giriliyor.
+  const laborPct=parseDecimalInput(document.getElementById('cost-labor-pct')?.value)||0;
   const profit=parseDecimalInput(document.getElementById('cost-profit')?.value)||0;
   const discount=parseDecimalInput(document.getElementById('cost-discount')?.value)||0;
   const manualRaw=parseDecimalInput(document.getElementById('cost-display-amount')?.value);
   const displayOfferAmount=(Number.isFinite(manualRaw)&&manualRaw>0)?manualRaw:null;
-  const labor=days*rate;
+  const labor=material*laborPct/100;
   const subtotal=material+purchase+labor;
   const profitAmt=subtotal*profit/100;
   const offerBefore=subtotal+profitAmt;
   // Pazarlık payı indirim değildir; müşteriye sunulan teklifin üzerine eklenen indirim tamponudur.
   const discountAmt=offerBefore*discount/100;
   const calculatedOffer=offerBefore+discountAmt;
-  return{material,purchase,days,rate,labor,total:subtotal,baseCost:material+purchase,profit,profitAmt,discount,discountAmt,offer:calculatedOffer,calculatedOffer,displayOfferAmount,items:_costItems.map(it=>Object.assign({},it)),itemsWeight:costItemsWeight()};
+  return{material,purchase,laborPct,labor,total:subtotal,baseCost:material+purchase,profit,profitAmt,discount,discountAmt,offer:calculatedOffer,calculatedOffer,displayOfferAmount,items:_costItems.map(it=>Object.assign({},it)),itemsWeight:costItemsWeight()};
+}
+function costLaborPct(c){
+  if(!c)return 0;
+  if(c.laborPct!==undefined&&c.laborPct!==null)return n(c.laborPct);
+  const base=(c.baseCost!==undefined)?n(c.baseCost):n(c.material);
+  return base>0?(n(c.labor)/base*100):0;
+}
+function costLaborPctLabel(c){
+  const pct=costLaborPct(c);
+  return pct>0?(' ('+formatNumberTr(pct,1)+'%)'):'';
 }
 function projectCostComputedOffer(c){
   if(!c)return 0;
@@ -10132,7 +10141,7 @@ function updateCostPreview(){
   const cards=document.getElementById('cost-preview-cards');
   if(cards)cards.innerHTML=`
     <div class="project-summary-metric"><div class="label">Tahmini Maliyet</div><div class="value">${projectMoney(c.baseCost,cur)}</div></div>
-    <div class="project-summary-metric"><div class="label">İşçilik</div><div class="value">${projectMoney(c.labor,cur)}</div></div>
+    <div class="project-summary-metric"><div class="label">İşçilik (%${formatNumberTr(c.laborPct,1)})</div><div class="value">${projectMoney(c.labor,cur)}</div></div>
     <div class="project-summary-metric positive"><div class="label">Kar</div><div class="value">${projectMoney(c.profitAmt,cur)}</div></div>
     <div class="project-summary-metric warning"><div class="label">Pazarlık Payı</div><div class="value">+${projectMoney(c.discountAmt,cur)}</div></div>
     <div class="project-summary-metric final"><div class="label">Hesaplanan Nihai</div><div class="value">${projectMoney(c.calculatedOffer,cur)}</div></div>
@@ -10140,7 +10149,7 @@ function updateCostPreview(){
   const el=document.getElementById('cost-preview');
   if(el){
     const manualText=manual!==null?` · <strong style="color:#BF6A00">Manuel teklifte gösterilecek tutar: ${projectMoney(displayed,cur)}</strong>`:' · Manuel tutar boş olduğu için teklifte hesaplanan nihai tutar gösterilir.';
-    el.innerHTML=`<strong>Formül:</strong> Tahmini maliyet ${projectMoney(c.baseCost,cur)} + İşçilik ${projectMoney(c.labor,cur)} + Kar ${projectMoney(c.profitAmt,cur)} + Pazarlık payı ${projectMoney(c.discountAmt,cur)} = <strong style="color:var(--income)">Hesaplanan nihai ${projectMoney(c.calculatedOffer,cur)}</strong>${manualText}`;
+    el.innerHTML=`<strong>Formül:</strong> Tahmini maliyet ${projectMoney(c.baseCost,cur)} + İşçilik %${formatNumberTr(c.laborPct,1)} = ${projectMoney(c.labor,cur)} + Kar ${projectMoney(c.profitAmt,cur)} + Pazarlık payı ${projectMoney(c.discountAmt,cur)} = <strong style="color:var(--income)">Hesaplanan nihai ${projectMoney(c.calculatedOffer,cur)}</strong>${manualText}`;
   }
 }
 function saveCostStudy(){
@@ -10152,7 +10161,7 @@ function saveCostStudy(){
   const rec={id:editId||makeId('cost'),projectId:pid,title,currency:document.getElementById('cost-currency').value||'TRY',note:document.getElementById('cost-note').value.trim(),...c,updatedAt:new Date().toISOString()};
   if(!editId)rec.createdAt=new Date().toISOString();
   const arr=mtpro().costs;const idx=arr.findIndex(x=>String(x.id)===String(editId));
-  if(idx>=0)arr[idx]=Object.assign({},arr[idx],rec);else arr.push(rec);
+  if(idx>=0){const m=Object.assign({},arr[idx],rec);delete m.days;delete m.rate;arr[idx]=m;}else arr.push(rec);
   const p=mtpro().projects.find(x=>String(x.id)===String(pid));
   if(p){p.offerAmount=projectCostDisplayOffer(rec);p.calculatedOfferAmount=projectCostComputedOffer(rec);p.currency=rec.currency;p.selectedCostId=rec.id;p.updatedAt=new Date().toISOString();}
   logProjectActivity(pid,'cost',(editId?'Maliyet çalışması güncellendi: ':'Maliyet çalışması oluşturuldu: ')+title
@@ -10181,8 +10190,10 @@ function editCostStudy(id){
   _costItems=Array.isArray(c.items)?c.items.map(it=>Object.assign({},it)):[];
   renderCostItems();
   document.getElementById('cost-material').value=c.baseCost!==undefined?c.baseCost:(c.material||0);
-  document.getElementById('cost-labor-days').value=c.days||0;
-  document.getElementById('cost-labor-rate').value=c.rate||0;
+  const _mat=n(c.baseCost!==undefined?c.baseCost:c.material);
+  // Eski adam-gün kayıtlarında oran yok; kayıtlı işçilik tutarı korunsun diye orandan geri hesaplanır.
+  const _lp=(c.laborPct!==undefined&&c.laborPct!==null)?n(c.laborPct):(_mat>0?(n(c.labor)/_mat*100):0);
+  document.getElementById('cost-labor-pct').value=Math.round(_lp*100)/100;
   document.getElementById('cost-profit').value=c.profit||0;
   document.getElementById('cost-discount').value=c.discount||0;
   const displayEl=document.getElementById('cost-display-amount');if(displayEl)displayEl.value=projectCostManualOffer(c)!==null?projectCostManualOffer(c):'';
@@ -10251,7 +10262,7 @@ function renderProjectCosts(){
     const calc=projectCostComputedOffer(c);
     const shownNote=projectCostOfferIsManual(c)?`<div class="quote-amount-source-pill">Teklifte gösterilecek: ${projectMoney(shown,c.currency)}</div>`:`<div class="quote-amount-source-pill">Teklifte hesaplanan tutar gösterilir</div>`;
     const offerInfo=costQuote?`<div class="quote-cost-link-pill">${isActive?'✓ Aktif teklif':'Teklif'}: ${htmlEsc(costQuote.code)} · ${projectMoney(costQuote.amount,costQuote.currency)}</div>`:'<div style="font-size:11px;color:var(--text-hint);margin-top:5px">Henüz teklif oluşturulmadı</div>';
-    return `<tr><td><strong>${htmlEsc(c.title)}</strong>${offerInfo}<div style="font-size:11px;color:var(--text-muted)">${htmlEsc(c.note||'')}</div></td><td>${projectMoney(c.baseCost!==undefined?c.baseCost:c.material,c.currency)}</td><td>${projectMoney(c.labor,c.currency)}</td><td>${projectMoney(c.profitAmt,c.currency)} (${Number(c.profit||0).toLocaleString('tr-TR')}%)</td><td>${projectMoney(projectCostNegotiationAmount(c),c.currency)} (${Number(c.discount||0).toLocaleString('tr-TR')}%)</td><td><strong style="color:var(--income)">${projectMoney(shown,c.currency)}</strong><div style="font-size:11px;color:var(--text-muted);margin-top:4px">Hesaplanan: ${projectMoney(calc,c.currency)}</div>${shownNote}</td><td><div class="project-action-row">${projectCanEdit()?`<button class="btn btn-sm btn-primary cost-quote-action" onclick="openQuoteModalFromCost('${c.id}')">Teklif Oluştur / Düzenle</button>${costQuote?`<button class="btn btn-sm" onclick="previewProjectQuote('${c.projectId}','${costQuote.id}')">Ön İzle</button>`:''}<button class="btn btn-sm btn-edit" onclick="editCostStudy('${c.id}')">✏️</button><button class="btn btn-sm btn-del" onclick="deleteCostStudy('${c.id}')">🗑</button>`:''}</div></td></tr>`;
+    return `<tr><td><strong>${htmlEsc(c.title)}</strong>${offerInfo}<div style="font-size:11px;color:var(--text-muted)">${htmlEsc(c.note||'')}</div></td><td>${projectMoney(c.baseCost!==undefined?c.baseCost:c.material,c.currency)}</td><td>${projectMoney(c.labor,c.currency)}${costLaborPctLabel(c)}</td><td>${projectMoney(c.profitAmt,c.currency)} (${Number(c.profit||0).toLocaleString('tr-TR')}%)</td><td>${projectMoney(projectCostNegotiationAmount(c),c.currency)} (${Number(c.discount||0).toLocaleString('tr-TR')}%)</td><td><strong style="color:var(--income)">${projectMoney(shown,c.currency)}</strong><div style="font-size:11px;color:var(--text-muted);margin-top:4px">Hesaplanan: ${projectMoney(calc,c.currency)}</div>${shownNote}</td><td><div class="project-action-row">${projectCanEdit()?`<button class="btn btn-sm btn-primary cost-quote-action" onclick="openQuoteModalFromCost('${c.id}')">Teklif Oluştur / Düzenle</button>${costQuote?`<button class="btn btn-sm" onclick="previewProjectQuote('${c.projectId}','${costQuote.id}')">Ön İzle</button>`:''}<button class="btn btn-sm btn-edit" onclick="editCostStudy('${c.id}')">✏️</button><button class="btn btn-sm btn-del" onclick="deleteCostStudy('${c.id}')">🗑</button>`:''}</div></td></tr>`;
   }).join('');
   renderProjectQuoteHistory();
 }

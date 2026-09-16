@@ -481,4 +481,11 @@
 - Satın alma ve teklif talep formunda tablo başlığı taşan sayfalarda tekrar
   ediyor; satır, not kutusu ve imza kutuları artık ortadan bölünmüyor.
 
-Güncel baz sürüm: **v0.22.3**
+## v0.23.0
+- Teklif & Maliyet çalışmasında "Adam-Gün" ve "Adam-Gün Birim" kutuları kaldırıldı;
+  yerine kar oranı gibi çalışan tek bir "İşçilik Oranı %" kutusu geldi.
+- İşçilik = Tahmini maliyet x İşçilik oranı / 100. Kar ve pazarlık zinciri değişmedi.
+- Eski adam-gün kayıtlarının tutarları korunuyor; düzenlemeye açıldığında oran
+  kayıtlı işçilik tutarından geri hesaplanıyor.
+
+Güncel baz sürüm: **v0.23.0**
